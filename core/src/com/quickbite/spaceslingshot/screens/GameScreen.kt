@@ -13,14 +13,15 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.quickbite.spaceslingshot.GameScreenInputListener
 import com.quickbite.spaceslingshot.MyGame
-import com.quickbite.spaceslingshot.Predictor
 import com.quickbite.spaceslingshot.data.GameLevels
 import com.quickbite.spaceslingshot.data.GameScreenData
 import com.quickbite.spaceslingshot.guis.GameScreenGUI
 import com.quickbite.spaceslingshot.objects.Obstacle
 import com.quickbite.spaceslingshot.objects.Planet
 import com.quickbite.spaceslingshot.objects.Ship
+import com.quickbite.spaceslingshot.util.Constants
 import com.quickbite.spaceslingshot.util.LineDraw
+import com.quickbite.spaceslingshot.util.Predictor
 
 /**
  * Created by Paha on 8/7/2016.
@@ -34,6 +35,25 @@ class GameScreen(val game:MyGame) : Screen {
     lateinit var points:List<Vector2>
 
     lateinit var starryBackground: TextureRegion
+
+    var physicsAccumulator = 0f
+    var updateAccumulator = 0f
+
+    companion object{
+        var finished = false
+        var lost = false
+
+        fun applyGravity(planet:Planet, ship:Ship){
+            val dst = planet.position.dst(ship.position)
+            if(dst <= planet.gravityRange){
+                val pull = planet.getPull(dst)
+                val angle = MathUtils.atan2(planet.position.y - ship.position.y, planet.position.x - ship.position.x )
+                val x = MathUtils.cos(angle)*pull
+                val y = MathUtils.sin(angle)*pull
+                ship.addVelocity(x, y)
+            }
+        }
+    }
 
     override fun show() {
         data.ship = Ship()
@@ -63,18 +83,22 @@ class GameScreen(val game:MyGame) : Screen {
 
     override fun render(delta: Float) {
         update(delta)
+
         draw(MyGame.batch)
+
+        MyGame.debugRenderer.render(MyGame.world, MyGame.camera.combined)
 
         MyGame.stage.act()
         MyGame.stage.draw()
+
+        if(!paused)
+            doPhysicsStep(delta)
     }
 
     private fun update(delta:Float){
-        //Not paused update...
+        //Not pausePhysics update...
         if(!paused) {
-            runPredictor()
-
-            applyGravity(data.planetList, data.ship)
+//            runPredictor()
             data.ship.update(delta)
             data.planetList.forEach { obj ->
                 obj.update(delta)
@@ -82,18 +106,27 @@ class GameScreen(val game:MyGame) : Screen {
 
             gui.fuelBar.setAmounts(data.ship.fuel, data.ship.burnTime * data.ship.burnPerTick)
 
-            val result = checkHitPlanet(data.planetList, data.obstacleList, data.ship)
-            if(result == 0){
-                gui.showGameOver(true)
-                setGamePaused(true)
-            }else if(result == 1){
-                gui.showGameOver(false)
+            if(GameScreen.finished){
+                gui.showGameOver(lost)
                 setGamePaused(true)
             }
 
         //Paused update...
         }else{
-            lineDrawer.setStartAndEnd(data.ship.burnBallBasePosition, data.ship.burnBallPosition)
+            lineDrawer.setStartAndEnd(data.ship.burnBallBasePosition, data.ship.burnHandleLocation)
+        }
+    }
+
+    private fun doPhysicsStep(deltaTime: Float) {
+        // fixed time step
+        // max frame time to avoid spiral of death (on slow devices)
+        val frameTime = Math.min(deltaTime, 0.25f)
+        physicsAccumulator += frameTime
+        while (physicsAccumulator >= Constants.PHYSICS_TIME_STEP) {
+            data.ship.fixedUpdate()
+            data.planetList.forEach { p -> p.fixedUpdate() }
+            MyGame.world.step(Constants.PHYSICS_TIME_STEP, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS)
+            physicsAccumulator -= Constants.PHYSICS_TIME_STEP
         }
     }
 
@@ -167,19 +200,6 @@ class GameScreen(val game:MyGame) : Screen {
         }
     }
 
-    private fun applyGravity(planets: Array<Planet>, ship: Ship){
-        planets.forEach { planet ->
-            val dst = planet.position.dst(ship.position)
-            if(dst <= planet.gravityRange){
-                val pull = planet.getPull(dst)
-                val angle = MathUtils.atan2(planet.position.y - ship.position.y, planet.position.x - ship.position.x )
-                val x = MathUtils.cos(angle)*pull
-                val y = MathUtils.sin(angle)*pull
-                ship.addVelocity(x, y)
-            }
-        }
-    }
-
     /**
      * @return An Integer representing the result. 0 for collision, 1 for collided with target (passed), 2 for nothing
      */
@@ -215,6 +235,9 @@ class GameScreen(val game:MyGame) : Screen {
     }
 
     fun reloadLevel():Boolean{
+        GameScreen.lost = false
+        GameScreen.finished = false
+
         val success = GameLevels.loadLevel(data.currLevel, data)
         runPredictor()
         gui.fuelBar.setAmounts(data.ship.fuel, 0f, data.ship.fuel)
@@ -222,6 +245,9 @@ class GameScreen(val game:MyGame) : Screen {
     }
 
     fun loadLevel(level:Int):Boolean{
+        GameScreen.lost = false
+        GameScreen.finished = false
+
         val success = GameLevels.loadLevel(level, data)
         data.currLevel = level
         runPredictor()
@@ -230,6 +256,9 @@ class GameScreen(val game:MyGame) : Screen {
     }
 
     fun loadNextLevel():Boolean{
+        GameScreen.lost = false
+        GameScreen.finished = false
+
         val success = GameLevels.loadLevel(++data.currLevel, data)
         runPredictor()
         gui.fuelBar.setAmounts(data.ship.fuel, 0f, data.ship.fuel)
@@ -237,14 +266,7 @@ class GameScreen(val game:MyGame) : Screen {
     }
 
     fun runPredictor(){
-        Predictor.runPrediction(data.planetList, data.ship, { planets, ship ->
-            applyGravity(planets, ship)
-            val hit = checkHitPlanet(planets, data.obstacleList, ship)
-            if(hit == 0 || hit == 1)
-                return@runPrediction
-
-        })
-
+        Predictor.runPrediction(data.ship, {pauseAllPhysicsExceptPredictorShip()}, {resumeAllPhysicsExceptPredictorShip()}, {doPhysicsStep(Constants.PHYSICS_TIME_STEP)})
         points = Predictor.pointsList
     }
 
@@ -258,9 +280,27 @@ class GameScreen(val game:MyGame) : Screen {
         if(paused) {
             runPredictor()
             gui.bottomPauseButton.setText("Resume")
+//            pauseAllPhysicsExceptPredictorShip()
+//            data.obstacleList.forEach { o ->  }
         }else{
-//            points = listOf()
+//            resumeAllPhysicsExceptPredictorShip()
         }
+    }
+
+    /**
+     * Pauses all physics except for the test ship predictor
+     */
+    fun pauseAllPhysicsExceptPredictorShip(){
+        data.planetList.forEach { p -> p.setPhysicsPaused(true) }
+        data.ship.setPhysicsPaused(true)
+    }
+
+    /**
+     * Resumes all physics except for the test ship predictor
+     */
+    fun resumeAllPhysicsExceptPredictorShip(){
+        data.planetList.forEach { p -> p.setPhysicsPaused(false) }
+        data.ship.setPhysicsPaused(false)
     }
 
     fun scrollScreen(x:Float, y:Float){
@@ -276,6 +316,8 @@ class GameScreen(val game:MyGame) : Screen {
     override fun dispose() {
         gui.dispose()
         data.obstacleList.clear()
-        data.planetList.clear()
+        data.planetList.forEach { p -> p.dispose() }
+        data.ship.dispose()
+//        Predictor.dispose()
     }
 }

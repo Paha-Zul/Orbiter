@@ -9,4 +9,5 @@ interface IPhysicsBody {
     var body:Body
 
     fun createBody()
+    fun setPhysicsPaused(pausePhysics:Boolean)
 }

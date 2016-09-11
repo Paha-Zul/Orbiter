@@ -1,0 +1,140 @@
+[
+  {
+    "level": 1,
+    "name": "Such",
+    "ship": {
+      "pos": [240, 50],
+      "fuel": 50,
+      "velocity": [0, 1]
+    },
+    "planets":[
+      {
+        "name": "GenericPlanet",
+        "pos": [240, 400],
+        "radius": 30,
+        "gravityRange": 75,
+        "density": 0.1,
+        "planetType": "Earth"
+      }
+    ],
+    "homePlanet":{
+      "name": "GenericPlanet",
+      "pos": [240, 650],
+      "radius": 30,
+      "gravityRange": 75,
+      "density": 0.1,
+      "planetType": "Earth"
+    },
+    "obstacles":[
+
+    ]
+  },
+  {
+    "level": 2,
+    "name": "Such",
+    "ship": {
+      "pos": [240, 50],
+      "fuel": 25,
+      "velocity": [0.5, 0.5]
+    },
+    "planets":[
+      {
+        "name": "GenericPlanet",
+        "pos": [340, 400],
+        "radius": 75,
+        "gravityRange": 75,
+        "density": 0.05,
+        "planetType": "Ice"
+      }
+    ],
+    "homePlanet":{
+      "name": "GenericPlanet",
+      "pos": [240, 650],
+      "radius": 20,
+      "gravityRange": 75,
+      "density": 0.2,
+      "planetType": "Earth"
+    },
+    "obstacles":[
+      {
+        "rect":[50, 500, 200, 50]
+      }
+    ]
+  },
+  {
+    "level": 3,
+    "name": "Such",
+    "ship": {
+      "pos": [240, 50],
+      "fuel": 10,
+      "velocity": [1, 1]
+    },
+    "planets":[
+      {
+        "name": "GenericPlanet",
+        "pos": [370, 400],
+        "radius": 50,
+        "gravityRange": 75,
+        "density": 0.15,
+        "planetType": "Ice"
+      },
+      {
+        "name": "GenericPlanet",
+        "pos": [300, 600],
+        "radius": 50,
+        "gravityRange": 75,
+        "density": 0.15,
+        "planetType": "Desert"
+      }
+    ],
+    "homePlanet":{
+      "name": "GenericPlanet",
+      "pos": [100, 600],
+      "radius": 20,
+      "gravityRange": 75,
+      "density": 0.2,
+      "planetType": "Earth"
+    },
+    "obstacles":[
+
+    ]
+  },
+  {
+    "level": 4,
+    "name": "Such",
+    "ship": {
+      "pos": [240, 50],
+      "fuel": 10,
+      "velocity": [0, 1]
+    },
+    "planets":[
+      {
+        "name": "GenericPlanet",
+        "pos": [100, 500],
+        "radius": 60,
+        "gravityRange": 120,
+        "density": 0.25,
+        "planetType": "Lava"
+      },
+      {
+        "name": "GenericPlanet",
+        "pos": [400, 500],
+        "radius": 40,
+        "gravityRange": 120,
+        "density": 0.15,
+        "planetType": "Desert"
+      }
+    ],
+    "homePlanet":{
+      "name": "GenericPlanet",
+      "pos": [240, 650],
+      "radius": 20,
+      "gravityRange": 75,
+      "density": 0.2,
+      "planetType": "Earth"
+    },
+    "obstacles":[
+
+    ]
+  }
+]

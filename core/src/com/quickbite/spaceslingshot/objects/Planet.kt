@@ -8,17 +8,21 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Body
+import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.CircleShape
 import com.badlogic.gdx.physics.box2d.FixtureDef
+import com.badlogic.gdx.utils.Disposable
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.interfaces.IPhysicsBody
 import com.quickbite.spaceslingshot.interfaces.IUniqueID
+import com.quickbite.spaceslingshot.util.BodyData
+import com.quickbite.spaceslingshot.util.Constants
 
 /**
  * Created by Paha on 8/6/2016.
  */
 class Planet(position: Vector2, radius: Int, _gravityRangeRadius: Float, _density: Float, rotation:Float, texture:Texture, val homePlanet:Boolean = false)
-    : SpaceBody(position, radius, _gravityRangeRadius, _density), IUniqueID, IPhysicsBody{
+    : SpaceBody(position, radius, _gravityRangeRadius, _density), IUniqueID, IPhysicsBody, Disposable{
 
     lateinit var sprite:Sprite
     lateinit var ring:Sprite
@@ -42,6 +46,8 @@ class Planet(position: Vector2, radius: Int, _gravityRangeRadius: Float, _densit
         ring.setPosition(position.x - ringSize/2f, position.y - ringSize/2f)
         ring.setSize(ringSize.toFloat(), ringSize.toFloat())
         ring.color = Color.GRAY
+
+        createBody()
     }
 
     override fun fixedUpdate() {
@@ -58,14 +64,48 @@ class Planet(position: Vector2, radius: Int, _gravityRangeRadius: Float, _densit
     }
 
     override fun createBody(){
+        val bodyDef = BodyDef()
+        bodyDef.type = BodyDef.BodyType.StaticBody
+        bodyDef.position.set(position.x*Constants.BOX2D_SCALE, position.y*Constants.BOX2D_SCALE)
+
+        this.body = MyGame.world.createBody(bodyDef)
+        MyGame.world.createBody(bodyDef)
+
+        //Create the main circle on the body.
         val mainFixture = FixtureDef()
         val circle = CircleShape()
 
         circle.position = Vector2(0f, 0f)
-        circle.radius = radius.toFloat()
+        circle.radius = radius.toFloat()*Constants.BOX2D_SCALE
 
         mainFixture.shape = circle
 
-//        this.body =
+        this.body.createFixture(mainFixture)
+
+        circle.dispose()
+
+        //Create the ring sensor
+        val secondaryFixture = FixtureDef()
+        val secondCircle = CircleShape()
+
+        secondCircle.position = Vector2(0f, 0f)
+        secondCircle.radius = (radius + _gravityRangeRadius)*Constants.BOX2D_SCALE
+
+        secondaryFixture.shape = secondCircle
+        secondaryFixture.isSensor = true
+
+        this.body.createFixture(secondaryFixture)
+
+        secondCircle.dispose()
+
+        this.body.userData = BodyData(BodyData.ObjectType.Planet, this.uniqueID, this)
+    }
+
+    override fun dispose() {
+        MyGame.world.destroyBody(this.body)
+    }
+
+    override fun setPhysicsPaused(pausePhysics: Boolean) {
+        //Nothing for now
     }
 }

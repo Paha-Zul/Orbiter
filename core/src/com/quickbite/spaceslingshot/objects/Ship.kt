@@ -6,17 +6,29 @@ import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.physics.box2d.*
+import com.badlogic.gdx.utils.Disposable
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.interfaces.IDrawable
+import com.quickbite.spaceslingshot.interfaces.IPhysicsBody
+import com.quickbite.spaceslingshot.interfaces.IUniqueID
 import com.quickbite.spaceslingshot.interfaces.IUpdateable
-import com.quickbite.spaceslingshot.util.GH
-import com.quickbite.spaceslingshot.util.translate
+import com.quickbite.spaceslingshot.screens.GameScreen
+import com.quickbite.spaceslingshot.util.*
+import java.util.*
 
 /**
  * Created by Paha on 8/6/2016.
+ * @param position The real 'world' coordinates of the ship. These will be used for everything (including rendering) except Box2D which is scaled.
  */
-class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val testShip:Boolean = false): IUpdateable, IDrawable {
+class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val testShip:Boolean = false): IUpdateable, IDrawable, IUniqueID, IPhysicsBody, Disposable {
+    override val uniqueID: Long = MathUtils.random(Long.MAX_VALUE)
+    override lateinit var body: Body
+
+    val planetList:LinkedList<Planet> = LinkedList()
+
     val velocity = initialVelocity
+    val velocityHolder = Vector2()
     var rotation = 0f
 
     var burnTime = 0 //Burn for 10 ticks
@@ -36,16 +48,18 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         private set
 
 
+    var physicsArePaused = false
+
     lateinit var sprite:Sprite
     lateinit var ring:Sprite
-    lateinit var burnBall:Sprite
+    lateinit var burnHandle:Sprite
 
     val ringRadius = 100f
     private val shipWidth = 20f
     private val shipHeight = 10f
     private val burnBallRadius = 30f
 
-    val burnBallPosition = Vector2()
+    val burnHandleLocation = Vector2()
     val burnBallBasePosition = Vector2()
 
     lateinit var normalBurnTexture:Texture
@@ -70,32 +84,93 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
             ring.color = Color.WHITE
             ring.setOrigin(ringRadius, ringRadius)
 
-            burnBall = Sprite(normalBurnTexture)
-            burnBall.setPosition(position.x - burnBallRadius, position.y - burnBallRadius)
-            burnBall.setSize(burnBallRadius * 2f, burnBallRadius * 2f)
-            burnBall.setOrigin(burnBall.width/2f, burnBall.height/2f)
-            burnBall.color = Color.WHITE
+            burnHandle = Sprite(normalBurnTexture)
+            burnHandle.setPosition(position.x - burnBallRadius, position.y - burnBallRadius)
+            burnHandle.setSize(burnBallRadius * 2f, burnBallRadius * 2f)
+            burnHandle.setOrigin(burnHandle.width/2f, burnHandle.height/2f)
+            burnHandle.color = Color.WHITE
 
             setRotationTowardsMouse(0f, 0f)
+
+            EventSystem.onEvent("collide_begin", { args ->
+                val other = args[0] as Fixture
+                val otherData = other.body.userData as BodyData
+
+                if(!other.isSensor && otherData.type == BodyData.ObjectType.Planet) {
+                    val planet = otherData.bodyOwner as Planet
+                    GameScreen.finished = true
+                    GameScreen.lost = !planet.homePlanet
+                }
+
+                //If the other fixture is a sensor and it's body belongs to a planet, we are in the gravity well
+                else if(other.isSensor && otherData.type == BodyData.ObjectType.Planet){
+                    val planet = otherData.bodyOwner as Planet
+                    planetList += planet
+                }
+
+            }, this.uniqueID)
+
+            //On collide_end, remove the planet from the list
+            EventSystem.onEvent("collide_end", { args ->
+                val other = args[0] as Fixture
+                val otherData = other.body.userData as BodyData
+
+                if(other.isSensor && otherData.type == BodyData.ObjectType.Planet){
+                    val planet = otherData.bodyOwner as Planet
+                    planetList -= planet
+                }
+
+            }, this.uniqueID)
+
+        //If we are the test ship
+        }else{
+            EventSystem.onEvent("collide_begin", { args ->
+                val other = args[0] as Fixture
+                val otherData = other.body.userData as BodyData
+
+                //If the other fixture is a sensor and it's body belongs to a planet, we are in the gravity well
+                if(other.isSensor && otherData.type == BodyData.ObjectType.Planet){
+                    val planet = otherData.bodyOwner as Planet
+                    planetList += planet
+                }
+
+            }, this.uniqueID)
+
+            //On collide_end, remove the planet from the list
+            EventSystem.onEvent("collide_end", { args ->
+                val other = args[0] as Fixture
+                val otherData = other.body.userData as BodyData
+
+                if(other.isSensor && otherData.type == BodyData.ObjectType.Planet){
+                    val planet = otherData.bodyOwner as Planet
+                    planetList -= planet
+                }
+
+            }, this.uniqueID)
         }
+
+        this.createBody()
     }
 
     //Empty constructor
     constructor():this(Vector2(0f, 0f), 0f, Vector2(0f, 0f), false)
 
     override fun update(delta: Float) {
-        burnFuel()
-        position.translate(velocity.x, velocity.y)
 
         if(!testShip) {
             sprite.setPosition(position.x - shipWidth / 2f, position.y - shipHeight / 2f)
             ring.setPosition(position.x - ringRadius, position.y - ringRadius)
-            burnBall.setPosition(position.x - burnBallRadius, position.y - burnBallRadius)
+            burnHandle.setPosition(position.x - burnBallRadius, position.y - burnBallRadius)
         }
     }
 
     override fun fixedUpdate() {
-
+        if(!physicsArePaused) {
+            burnFuel()
+            planetList.forEach { planet -> GameScreen.applyGravity(planet, this) }
+            body.setLinearVelocity(velocity.x * Constants.VELOCITY_SCALE, velocity.y * Constants.VELOCITY_SCALE)
+            position.set(body.position.x*Constants.BOX2D_INVERSESCALE, body.position.y*Constants.BOX2D_INVERSESCALE)
+        }
     }
 
     override fun draw(batch: SpriteBatch) {
@@ -103,10 +178,10 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     }
 
     fun drawHandles(batch: SpriteBatch){
-        setBurnBallLocation()
+        setBurnHandleLocation()
 
         ring.draw(batch)
-        burnBall.draw(batch)
+        burnHandle.draw(batch)
     }
 
     fun addVelocity(x:Float, y:Float){
@@ -120,6 +195,11 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         addVelocity(x, y)
     }
 
+    /**
+     * Sets the velocity of the ship
+     * @param x The X velocity
+     * @param y The Y velocity
+     */
     fun setVelocity(x:Float, y:Float){
         velocity.set(x, y)
     }
@@ -128,13 +208,13 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         val angle = MathUtils.atan2(mouseY - position.y, mouseX - position.x)
         this.rotation = angle*MathUtils.radiansToDegrees
         sprite.rotation = angle*MathUtils.radiansToDegrees
-        burnBall.rotation = angle*MathUtils.radiansToDegrees
+        burnHandle.rotation = angle*MathUtils.radiansToDegrees
         ring.rotation = angle*MathUtils.radiansToDegrees - 90 //Give an offset of 90 so the arrow doesn't sit under the burn ball
 
-        setBurnBallLocation()
+        setBurnHandleLocation()
     }
 
-    private fun setBurnBallLocation(){
+    private fun setBurnHandleLocation(){
         val angle = rotation*MathUtils.degreesToRadians
         val x = ringRadius * MathUtils.cos(angle) - MathUtils.sin(angle) //Original X position of the burn ball
         val y = ringRadius * MathUtils.sin(angle) + MathUtils.cos(angle) //Original Y position of the burn ball
@@ -143,8 +223,8 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
         burnBallBasePosition.set(position.x + x, position.y + y)
 
-        burnBallPosition.set(position.x + x2, position.y + y2 )
-        burnBall.setPosition(burnBallPosition.x - burnBallRadius, burnBallPosition.y - burnBallRadius)
+        burnHandleLocation.set(position.x + x2, position.y + y2 )
+        burnHandle.setPosition(burnHandleLocation.x - burnBallRadius, burnHandleLocation.y - burnBallRadius)
     }
 
     private fun burnFuel(){
@@ -153,13 +233,13 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
         addVelocityForward(burnForce)
 
-        fuel-=burnPerTick
+        fuel -= burnPerTick
         burnTime--
     }
 
     fun clickOnShip(mouseX:Float, mouseY:Float):Int{
         val dst = position.dst(mouseX, mouseY)
-        val dstToBurnBall = burnBallPosition.dst(mouseX, mouseY)
+        val dstToBurnBall = burnHandleLocation.dst(mouseX, mouseY)
         if(dstToBurnBall <= burnBallRadius)
             return 2
         else if(dst <= ringRadius){
@@ -181,27 +261,29 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         if(burnValue == !this.doubleBurn) return doubleBurn
 
         when(burnValue){
+            //If we are double burning, set the texture and apply the bonus burn.
             true -> {
                 if(!testShip) {
-                    burnBall.texture = doubleBurnTexture
-                    burnBall.color = Color.RED
+                    burnHandle.texture = doubleBurnTexture
+                    burnHandle.color = Color.RED
                 }
                 burnForce *= 2f
                 burnPerTick *= 2f
             }
+            //If we are not double burning, set the texture and reduce our burn.
             false ->{
                 if(!testShip) {
-                    burnBall.texture = normalBurnTexture
-                    burnBall.color = Color.WHITE
+                    burnHandle.texture = normalBurnTexture
+                    burnHandle.color = Color.WHITE
                 }
                 burnForce /= 2f
                 burnPerTick /= 2f
             }
         }
 
-        if(burnAmount > fuel){
+        //If we don't have enough fuel, clamp it
+        if(burnAmount > fuel)
             burnTime = (fuel/burnPerTick).toInt()
-        }
 
         return doubleBurn
     }
@@ -219,5 +301,75 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         if(burnAmount > fuel){
             burnTime = (fuel/burnPerTick).toInt()
         }
+    }
+
+    fun reset(position:Vector2, fuel:Float, initialVelocity:Vector2){
+        this.position.set(position.x, position.y)
+        this.fuel = fuel
+        this.velocity.set(initialVelocity.x, initialVelocity.y)
+        this.setDoubleBurn(false)
+        this.rotation = 0f
+        this.body.setTransform(Vector2(position.x*Constants.BOX2D_SCALE, position.y*Constants.BOX2D_SCALE), 0f)
+        this.body.setLinearVelocity(initialVelocity.x, initialVelocity.y)
+        this.planetList.clear()
+
+        //If we are the test ship, don't do this!
+        if(!testShip) {
+            sprite.setPosition(position.x - shipWidth / 2f, position.y - shipHeight / 2f)
+            ring.setPosition(position.x - ringRadius, position.y - ringRadius)
+            burnHandle.setPosition(position.x - burnBallRadius, position.y - burnBallRadius)
+            setBurnHandleLocation()
+        }
+    }
+
+    override fun createBody() {
+        val bodyDef = BodyDef()
+        bodyDef.type = BodyDef.BodyType.DynamicBody
+        bodyDef.position.set(position.x* Constants.BOX2D_SCALE, position.y* Constants.BOX2D_SCALE)
+
+        val world = MyGame.world
+        this.body = world.createBody(bodyDef)
+
+        //Create the main circle on the body.
+        val mainFixture = FixtureDef()
+        val circle = CircleShape()
+
+        circle.position = Vector2(0f, 0f)
+        circle.radius = 10* Constants.BOX2D_SCALE
+
+        mainFixture.shape = circle
+        if(testShip) mainFixture.isSensor = true
+
+        this.body.createFixture(mainFixture)
+
+        circle.dispose()
+
+        this.body.userData = BodyData(BodyData.ObjectType.Ship, this.uniqueID, this)
+    }
+
+    override fun dispose() {
+        val world = MyGame.world
+        world.destroyBody(this.body)
+    }
+
+    override fun setPhysicsPaused(pausePhysics: Boolean) {
+        if(physicsArePaused == pausePhysics) return //If we are not changing the state, simply return
+
+        when(pausePhysics){
+            //If we are pausing, remove velocity and store it away.
+            true -> {
+                velocityHolder.set(velocity.x, velocity.y)
+                velocity.set(0f, 0f)
+                body.setLinearVelocity(0f, 0f)
+            }
+            //Otherwise, set the velocity back
+            false -> {
+                velocity.set(velocityHolder.x, velocityHolder.y)
+                body.setLinearVelocity(velocity.x, velocity.y)
+                velocityHolder.set(0f, 0f)
+            }
+        }
+
+        physicsArePaused = pausePhysics
     }
 }

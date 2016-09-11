@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.quickbite.spaceslingshot.objects.Obstacle
 import com.quickbite.spaceslingshot.objects.Planet
-import com.quickbite.spaceslingshot.objects.Ship
 import com.quickbite.spaceslingshot.util.JsonLevelLoader
 
 /**
@@ -21,6 +20,7 @@ object GameLevels {
         System.out.println("Loading level $level")
 
         val levelData = levels[level]
+        data.planetList.forEach { planet -> planet.dispose() }
         data.planetList.clear()
         data.obstacleList.clear()
 
@@ -42,7 +42,7 @@ object GameLevels {
         data.planetList.add(Planet(Vector2(hp.pos[0].toFloat(), hp.pos[1].toFloat()), hp.radius, hp.gravityRange, hp.density, planetRotation(), planetTexture!!, true))
 
         val sd = levelData.ship
-        data.ship = Ship(Vector2(sd.pos[0].toFloat(), sd.pos[1].toFloat()), sd.fuel, Vector2(sd.velocity[0].toFloat(), sd.velocity[1].toFloat()))
+        data.ship.reset(Vector2(sd.pos[0].toFloat(), sd.pos[1].toFloat()), sd.fuel, Vector2(sd.velocity[0].toFloat(), sd.velocity[1].toFloat()))
 
         ProceduralPlanetTextureGenerator.generatePlanetTexturesThreaded(10) //Generate the next set of textures
 
