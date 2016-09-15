@@ -14,7 +14,10 @@ import com.quickbite.spaceslingshot.interfaces.IPhysicsBody
 import com.quickbite.spaceslingshot.interfaces.IUniqueID
 import com.quickbite.spaceslingshot.interfaces.IUpdateable
 import com.quickbite.spaceslingshot.screens.GameScreen
-import com.quickbite.spaceslingshot.util.*
+import com.quickbite.spaceslingshot.util.BodyData
+import com.quickbite.spaceslingshot.util.Constants
+import com.quickbite.spaceslingshot.util.EventSystem
+import com.quickbite.spaceslingshot.util.GH
 import java.util.*
 
 /**
@@ -25,10 +28,9 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     override val uniqueID: Long = MathUtils.random(Long.MAX_VALUE)
     override lateinit var body: Body
 
-    val planetList:LinkedList<Planet> = LinkedList()
+    private val planetList:LinkedList<Planet> = LinkedList()
 
-    val velocity = initialVelocity
-    val velocityHolder = Vector2()
+    private val velocityHolder = Vector2()
     var rotation = 0f
 
     var burnTime = 0 //Burn for 10 ticks
@@ -47,14 +49,16 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     var doubleBurn = false
         private set
 
+    val velocity:Vector2
+        get() = Vector2(body.linearVelocity.x*Constants.VELOCITY_INVERSESCALE, body.linearVelocity.y*Constants.VELOCITY_INVERSESCALE)
 
-    var physicsArePaused = false
+    override var physicsArePaused = false
 
-    lateinit var sprite:Sprite
-    lateinit var ring:Sprite
-    lateinit var burnHandle:Sprite
+    private lateinit var sprite:Sprite
+    private lateinit var ring:Sprite
+    private lateinit var burnHandle:Sprite
 
-    val ringRadius = 100f
+    private val ringRadius = 100f
     private val shipWidth = 20f
     private val shipHeight = 10f
     private val burnBallRadius = 30f
@@ -62,8 +66,8 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     val burnHandleLocation = Vector2()
     val burnBallBasePosition = Vector2()
 
-    lateinit var normalBurnTexture:Texture
-    lateinit var doubleBurnTexture:Texture
+    private lateinit var normalBurnTexture:Texture
+    private lateinit var doubleBurnTexture:Texture
 
     init{
         if(!testShip) {
@@ -105,7 +109,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
                 //If the other fixture is a sensor and it's body belongs to a planet, we are in the gravity well
                 else if(other.isSensor && otherData.type == BodyData.ObjectType.Planet){
                     val planet = otherData.bodyOwner as Planet
-                    planetList += planet
+                    planetList.add(planet)
                 }
 
             }, this.uniqueID)
@@ -117,7 +121,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
                 if(other.isSensor && otherData.type == BodyData.ObjectType.Planet){
                     val planet = otherData.bodyOwner as Planet
-                    planetList -= planet
+                    planetList.remove(planet)
                 }
 
             }, this.uniqueID)
@@ -131,7 +135,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
                 //If the other fixture is a sensor and it's body belongs to a planet, we are in the gravity well
                 if(other.isSensor && otherData.type == BodyData.ObjectType.Planet){
                     val planet = otherData.bodyOwner as Planet
-                    planetList += planet
+                    planetList.add(planet)
                 }
 
             }, this.uniqueID)
@@ -143,7 +147,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
                 if(other.isSensor && otherData.type == BodyData.ObjectType.Planet){
                     val planet = otherData.bodyOwner as Planet
-                    planetList -= planet
+                    planetList.remove(planet)
                 }
 
             }, this.uniqueID)
@@ -168,7 +172,6 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         if(!physicsArePaused) {
             burnFuel()
             planetList.forEach { planet -> GameScreen.applyGravity(planet, this) }
-            body.setLinearVelocity(velocity.x * Constants.VELOCITY_SCALE, velocity.y * Constants.VELOCITY_SCALE)
             position.set(body.position.x*Constants.BOX2D_INVERSESCALE, body.position.y*Constants.BOX2D_INVERSESCALE)
         }
     }
@@ -185,8 +188,8 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     }
 
     fun addVelocity(x:Float, y:Float){
-        velocity.translate(x, y)
-    }
+        body.setLinearVelocity(body.linearVelocity.x + x*Constants.VELOCITY_SCALE, body.linearVelocity.y + y*Constants.VELOCITY_SCALE)
+}
 
     fun addVelocityForward(force:Float){
         val angle = rotation*MathUtils.degreesToRadians
@@ -201,7 +204,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
      * @param y The Y velocity
      */
     fun setVelocity(x:Float, y:Float){
-        velocity.set(x, y)
+        body.setLinearVelocity(x*Constants.VELOCITY_SCALE, y*Constants.VELOCITY_SCALE)
     }
 
     fun setRotationTowardsMouse(mouseX:Float, mouseY:Float){
@@ -306,11 +309,10 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     fun reset(position:Vector2, fuel:Float, initialVelocity:Vector2){
         this.position.set(position.x, position.y)
         this.fuel = fuel
-        this.velocity.set(initialVelocity.x, initialVelocity.y)
         this.setDoubleBurn(false)
         this.rotation = 0f
         this.body.setTransform(Vector2(position.x*Constants.BOX2D_SCALE, position.y*Constants.BOX2D_SCALE), 0f)
-        this.body.setLinearVelocity(initialVelocity.x, initialVelocity.y)
+        this.body.setLinearVelocity(initialVelocity.x*Constants.VELOCITY_SCALE, initialVelocity.y*Constants.VELOCITY_SCALE)
         this.planetList.clear()
 
         //If we are the test ship, don't do this!
@@ -335,7 +337,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         val circle = CircleShape()
 
         circle.position = Vector2(0f, 0f)
-        circle.radius = 10* Constants.BOX2D_SCALE
+        circle.radius = 2* Constants.BOX2D_SCALE
 
         mainFixture.shape = circle
         if(testShip) mainFixture.isSensor = true
@@ -345,6 +347,23 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         circle.dispose()
 
         this.body.userData = BodyData(BodyData.ObjectType.Ship, this.uniqueID, this)
+    }
+
+    /**
+     * Sets the position of the ship. This sets both the rendering position and the physics body position.
+     * @param x The X position (real value)
+     * @param y The Y position (real value)
+     */
+    fun setPosition(x:Float, y:Float){
+        this.position.set(x, y)
+        this.body.setTransform(x*Constants.BOX2D_SCALE, y*Constants.BOX2D_SCALE, 0f)
+
+        if(!testShip) {
+            sprite.setPosition(position.x - shipWidth / 2f, position.y - shipHeight / 2f)
+            ring.setPosition(position.x - ringRadius, position.y - ringRadius)
+            burnHandle.setPosition(position.x - burnBallRadius, position.y - burnBallRadius)
+            setBurnHandleLocation()
+        }
     }
 
     override fun dispose() {
@@ -358,14 +377,12 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         when(pausePhysics){
             //If we are pausing, remove velocity and store it away.
             true -> {
-                velocityHolder.set(velocity.x, velocity.y)
-                velocity.set(0f, 0f)
+                velocityHolder.set( body.linearVelocity.x,  body.linearVelocity.y)
                 body.setLinearVelocity(0f, 0f)
             }
             //Otherwise, set the velocity back
             false -> {
-                velocity.set(velocityHolder.x, velocityHolder.y)
-                body.setLinearVelocity(velocity.x, velocity.y)
+                body.setLinearVelocity(velocityHolder.x, velocityHolder.y)
                 velocityHolder.set(0f, 0f)
             }
         }

@@ -176,6 +176,7 @@ object ProceduralPlanetTextureGenerator {
                 }
                 pixmap.dispose()
 
+                textureCounter = 0
                 texture
             }
 
@@ -266,7 +267,7 @@ object ProceduralPlanetTextureGenerator {
         return Color(scaledValue, scaledValue, scaledValue, 1f)
     }
 
-    fun getColor(planetType: PlanetData.PlanetType, value: Float, secondaryValue: Float):Color{
+    private fun getColor(planetType: PlanetData.PlanetType, value: Float, secondaryValue: Float):Color{
         if(planetType == PlanetData.PlanetType.Earth)
             return getColor(earthData, value, secondaryValue)
         else if(planetType == PlanetData.PlanetType.Desert)
@@ -277,6 +278,12 @@ object ProceduralPlanetTextureGenerator {
             return getColor(lavaData, value, secondaryValue)
         else
             return getColor(lavaData, value, secondaryValue)
+    }
+
+    fun getNextTexture():Texture{
+        val texture = textureArray[textureCounter]!!
+        textureCounter = (textureCounter+1)% textureArray.size
+        return texture
     }
 
     private fun getColor(data:PlanetTypeData, value: Float, secondaryValue: Float):Color{

@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.Body
  */
 interface IPhysicsBody {
     var body:Body
+    var physicsArePaused:Boolean
 
     fun createBody()
     fun setPhysicsPaused(pausePhysics:Boolean)

@@ -24,6 +24,7 @@ import com.quickbite.spaceslingshot.util.Constants
 class Planet(position: Vector2, radius: Int, _gravityRangeRadius: Float, _density: Float, rotation:Float, texture:Texture, val homePlanet:Boolean = false)
     : SpaceBody(position, radius, _gravityRangeRadius, _density), IUniqueID, IPhysicsBody, Disposable{
 
+    override var physicsArePaused: Boolean = false
     lateinit var sprite:Sprite
     lateinit var ring:Sprite
     override val uniqueID: Long = MathUtils.random(Long.MAX_VALUE)

@@ -113,7 +113,7 @@
         "pos": [100, 500],
         "radius": 60,
         "gravityRange": 120,
-        "density": 0.25,
+        "density": 0.1,
         "planetType": "Lava"
       },
       {
@@ -121,7 +121,7 @@
         "pos": [400, 500],
         "radius": 40,
         "gravityRange": 120,
-        "density": 0.15,
+        "density": 0.1,
         "planetType": "Desert"
       }
     ],
@@ -135,6 +135,22 @@
     },
     "obstacles":[
 
+    ],
+    "asteroidSpawners":[
+      {
+        "immediate": true,
+        "pos": [-50, 300],
+        "spawnDir": [1, 0],
+        "spawnFreq": [4, 8],
+        "speedRange": [0.5, 1.5]
+      },
+      {
+        "immediate": true,
+        "pos": [-100, 150],
+        "spawnDir": [1, 0],
+        "spawnFreq": [4, 8],
+        "speedRange": [0.5, 1.5]
+      }
     ]
   }
 ]

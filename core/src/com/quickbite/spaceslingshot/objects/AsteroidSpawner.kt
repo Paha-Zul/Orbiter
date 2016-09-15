@@ -9,18 +9,19 @@ import com.quickbite.spaceslingshot.interfaces.IUpdateable
 /**
  * Created by Paha on 9/11/2016.
  */
-class AsteroidSpawner(val position: Vector2, val spawnDirection:Vector2, val spawnFrequency:Pair<Float, Float>, val speedRange:Pair<Float, Float>, val data:GameScreenData) : IUpdateable, Disposable {
+class AsteroidSpawner(val position: Vector2, val spawnDirection:Vector2, val spawnFrequency:Pair<Float, Float>, val speedRange:Pair<Float, Float>, val data:GameScreenData, immediate:Boolean = false) : IUpdateable, Disposable {
 
     var counter = 0f
-    var chosenTime = MathUtils.random(spawnFrequency.first, spawnFrequency.second)
+    var chosenTime:Float = if(immediate) 0f else MathUtils.random(spawnFrequency.first, spawnFrequency.second)
 
     override fun update(delta: Float) {
         counter += delta
         if(counter >= chosenTime){
             val randSpeed = MathUtils.random(speedRange.first, speedRange.second)
-            val asteroid = Asteroid(Vector2(position.x, position.y), 10f,Vector2(spawnDirection.x*randSpeed, spawnDirection.y*randSpeed))
+            val asteroid = Asteroid(Vector2(position.x, position.y), 10f,Vector2(spawnDirection.x*randSpeed, spawnDirection.y*randSpeed), 10f)
             data.asteroidList.add(asteroid)
             counter = 0f
+            chosenTime = MathUtils.random(spawnFrequency.first, spawnFrequency.second)
         }
     }
 

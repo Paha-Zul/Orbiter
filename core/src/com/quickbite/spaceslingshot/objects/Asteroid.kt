@@ -1,5 +1,7 @@
 package com.quickbite.spaceslingshot.objects
 
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
@@ -19,20 +21,38 @@ import com.quickbite.spaceslingshot.util.Constants
 /**
  * Created by Paha on 8/13/2016.
  */
-class Asteroid(val position: Vector2, val radius:Float, val velocity:Vector2) : IDrawable, IUpdateable, Disposable, IPhysicsBody, IUniqueID{
+class Asteroid(val position: Vector2, val radius:Float, val velocity:Vector2, val lifetimeSeconds:Float) : IDrawable, IUpdateable, Disposable, IPhysicsBody, IUniqueID{
     override val uniqueID: Long = MathUtils.random(Long.MAX_VALUE)
+    override var physicsArePaused: Boolean = false
+    lateinit var sprite:Sprite
+
+    val tempVel:Vector2 = Vector2()
+
+    var lifeCounter = 0f
+
+    var dead = false
 
     override lateinit var body: Body
 
     init{
         this.createBody()
+        sprite = Sprite(MyGame.manager["asteroid", Texture::class.java])
+        sprite.setSize(radius*2f, radius*2f)
+        sprite.setPosition(position.x - sprite.width/2f, position.y - sprite.height/2f)
+        sprite.setOrigin(sprite.width/2f, sprite.height/2f)
     }
 
     override fun draw(batch: SpriteBatch) {
-
+        sprite.draw(batch)
     }
 
     override fun update(delta: Float) {
+        position.set(body.position.x*Constants.BOX2D_INVERSESCALE, body.position.y*Constants.BOX2D_INVERSESCALE)
+        sprite.setPosition(position.x - sprite.width/2f, position.y - sprite.height/2f)
+
+        lifeCounter += delta
+        if(lifeCounter >= lifetimeSeconds)
+            dead = true
 
     }
 
@@ -41,7 +61,7 @@ class Asteroid(val position: Vector2, val radius:Float, val velocity:Vector2) : 
     }
 
     override fun dispose() {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+        MyGame.world.destroyBody(this.body)
     }
 
     override fun createBody() {
@@ -62,6 +82,7 @@ class Asteroid(val position: Vector2, val radius:Float, val velocity:Vector2) : 
         mainFixture.shape = circle
 
         this.body.createFixture(mainFixture)
+        this.body.setLinearVelocity(velocity.x*Constants.VELOCITY_SCALE, velocity.y*Constants.VELOCITY_SCALE)
 
         circle.dispose()
 
@@ -69,7 +90,17 @@ class Asteroid(val position: Vector2, val radius:Float, val velocity:Vector2) : 
     }
 
     override fun setPhysicsPaused(pausePhysics: Boolean) {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if(physicsArePaused == pausePhysics) return
+
+        if(pausePhysics){
+            tempVel.set(body.linearVelocity.x, body.linearVelocity.y)
+            body.setLinearVelocity(0f, 0f)
+        }else{
+            body.setLinearVelocity(tempVel.x, tempVel.y)
+            tempVel.set(0f, 0f)
+        }
+
+        this.physicsArePaused = pausePhysics
     }
 
 

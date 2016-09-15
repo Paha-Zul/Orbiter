@@ -10,6 +10,8 @@ object Constants {
         get() = 1/ BOX2D_SCALE
 
     val VELOCITY_SCALE = 10f
+    val VELOCITY_INVERSESCALE:Float
+        get() = 1/VELOCITY_SCALE
 
     val UPDATE_TIME_STEP = 1/60f
 

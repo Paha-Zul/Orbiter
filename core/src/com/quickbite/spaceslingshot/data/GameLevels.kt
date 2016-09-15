@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
+import com.quickbite.spaceslingshot.objects.AsteroidSpawner
 import com.quickbite.spaceslingshot.objects.Obstacle
 import com.quickbite.spaceslingshot.objects.Planet
 import com.quickbite.spaceslingshot.util.JsonLevelLoader
@@ -21,8 +22,11 @@ object GameLevels {
 
         val levelData = levels[level]
         data.planetList.forEach { planet -> planet.dispose() }
+        data.asteroidList.forEach { a -> a.dispose() }
+
         data.planetList.clear()
         data.obstacleList.clear()
+        data.asteroidList.clear()
 
         var planetTexture: Texture?
         val planetRotation:() -> Float = { MathUtils.random(360f)}
@@ -35,6 +39,11 @@ object GameLevels {
 
         levelData.obstacles.forEach { od ->
             data.obstacleList.add(Obstacle(Rectangle(od.rect[0].toFloat(), od.rect[1].toFloat(), od.rect[2].toFloat(), od.rect[3].toFloat())))
+        }
+
+        levelData.asteroidSpawners.forEach { spawner ->
+            data.asteroidSpawnerList.add(AsteroidSpawner(Vector2(spawner.pos[0], spawner.pos[1]), Vector2(spawner.spawnDir[0], spawner.spawnDir[1]),
+                    Pair(spawner.spawnFreq[0], spawner.spawnFreq[1]), Pair(spawner.speedRange[0], spawner.speedRange[1]), data, spawner.immediate))
         }
 
         val hp = levelData.homePlanet

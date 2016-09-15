@@ -10,4 +10,5 @@ class JsonLevelData() {
     lateinit var planets:Array<JsonPlanetData>
     lateinit var homePlanet: JsonPlanetData
     var obstacles:Array<JsonObstacleData> = arrayOf()
+    var asteroidSpawners:Array<JsonAsteroidSpawner> = arrayOf()
 }

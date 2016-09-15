@@ -20,13 +20,14 @@ import com.quickbite.spaceslingshot.objects.Obstacle
 import com.quickbite.spaceslingshot.objects.Planet
 import com.quickbite.spaceslingshot.objects.Ship
 import com.quickbite.spaceslingshot.util.Constants
+import com.quickbite.spaceslingshot.util.EndlessGame
 import com.quickbite.spaceslingshot.util.LineDraw
 import com.quickbite.spaceslingshot.util.Predictor
 
 /**
  * Created by Paha on 8/7/2016.
  */
-class GameScreen(val game:MyGame) : Screen {
+class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = false) : Screen {
     val data = GameScreenData()
     lateinit var gui:GameScreenGUI
     val lineDrawer = LineDraw()
@@ -38,6 +39,8 @@ class GameScreen(val game:MyGame) : Screen {
 
     var physicsAccumulator = 0f
     var updateAccumulator = 0f
+
+    val endlessGame:EndlessGame? = if(endlessGame) EndlessGame(data) else null
 
     companion object{
         var finished = false
@@ -67,6 +70,13 @@ class GameScreen(val game:MyGame) : Screen {
 
         starryBackground = TextureRegion(background)
         starryBackground.setRegion(0,0,480, 800)
+
+        if(levelToLoad != -1)
+            GameLevels.loadLevel(levelToLoad, data)
+        else
+            endlessGame?.start()
+
+//        data.asteroidSpawnerList.add(AsteroidSpawner(Vector2(100f, 100f), Vector2(1f, 0f), Pair(1f, 5f), Pair(1f, 2f), data))
     }
 
     override fun pause() {
@@ -83,7 +93,7 @@ class GameScreen(val game:MyGame) : Screen {
 
     override fun render(delta: Float) {
         update(delta)
-
+        if(!paused) doPhysicsStep(delta)
         draw(MyGame.batch)
 
         MyGame.debugRenderer.render(MyGame.world, MyGame.camera.combined)
@@ -91,8 +101,7 @@ class GameScreen(val game:MyGame) : Screen {
         MyGame.stage.act()
         MyGame.stage.draw()
 
-        if(!paused)
-            doPhysicsStep(delta)
+
     }
 
     private fun update(delta:Float){
@@ -102,6 +111,16 @@ class GameScreen(val game:MyGame) : Screen {
             data.ship.update(delta)
             data.planetList.forEach { obj ->
                 obj.update(delta)
+            }
+
+            data.asteroidSpawnerList.forEach { spawner -> spawner.update(delta) }
+
+            for(i in (data.asteroidList.size-1).downTo(0)){
+                data.asteroidList[i].update(delta)
+                if(data.asteroidList[i].dead) {
+                    data.asteroidList[i].dispose()
+                    data.asteroidList.removeIndex(i)
+                }
             }
 
             gui.fuelBar.setAmounts(data.ship.fuel, data.ship.burnTime * data.ship.burnPerTick)
@@ -130,17 +149,6 @@ class GameScreen(val game:MyGame) : Screen {
         }
     }
 
-    //Broken
-    private fun fixedUpdate(){
-        if(paused) return
-
-//        applyGravity(data.planetList, data.ship)
-        data.ship.fixedUpdate()
-        data.planetList.forEach { obj ->
-            obj.fixedUpdate()
-        }
-    }
-
     private fun draw(batch: SpriteBatch){
         batch.projectionMatrix = MyGame.camera.combined
         batch.begin()
@@ -151,15 +159,18 @@ class GameScreen(val game:MyGame) : Screen {
         if(paused)
             lineDrawer.draw(batch)
 
-//        batch.shader = MyGame.shaderProgram
+        //Draw planets
         data.planetList.forEach { obj ->
             obj.draw(batch)
         }
-//        batch.shader = null
 
+        //Draw obstacles
         data.obstacleList.forEach { obj ->
             obj.draw(batch)
         }
+
+        //Draw asteroids
+        data.asteroidList.forEach { asteroid -> asteroid.draw(batch) }
 
         data.ship.draw(batch)
 
@@ -292,6 +303,7 @@ class GameScreen(val game:MyGame) : Screen {
      */
     fun pauseAllPhysicsExceptPredictorShip(){
         data.planetList.forEach { p -> p.setPhysicsPaused(true) }
+        data.asteroidList.forEach { a -> a.setPhysicsPaused(true) }
         data.ship.setPhysicsPaused(true)
     }
 
@@ -300,6 +312,7 @@ class GameScreen(val game:MyGame) : Screen {
      */
     fun resumeAllPhysicsExceptPredictorShip(){
         data.planetList.forEach { p -> p.setPhysicsPaused(false) }
+        data.asteroidList.forEach { a -> a.setPhysicsPaused(false) }
         data.ship.setPhysicsPaused(false)
     }
 
@@ -317,6 +330,7 @@ class GameScreen(val game:MyGame) : Screen {
         gui.dispose()
         data.obstacleList.clear()
         data.planetList.forEach { p -> p.dispose() }
+        data.asteroidList.forEach { a -> a.dispose() }
         data.ship.dispose()
 //        Predictor.dispose()
     }

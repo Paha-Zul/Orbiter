@@ -5,10 +5,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.Button
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
@@ -37,7 +34,6 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable{
     lateinit var relocateShipButton:Button
     lateinit var bottomTable:Table
 
-
     init{
         bottomTable = Table()
 
@@ -61,6 +57,10 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable{
         bottomTable.width = 480f
         bottomTable.setPosition(0f,0f)
 
+        val mainMenuButton = ImageButton(TextureRegionDrawable(TextureRegion(MyGame.manager["backButton", Texture::class.java])))
+        mainMenuButton.setSize(50f, 50f)
+        mainMenuButton.setPosition(0f, MyGame.UIViewport.worldHeight - mainMenuButton.height)
+
         bottomPauseButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 gameScreen.toggleGamePause()
@@ -78,10 +78,17 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable{
             }
         })
 
+        mainMenuButton.addListener(object:ChangeListener(){
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                goToMainMenu()
+            }
+        })
+
         makeGameOverStuff()
         makeTopInfo()
 
         MyGame.stage.addActor(bottomTable)
+        MyGame.stage.addActor(mainMenuButton)
     }
 
     private fun makeTopInfo(){

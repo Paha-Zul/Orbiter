@@ -1,5 +1,6 @@
 package com.quickbite.spaceslingshot.guis
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -58,6 +59,12 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
             }
         })
 
+        quitButton.addListener(object:ChangeListener(){
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                Gdx.app.exit()
+            }
+        })
+
 //        editorButton.addListener(object:ChangeListener(){
 //            override fun changed(event: ChangeEvent?, actor: Actor?) {
 //                MyGame.stage.clear()
@@ -104,9 +111,8 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
             levelButton.addListener(object:ChangeListener(){
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
                     MyGame.stage.clear() //Clear the stage
-                    val game = GameScreen(mainMenu.game) //Create the game screen instance
+                    val game = GameScreen(mainMenu.game, -1, true) //Create the game screen instance
                     mainMenu.game.screen = game //Set the screen
-                    game.loadLevel(level) //Load the level BEFORE assigning it to screen, where show() will be called
                 }
             })
 

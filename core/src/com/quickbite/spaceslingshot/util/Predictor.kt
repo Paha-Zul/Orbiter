@@ -9,7 +9,7 @@ import com.quickbite.spaceslingshot.objects.Ship
  */
 object Predictor : Disposable{
     private val predictorShip = Ship(Vector2(0f,0f), 0f, Vector2(0f, 0f), true)
-    val steps = 200
+    val steps = 300
     val stepSize = 10
 
     private val points: Array<Vector2> = Array(steps/stepSize, { Vector2() })
@@ -23,8 +23,10 @@ object Predictor : Disposable{
         predictorShip.burnTime = ship.burnTime
         predictorShip.setBurnForceAndPerTick(ship.burnForce, ship.burnPerTick)
 
-        //Pause the physics before stepping the world
         pausePhysics()
+        predictorShip.setPosition(0f, -500f)
+        physicsStep()
+        predictorShip.setPosition(ship.position.x, ship.position.y)
 
         for(i in 0..steps-1){
             predictorShip.update(0.016f)
@@ -32,7 +34,7 @@ object Predictor : Disposable{
             physicsStep()
 
             if(i%stepSize == 0)
-                points[i/10].set(predictorShip.position.x, predictorShip.position.y)
+                points[i/stepSize].set(predictorShip.position.x, predictorShip.position.y)
         }
 
         //Resume physics now that we are done
