@@ -280,10 +280,14 @@ object ProceduralPlanetTextureGenerator {
             return getColor(lavaData, value, secondaryValue)
     }
 
-    fun getNextTexture():Texture{
-        val texture = textureArray[textureCounter]!!
-        textureCounter = (textureCounter+1)% textureArray.size
-        return texture
+    fun getNextTexture(homePlanet:Boolean = false):Texture{
+        if(!homePlanet) {
+            val texture = textureArray[textureCounter]!!
+            textureCounter = (textureCounter + 1) % textureArray.size
+            return texture
+        }else{
+            return MyGame.manager["wormhole", Texture::class.java]
+        }
     }
 
     private fun getColor(data:PlanetTypeData, value: Float, secondaryValue: Float):Color{

@@ -55,7 +55,7 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
 
         playButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                showLevels()
+                showGameTypeSelection()
             }
         })
 
@@ -77,6 +77,43 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         MyGame.stage.addActor(mainTable)
     }
 
+    fun showGameTypeSelection(){
+        MyGame.stage.clear()
+
+        val buttonTable = Table()
+
+        val textButtonStyle = TextButton.TextButtonStyle()
+        textButtonStyle.font = MyGame.font
+
+        val levelsButton = TextButton("Levels", textButtonStyle)
+        levelsButton.label.setFontScale(0.4f)
+
+        val endless = TextButton("Endless", textButtonStyle)
+        endless.label.setFontScale(0.4f)
+
+        buttonTable.add(levelsButton)
+        buttonTable.row()
+        buttonTable.add(endless)
+
+        levelsButton.addListener(object:ChangeListener(){
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                showLevels()
+            }
+        })
+
+        endless.addListener(object:ChangeListener(){
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                MyGame.stage.clear() //Clear the stage
+                val game = GameScreen(mainMenu.game, -1, true) //Create the game screen instance
+                mainMenu.game.screen = game //Set the screen
+            }
+        })
+
+        buttonTable.setFillParent(true)
+
+        MyGame.stage.addActor(buttonTable)
+    }
+
     fun showLevels(){
         MyGame.stage.clear()
 
@@ -88,7 +125,6 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         textButtonStyle.font = MyGame.font
         textButtonStyle.fontColor = Color.WHITE
         textButtonStyle.up = background
-
 
         val buttonSize = 64
         val offsets:Padding = Padding(10, 10, 10, 10)
@@ -111,7 +147,7 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
             levelButton.addListener(object:ChangeListener(){
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
                     MyGame.stage.clear() //Clear the stage
-                    val game = GameScreen(mainMenu.game, -1, true) //Create the game screen instance
+                    val game = GameScreen(mainMenu.game, level, false) //Create the game screen instance
                     mainMenu.game.screen = game //Set the screen
                 }
             })

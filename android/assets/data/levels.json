@@ -20,8 +20,8 @@
     "homePlanet":{
       "name": "GenericPlanet",
       "pos": [240, 650],
-      "radius": 30,
-      "gravityRange": 75,
+      "radius": 50,
+      "gravityRange": 50,
       "density": 0.1,
       "planetType": "Earth"
     },
@@ -50,8 +50,8 @@
     "homePlanet":{
       "name": "GenericPlanet",
       "pos": [240, 650],
-      "radius": 20,
-      "gravityRange": 75,
+      "radius": 50,
+      "gravityRange": 50,
       "density": 0.2,
       "planetType": "Earth"
     },
@@ -90,8 +90,8 @@
     "homePlanet":{
       "name": "GenericPlanet",
       "pos": [100, 600],
-      "radius": 20,
-      "gravityRange": 75,
+      "radius": 50,
+      "gravityRange": 50,
       "density": 0.2,
       "planetType": "Earth"
     },
@@ -128,8 +128,8 @@
     "homePlanet":{
       "name": "GenericPlanet",
       "pos": [240, 650],
-      "radius": 20,
-      "gravityRange": 75,
+      "radius": 50,
+      "gravityRange": 50,
       "density": 0.2,
       "planetType": "Earth"
     },

@@ -27,7 +27,7 @@ public class MyGame extends Game {
 	public static ShapeRenderer shapeRenderer;
     public static OrthographicCamera camera, UICamera;
     public static Viewport viewport, UIViewport;
-    public static Stage stage;
+    public static Stage stage, worldStage;
 	public static BitmapFont font;
 	public static ShaderProgram shaderProgram;
 	public static EasyAssetManager manager;
@@ -58,6 +58,7 @@ public class MyGame extends Game {
 		manager = new EasyAssetManager();
 
         stage = new Stage(UIViewport);
+        worldStage = new Stage(viewport);
 
 		batch = new SpriteBatch();
 		batch.setProjectionMatrix(camera.combined);

@@ -76,6 +76,10 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         else
             endlessGame?.start()
 
+        this.gui.fuelBar.setAmounts(data.ship.fuel, 0f, data.ship.fuel)
+
+        runPredictor()
+
 //        data.asteroidSpawnerList.add(AsteroidSpawner(Vector2(100f, 100f), Vector2(1f, 0f), Pair(1f, 5f), Pair(1f, 2f), data))
     }
 
@@ -100,11 +104,11 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
         MyGame.stage.act()
         MyGame.stage.draw()
-
-
     }
 
     private fun update(delta:Float){
+        endlessGame?.update(delta)
+
         //Not pausePhysics update...
         if(!paused) {
 //            runPredictor()

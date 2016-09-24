@@ -23,11 +23,12 @@ object Predictor : Disposable{
         predictorShip.burnTime = ship.burnTime
         predictorShip.setBurnForceAndPerTick(ship.burnForce, ship.burnPerTick)
 
-        pausePhysics()
-        predictorShip.setPosition(0f, -500f)
-        physicsStep()
-        predictorShip.setPosition(ship.position.x, ship.position.y)
+//        pausePhysics()
+//        predictorShip.setPosition(0f, -500f)
+//        physicsStep()
+//        predictorShip.setPosition(ship.position.x, ship.position.y)
 
+        pausePhysics()
         for(i in 0..steps-1){
             predictorShip.update(0.016f)
             predictorShip.fixedUpdate()

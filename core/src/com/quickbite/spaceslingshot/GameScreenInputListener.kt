@@ -108,7 +108,9 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
             screen.runPredictor()
         }else if(draggingScreen){
             offset.set(screenX - startDragPos.x, screenY - startDragPos.y)
-            screen.scrollScreen(originalCameraPos.x - offset.x, originalCameraPos.y + offset.y)
+            val x = if(screen.endlessGame == null) originalCameraPos.x - offset.x else MyGame.camera.viewportWidth/2f
+            val y = originalCameraPos.y + offset.y
+            screen.scrollScreen(x, y)
 //            MyGame.camera.position.set(originalCameraPos.x - offset.x, originalCameraPos.y + offset.y, 0f)
 //            System.out.println("Dragging, offset: $offset, camera: ${MyGame.camera.position}, worldPos: $worldPos, screen: X: $screenX, Y: $screenY")
         }

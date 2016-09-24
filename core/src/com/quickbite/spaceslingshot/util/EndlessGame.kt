@@ -13,18 +13,18 @@ import com.quickbite.spaceslingshot.objects.Planet
  */
 class EndlessGame(val data:GameScreenData) : IUpdateable{
     var counter = 0
-    var randDist = Pair(100f, 300f)
+    var randDist = Pair(200f, 400f)
     var randSize = Pair(25, 75)
     var randGravity = Pair(50f, 200f)
-    var randDensity = Pair(0.05f, 0.3f)
+    var randDensity = Pair(0.01f, 0.2f)
     val nextPosition = Vector2()
 
     fun start(){
-        var planet = Planet(Vector2(MyGame.camera.position.x, MyGame.camera.position.y), 25, 50f, 0.1f, 0f,
+        val planet = Planet(Vector2(MyGame.camera.position.x, MyGame.camera.position.y - 100f), 50, 75f, 0.1f, 0f,
                 ProceduralPlanetTextureGenerator.getNextTexture(), false)
 
         data.planetList.add(planet)
-        nextPosition.set(MyGame.camera.position.x, MyGame.camera.position.y)
+        nextPosition.set(MyGame.camera.position.x, MyGame.camera.position.y - 100f)
 
         addPlanet()
         addPlanet()
@@ -36,7 +36,11 @@ class EndlessGame(val data:GameScreenData) : IUpdateable{
     }
 
     override fun update(delta: Float) {
+        //TODO Add in some asteroid spawners
+        //TODO Add in some obstacles?
 
+        if(nextPosition.y <= MyGame.camera.position.y + (randSize.second + randGravity.second)*2f)
+            addPlanet()
     }
 
     override fun fixedUpdate() {
@@ -47,7 +51,7 @@ class EndlessGame(val data:GameScreenData) : IUpdateable{
         val randSize = MathUtils.random(randSize.first, randSize.second)
         val randGravity = MathUtils.random(randGravity.first, randGravity.second)
         val randDensity = MathUtils.random(randDensity.first, randDensity.second)
-        val randX = MathUtils.random(-MyGame.camera.viewportWidth/2f, MyGame.camera.viewportHeight/2f)
+        val randX = MathUtils.random(-MyGame.camera.viewportWidth/2f + (randSize), MyGame.camera.viewportWidth/2f - (randSize))
         val randY = MathUtils.random(randDist.first, randDist.second) + randSize/2f
 
         nextPosition.set(MyGame.camera.position.x + randX, nextPosition.y + randY)

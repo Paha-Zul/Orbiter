@@ -32,6 +32,14 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
     private val velocityHolder = Vector2()
     var rotation = 0f
+    get
+    set(value) {
+        field = value
+        sprite.rotation = value
+        burnHandle.rotation = value
+        ring.rotation = value- 90 //Give an offset of 90 so the arrow doesn't sit under the burn ball
+    }
+
 
     var burnTime = 0 //Burn for 10 ticks
 
@@ -100,16 +108,19 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
                 val other = args[0] as Fixture
                 val otherData = other.body.userData as BodyData
 
-                if(!other.isSensor && otherData.type == BodyData.ObjectType.Planet) {
-                    val planet = otherData.bodyOwner as Planet
-                    GameScreen.finished = true
-                    GameScreen.lost = !planet.homePlanet
-                }
-
-                //If the other fixture is a sensor and it's body belongs to a planet, we are in the gravity well
-                else if(other.isSensor && otherData.type == BodyData.ObjectType.Planet){
-                    val planet = otherData.bodyOwner as Planet
-                    planetList.add(planet)
+                if(otherData.type == BodyData.ObjectType.Planet) {
+                    if (!other.isSensor) {
+                        val planet = otherData.bodyOwner as Planet
+                        GameScreen.finished = true
+                        GameScreen.lost = !planet.homePlanet
+                    }
+                    //If the other fixture is a sensor and it's body belongs to a planet, we are in the gravity well
+                    else if (other.isSensor) {
+                        val planet = otherData.bodyOwner as Planet
+                        planetList.add(planet)
+                    }
+                }else if(otherData.type == BodyData.ObjectType.Station){
+                    EventSystem.callEvent("hit_station", listOf(this), otherData.id)
                 }
 
             }, this.uniqueID)
@@ -208,11 +219,8 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     }
 
     fun setRotationTowardsMouse(mouseX:Float, mouseY:Float){
-        val angle = MathUtils.atan2(mouseY - position.y, mouseX - position.x)
-        this.rotation = angle*MathUtils.radiansToDegrees
-        sprite.rotation = angle*MathUtils.radiansToDegrees
-        burnHandle.rotation = angle*MathUtils.radiansToDegrees
-        ring.rotation = angle*MathUtils.radiansToDegrees - 90 //Give an offset of 90 so the arrow doesn't sit under the burn ball
+        val rot = MathUtils.atan2(mouseY - position.y, mouseX - position.x)*MathUtils.radiansToDegrees
+        this.rotation = rot
 
         setBurnHandleLocation()
     }
@@ -313,10 +321,10 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         this.rotation = 0f
         this.body.setTransform(Vector2(position.x*Constants.BOX2D_SCALE, position.y*Constants.BOX2D_SCALE), 0f)
         this.body.setLinearVelocity(initialVelocity.x*Constants.VELOCITY_SCALE, initialVelocity.y*Constants.VELOCITY_SCALE)
-        this.planetList.clear()
 
         //If we are the test ship, don't do this!
         if(!testShip) {
+            this.planetList.clear()
             sprite.setPosition(position.x - shipWidth / 2f, position.y - shipHeight / 2f)
             ring.setPosition(position.x - ringRadius, position.y - ringRadius)
             burnHandle.setPosition(position.x - burnBallRadius, position.y - burnBallRadius)
