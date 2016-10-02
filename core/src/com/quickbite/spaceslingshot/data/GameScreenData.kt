@@ -13,4 +13,5 @@ class GameScreenData{
     val obstacleList: Array<Obstacle> = Array()
     val asteroidSpawnerList: Array<AsteroidSpawner> = Array()
     val asteroidList: Array<Asteroid> = Array()
+    val stationList: Array<SpaceStation> = Array()
 }

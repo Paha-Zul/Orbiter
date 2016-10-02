@@ -2,6 +2,7 @@ package com.quickbite.spaceslingshot.screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
+import com.badlogic.gdx.audio.Music
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.data.ProceduralPlanetTextureGenerator
 import com.quickbite.spaceslingshot.guis.MainMenuGUI
@@ -17,7 +18,11 @@ class MainMenuScreen(val game:MyGame) :Screen{
         JsonLevelLoader.loadLevels()
         Gdx.input.inputProcessor = MyGame.stage
 
-        ProceduralPlanetTextureGenerator.generatePlanetTexturesThreaded(10)
+        val music = MyGame.manager["Action_In_Orbit", Music::class.java]
+        music.isLooping = true
+        music.play()
+
+        ProceduralPlanetTextureGenerator.generatePlanetTexturesFromData()
     }
 
     override fun pause() {

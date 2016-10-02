@@ -24,7 +24,14 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
     val mainTable:Table = Table()
     val levelsTable:Table = Table()
 
+    val mainMenuTable:Table = Table()
+
     init{
+        buildMainMenu()
+        showMainMenu()
+    }
+
+    fun buildMainMenu(){
         val labelStyle = Label.LabelStyle(MyGame.font, Color.WHITE)
 
         val buttonStyle = TextButton.TextButtonStyle()
@@ -45,13 +52,13 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         val quitButton = TextButton("Quit", buttonStyle)
         quitButton.label.setFontScale(0.4f)
 
-        mainTable.add(titleLabel).spaceBottom(100f)
-        mainTable.row()
-        mainTable.add(playButton)
-        mainTable.row()
-        mainTable.add(editorButton)
-        mainTable.row()
-        mainTable.add(quitButton)
+        mainMenuTable.add(titleLabel).spaceBottom(100f)
+        mainMenuTable.row()
+        mainMenuTable.add(playButton)
+        mainMenuTable.row()
+        mainMenuTable.add(editorButton)
+        mainMenuTable.row()
+        mainMenuTable.add(quitButton)
 
         playButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -72,9 +79,12 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
 //            }
 //        })
 
-        mainTable.setFillParent(true)
+        mainMenuTable.setFillParent(true)
+    }
 
-        MyGame.stage.addActor(mainTable)
+    fun showMainMenu(){
+        MyGame.stage.clear()
+        MyGame.stage.addActor(mainMenuTable)
     }
 
     fun showGameTypeSelection(){
@@ -91,9 +101,14 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         val endless = TextButton("Endless", textButtonStyle)
         endless.label.setFontScale(0.4f)
 
+        val backButton = TextButton("Back", textButtonStyle)
+        backButton.label.setFontScale(0.4f)
+
         buttonTable.add(levelsButton)
         buttonTable.row()
         buttonTable.add(endless)
+        buttonTable.row()
+        buttonTable.add(backButton)
 
         levelsButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -109,6 +124,12 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
             }
         })
 
+        backButton.addListener(object:ChangeListener(){
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                showMainMenu()
+            }
+        })
+
         buttonTable.setFillParent(true)
 
         MyGame.stage.addActor(buttonTable)
@@ -121,10 +142,17 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
 
         val background = TextureRegionDrawable(TextureRegion(MyGame.manager["box", Texture::class.java]))
 
+        val boxTextButtonStyle = TextButton.TextButtonStyle()
+        boxTextButtonStyle.font = MyGame.font
+        boxTextButtonStyle.fontColor = Color.WHITE
+        boxTextButtonStyle.up = background
+
         val textButtonStyle = TextButton.TextButtonStyle()
         textButtonStyle.font = MyGame.font
         textButtonStyle.fontColor = Color.WHITE
-        textButtonStyle.up = background
+
+        val backButton = TextButton("Back", textButtonStyle)
+        backButton.label.setFontScale(0.4f)
 
         val buttonSize = 64
         val offsets:Padding = Padding(10, 10, 10, 10)
@@ -140,7 +168,7 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
 
         for(i in 1..numButtons){
             val level = i-1
-            val levelButton = TextButton("$level", textButtonStyle)
+            val levelButton = TextButton("$level", boxTextButtonStyle)
             levelButton.label.setFontScale(0.2f)
             levelButton.label.setAlignment(Align.center)
 
@@ -156,7 +184,15 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
             if(i%numX == 0) buttonTable.row()
         }
 
+        backButton.addListener(object:ChangeListener(){
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                showMainMenu()
+            }
+        })
+
         levelsTable.add(buttonTable)
+        levelsTable.row()
+        levelsTable.add(backButton)
         levelsTable.setFillParent(true)
         MyGame.stage.addActor(levelsTable)
     }

@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Disposable
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.interfaces.IPhysicsBody
 import com.quickbite.spaceslingshot.interfaces.IUniqueID
+import com.quickbite.spaceslingshot.screens.GameScreen
 import com.quickbite.spaceslingshot.util.BodyData
 import com.quickbite.spaceslingshot.util.Constants
 import com.quickbite.spaceslingshot.util.EventSystem
@@ -21,7 +22,7 @@ import com.quickbite.spaceslingshot.util.EventSystem
  * Created by Paha on 9/23/2016.
  */
 
-class SpaceStation(position: Vector2, size:Int, fuelStorage:Float):SpaceBody(position, size, 0f, 0f), IUniqueID, IPhysicsBody, Disposable{
+class SpaceStation(position: Vector2, size:Int, val fuelStorage:Float, val homeStation:Boolean = false):SpaceBody(position, size, 0f, 0f), IUniqueID, IPhysicsBody, Disposable{
     override val uniqueID: Long = MathUtils.random(Long.MAX_VALUE)
     override lateinit var body: Body
     override var physicsArePaused: Boolean = false
@@ -29,23 +30,47 @@ class SpaceStation(position: Vector2, size:Int, fuelStorage:Float):SpaceBody(pos
     var sprite: Sprite
 
     init{
-        sprite = Sprite(MyGame.manager["circle", Texture::class.java])
-        sprite.setPosition(position.x - radius / 2, position.y - radius / 2)
+        sprite = Sprite(MyGame.manager["station", Texture::class.java])
+        sprite.setSize(radius*2f, radius*2f)
+        sprite.setPosition(position.x - radius, position.y - radius)
 
         EventSystem.onEvent("hit_station", { args ->
             val ship = args[0] as Ship
 
-            if(!ship.testShip) return@onEvent
+            //If the ship is a test ship, ignore
+            if(ship.testShip) return@onEvent
 
-            val angle = MathUtils.atan2(this.position.y - ship.position.y, this.position.x - ship.position.y)
-            ship.rotation = angle*MathUtils.radiansToDegrees
+            //If the ship's velocity is too great, lose!
+            if(ship.velocity.x > 0.5f || ship.velocity.y > 0.5f){
+                GameScreen.finished = true
+                GameScreen.lost = true
+                return@onEvent
+            }
 
-            val x = size * MathUtils.cos(angle) - MathUtils.sin(angle) //Original X position
-            val y = size * MathUtils.sin(angle) + MathUtils.cos(angle) //Original Y position
+            //If it is the home station and we didn't go too fast, win!
+            if(homeStation){
+                GameScreen.finished = true
+                GameScreen.lost = false
+                return@onEvent
+            }
 
-            ship.setPosition(x, y)
+            //Otherwise, attach to the station.
+
+            val angle = MathUtils.atan2(ship.position.y - this.position.y, ship.position.x - this.position.x)
+
+            //set the ship position
+            val x = radius * MathUtils.cos(angle) - MathUtils.sin(angle) //Original X position
+            val y = radius * MathUtils.sin(angle) +  MathUtils.cos(angle) //Original Y position
+            ship.setPosition(position.x + x, position.y + y)
+
+            //Set the ship rotation
+            ship.setShipRotation(angle*MathUtils.radiansToDegrees)
+            ship.setVelocity(0f, 0f)
+            ship.burnTime = 0
 
         }, this.uniqueID)
+
+        this.createBody()
     }
 
     override fun draw(batch: SpriteBatch) {
@@ -68,6 +93,7 @@ class SpaceStation(position: Vector2, size:Int, fuelStorage:Float):SpaceBody(pos
         circle.radius = radius * Constants.BOX2D_SCALE
 
         mainFixture.shape = circle
+        mainFixture.isSensor = true
 
         this.body.createFixture(mainFixture)
 

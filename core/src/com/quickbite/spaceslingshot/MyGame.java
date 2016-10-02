@@ -71,6 +71,7 @@ public class MyGame extends Game {
 		shaderProgram = new ShaderProgram(VERT,FRAG);
 
 		Loader.INSTANCE.loadAllImgs(manager, Gdx.files.internal("img"), false);
+		Loader.INSTANCE.loadMusic(manager, Gdx.files.internal("music"));
         manager.finishLoading();
 
 		int cores = Runtime.getRuntime().availableProcessors();

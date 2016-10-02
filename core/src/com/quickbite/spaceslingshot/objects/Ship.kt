@@ -17,7 +17,6 @@ import com.quickbite.spaceslingshot.screens.GameScreen
 import com.quickbite.spaceslingshot.util.BodyData
 import com.quickbite.spaceslingshot.util.Constants
 import com.quickbite.spaceslingshot.util.EventSystem
-import com.quickbite.spaceslingshot.util.GH
 import java.util.*
 
 /**
@@ -31,15 +30,10 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     private val planetList:LinkedList<Planet> = LinkedList()
 
     private val velocityHolder = Vector2()
+
     var rotation = 0f
     get
-    set(value) {
-        field = value
-        sprite.rotation = value
-        burnHandle.rotation = value
-        ring.rotation = value- 90 //Give an offset of 90 so the arrow doesn't sit under the burn ball
-    }
-
+    private set
 
     var burnTime = 0 //Burn for 10 ticks
 
@@ -65,14 +59,16 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     private lateinit var sprite:Sprite
     private lateinit var ring:Sprite
     private lateinit var burnHandle:Sprite
+    private lateinit var thrustFireSprite:Sprite
 
     private val ringRadius = 100f
-    private val shipWidth = 20f
-    private val shipHeight = 10f
+    private val shipWidth = 50f
+    private val shipHeight = 50f
     private val burnBallRadius = 30f
 
     val burnHandleLocation = Vector2()
     val burnBallBasePosition = Vector2()
+    private val thrustFirePositionPercent = Vector2(0.68f, 0f)
 
     private lateinit var normalBurnTexture:Texture
     private lateinit var doubleBurnTexture:Texture
@@ -84,8 +80,10 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
             doubleBurnTexture = MyGame.manager["doubleArrow", Texture::class.java]
             doubleBurnTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
 
-            sprite = Sprite(GH.createPixel(Color.WHITE, shipWidth.toInt(), shipHeight.toInt()))
+            sprite = Sprite(MyGame.manager["spaceship", Texture::class.java])
+            sprite.setSize(shipHeight, shipWidth)
             sprite.setPosition(position.x - shipWidth / 2, position.y - shipHeight / 2)
+            sprite.setOrigin(shipHeight/2f, shipWidth/2f)
 
             val ringTexture = MyGame.manager["arrowCircle", Texture::class.java]
             ringTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
@@ -101,6 +99,10 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
             burnHandle.setSize(burnBallRadius * 2f, burnBallRadius * 2f)
             burnHandle.setOrigin(burnHandle.width/2f, burnHandle.height/2f)
             burnHandle.color = Color.WHITE
+
+            thrustFireSprite = Sprite(MyGame.manager["thrustFire", Texture::class.java])
+            thrustFireSprite.setSize(24f, 24f)
+            thrustFireSprite.setOrigin(thrustFireSprite.width/2f, thrustFireSprite.height/2f)
 
             setRotationTowardsMouse(0f, 0f)
 
@@ -120,7 +122,9 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
                         planetList.add(planet)
                     }
                 }else if(otherData.type == BodyData.ObjectType.Station){
-                    EventSystem.callEvent("hit_station", listOf(this), otherData.id)
+                    //Call this event but delay it. Since this event will be called during a physics step, we can not
+                    //change anything physics related, so instead, delay it!
+                    EventSystem.callEvent("hit_station", listOf(this), otherData.id, true)
                 }
 
             }, this.uniqueID)
@@ -172,11 +176,6 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
     override fun update(delta: Float) {
 
-        if(!testShip) {
-            sprite.setPosition(position.x - shipWidth / 2f, position.y - shipHeight / 2f)
-            ring.setPosition(position.x - ringRadius, position.y - ringRadius)
-            burnHandle.setPosition(position.x - burnBallRadius, position.y - burnBallRadius)
-        }
     }
 
     override fun fixedUpdate() {
@@ -189,10 +188,20 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
     override fun draw(batch: SpriteBatch) {
         sprite.draw(batch)
+        if(burnTime > 0){
+            setThrustFirePosition()
+            thrustFireSprite.draw(batch)
+        }
+
+        if(!testShip) {
+            sprite.setPosition(position.x - shipWidth / 2f, position.y - shipHeight / 2f)
+            ring.setPosition(position.x - ringRadius, position.y - ringRadius)
+            burnHandle.setPosition(position.x - burnBallRadius, position.y - burnBallRadius)
+        }
     }
 
     fun drawHandles(batch: SpriteBatch){
-        setBurnHandleLocation()
+        setBurnHandlePosition()
 
         ring.draw(batch)
         burnHandle.draw(batch)
@@ -220,12 +229,28 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
     fun setRotationTowardsMouse(mouseX:Float, mouseY:Float){
         val rot = MathUtils.atan2(mouseY - position.y, mouseX - position.x)*MathUtils.radiansToDegrees
-        this.rotation = rot
+        setShipRotation(rot)
 
-        setBurnHandleLocation()
+        setBurnHandlePosition()
     }
 
-    private fun setBurnHandleLocation(){
+    /**
+     * Sets the ships rotation along with the graphics of the ship
+     * @param rotation The rotation in degrees.
+     */
+    fun setShipRotation(rotation:Float){
+        this.rotation = rotation
+        if(!testShip) {
+            sprite.rotation = rotation
+            burnHandle.rotation = rotation
+            ring.rotation = rotation - 90 //Give an offset of 90 so the arrow doesn't sit under the burn ball
+        }
+    }
+
+    /**
+     * Sets the burn handle's position using the ships rotation.
+     */
+    private fun setBurnHandlePosition(){
         val angle = rotation*MathUtils.degreesToRadians
         val x = ringRadius * MathUtils.cos(angle) - MathUtils.sin(angle) //Original X position of the burn ball
         val y = ringRadius * MathUtils.sin(angle) + MathUtils.cos(angle) //Original Y position of the burn ball
@@ -238,6 +263,22 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         burnHandle.setPosition(burnHandleLocation.x - burnBallRadius, burnHandleLocation.y - burnBallRadius)
     }
 
+    /**
+     * Sets the thrust fire's position in relation to the ship.
+     */
+    private fun setThrustFirePosition(){
+        val angle = rotation*MathUtils.degreesToRadians
+        val xOffset = sprite.width*thrustFirePositionPercent.x
+        val x = (-xOffset) * MathUtils.cos(angle) - MathUtils.sin(angle) //Original X position of the burn ball
+        val y = (-xOffset) * MathUtils.sin(angle) + MathUtils.cos(angle) //Original Y position of the burn ball
+
+        thrustFireSprite.setPosition(this.position.x - thrustFireSprite.width/2f + x, this.position.y - thrustFireSprite.height/2f + y)
+        thrustFireSprite.rotation = angle*MathUtils.radiansToDegrees
+    }
+
+    /**
+     * Burns a tick of fuel.
+     */
     private fun burnFuel(){
         if(fuel <= 0 || burnTime <= 0)
             return
@@ -248,6 +289,12 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         burnTime--
     }
 
+    /**
+     * Determines what on the ship was clicked.
+     * @param mouseX The mouse's X location
+     * @param mouseY The mouse's Y location
+     * @return An integer representing what was clicked. 2 = burn handle, 1 = rotation ring, 0 = nothing
+     */
     fun clickOnShip(mouseX:Float, mouseY:Float):Int{
         val dst = position.dst(mouseX, mouseY)
         val dstToBurnBall = burnHandleLocation.dst(mouseX, mouseY)
@@ -268,6 +315,11 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         return setDoubleBurn(doubleBurn)
     }
 
+    /**
+     * Sets the double burn to a certain value
+     * @param burnValue The value to set the double burn as
+     * @return What the burn value is.
+     */
     fun setDoubleBurn(burnValue:Boolean):Boolean{
         if(burnValue == !this.doubleBurn) return doubleBurn
 
@@ -299,19 +351,30 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         return doubleBurn
     }
 
+    /**
+     * Used mostly for copying the burn force and burn per tick to another ship.
+     */
     fun setBurnForceAndPerTick(force:Float, amount:Float){
         this.burnForce = force
         this.burnPerTick = amount
     }
 
+    /**
+     * Drags the burn handle to the location of the mouse
+     * @param mouseX The mouse's X position
+     * @param mouseY The mouse's Y position
+     */
     fun dragBurn(mouseX:Float, mouseY:Float){
         var dst = position.dst(mouseX, mouseY) - ringRadius
         if(dst <= 0) dst = 0f
 
+        //The burn time is equal to the distance. If the burn amount is greater than the fuel we have, set it to the max
         burnTime = dst.toInt()
         if(burnAmount > fuel){
             burnTime = (fuel/burnPerTick).toInt()
         }
+
+        this.setRotationTowardsMouse(mouseX, mouseY)
     }
 
     fun reset(position:Vector2, fuel:Float, initialVelocity:Vector2){
@@ -328,7 +391,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
             sprite.setPosition(position.x - shipWidth / 2f, position.y - shipHeight / 2f)
             ring.setPosition(position.x - ringRadius, position.y - ringRadius)
             burnHandle.setPosition(position.x - burnBallRadius, position.y - burnBallRadius)
-            setBurnHandleLocation()
+            setBurnHandlePosition()
         }
     }
 
@@ -370,7 +433,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
             sprite.setPosition(position.x - shipWidth / 2f, position.y - shipHeight / 2f)
             ring.setPosition(position.x - ringRadius, position.y - ringRadius)
             burnHandle.setPosition(position.x - burnBallRadius, position.y - burnBallRadius)
-            setBurnHandleLocation()
+            setBurnHandlePosition()
         }
     }
 

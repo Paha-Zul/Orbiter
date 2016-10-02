@@ -8,6 +8,7 @@ import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.objects.AsteroidSpawner
 import com.quickbite.spaceslingshot.objects.Obstacle
 import com.quickbite.spaceslingshot.objects.Planet
+import com.quickbite.spaceslingshot.objects.SpaceStation
 import com.quickbite.spaceslingshot.util.JsonLevelLoader
 
 /**
@@ -34,11 +35,17 @@ object GameLevels {
 
         levelData.planets.forEach { pd ->
             planetTexture = ProceduralPlanetTextureGenerator.getNextTexture()
-            data.planetList.add(Planet(Vector2(pd.pos[0].toFloat(), pd.pos[1].toFloat()), pd.radius, pd.gravityRange, pd.density, planetRotation(), planetTexture!!))
+//            data.planetList.add(Planet(Vector2(pd.pos[0].toFloat(), pd.pos[1].toFloat()), pd.radius, pd.gravityRange, pd.density, planetRotation(), planetTexture!!))
+            data.planetList.add(Planet(Vector2(pd.pos[0].toFloat(), pd.pos[1].toFloat()), pd.radius, pd.gravityRange, pd.density, 0f, planetTexture!!))
         }
 
         levelData.obstacles.forEach { od ->
             data.obstacleList.add(Obstacle(Rectangle(od.rect[0].toFloat(), od.rect[1].toFloat(), od.rect[2].toFloat(), od.rect[3].toFloat())))
+        }
+
+        levelData.stations.forEach { sd ->
+            planetTexture = ProceduralPlanetTextureGenerator.getNextTexture()
+            data.stationList.add(SpaceStation(Vector2(sd.pos[0].toFloat(), sd.pos[1].toFloat()), sd.size, sd.fuelStorage, true))
         }
 
         levelData.asteroidSpawners.forEach { spawner ->
@@ -46,14 +53,14 @@ object GameLevels {
                     Pair(spawner.spawnFreq[0], spawner.spawnFreq[1]), Pair(spawner.speedRange[0], spawner.speedRange[1]), data, spawner.immediate))
         }
 
-        val hp = levelData.homePlanet
+        val hs = levelData.homeStation
         planetTexture = ProceduralPlanetTextureGenerator.getNextTexture(true)
-        data.planetList.add(Planet(Vector2(hp.pos[0].toFloat(), hp.pos[1].toFloat()), hp.radius, hp.gravityRange, hp.density, planetRotation(), planetTexture!!, true))
+        data.stationList.add(SpaceStation(Vector2(hs.pos[0].toFloat(), hs.pos[1].toFloat()), hs.size, hs.fuelStorage, true))
 
         val sd = levelData.ship
         data.ship.reset(Vector2(sd.pos[0].toFloat(), sd.pos[1].toFloat()), sd.fuel, Vector2(sd.velocity[0].toFloat(), sd.velocity[1].toFloat()))
 
-        ProceduralPlanetTextureGenerator.generatePlanetTexturesThreaded(10) //Generate the next set of textures
+        ProceduralPlanetTextureGenerator.generatePlanetTexturesFromData() //Generate the next set of textures
 
         MyGame.camera.position.set(data.ship.position.x, data.ship.position.y, 0f)
 

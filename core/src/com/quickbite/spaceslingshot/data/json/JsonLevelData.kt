@@ -8,7 +8,8 @@ class JsonLevelData() {
     var name:String = ""
     lateinit var ship: JsonShipData
     lateinit var planets:Array<JsonPlanetData>
-    lateinit var homePlanet: JsonPlanetData
+    var stations:Array<JsonStationData> = arrayOf()
+    lateinit var homeStation: JsonStationData
     var obstacles:Array<JsonObstacleData> = arrayOf()
     var asteroidSpawners:Array<JsonAsteroidSpawner> = arrayOf()
 }

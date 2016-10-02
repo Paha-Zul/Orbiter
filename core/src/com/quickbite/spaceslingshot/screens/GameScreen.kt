@@ -19,10 +19,7 @@ import com.quickbite.spaceslingshot.guis.GameScreenGUI
 import com.quickbite.spaceslingshot.objects.Obstacle
 import com.quickbite.spaceslingshot.objects.Planet
 import com.quickbite.spaceslingshot.objects.Ship
-import com.quickbite.spaceslingshot.util.Constants
-import com.quickbite.spaceslingshot.util.EndlessGame
-import com.quickbite.spaceslingshot.util.LineDraw
-import com.quickbite.spaceslingshot.util.Predictor
+import com.quickbite.spaceslingshot.util.*
 
 /**
  * Created by Paha on 8/7/2016.
@@ -72,7 +69,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         starryBackground.setRegion(0,0,480, 800)
 
         if(levelToLoad != -1)
-            GameLevels.loadLevel(levelToLoad, data)
+            loadLevel(levelToLoad)
         else
             endlessGame?.start()
 
@@ -107,17 +104,16 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     }
 
     private fun update(delta:Float){
+        EventSystem.executeEventQueue()
         endlessGame?.update(delta)
 
         //Not pausePhysics update...
         if(!paused) {
 //            runPredictor()
             data.ship.update(delta)
-            data.planetList.forEach { obj ->
-                obj.update(delta)
-            }
-
+            data.planetList.forEach { obj -> obj.update(delta)}
             data.asteroidSpawnerList.forEach { spawner -> spawner.update(delta) }
+            data.stationList.forEach { station -> station.update(delta) }
 
             for(i in (data.asteroidList.size-1).downTo(0)){
                 data.asteroidList[i].update(delta)
@@ -164,17 +160,16 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
             lineDrawer.draw(batch)
 
         //Draw planets
-        data.planetList.forEach { obj ->
-            obj.draw(batch)
-        }
+        data.planetList.forEach { obj -> obj.draw(batch)}
 
         //Draw obstacles
-        data.obstacleList.forEach { obj ->
-            obj.draw(batch)
-        }
+        data.obstacleList.forEach { obj -> obj.draw(batch)}
 
         //Draw asteroids
         data.asteroidList.forEach { asteroid -> asteroid.draw(batch) }
+
+        //draw stations
+        data.stationList.forEach { station -> station.draw(batch) }
 
         data.ship.draw(batch)
 

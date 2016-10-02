@@ -17,13 +17,11 @@
         "planetType": "Earth"
       }
     ],
-    "homePlanet":{
-      "name": "GenericPlanet",
+    "homeStation":{
       "pos": [240, 650],
-      "radius": 50,
-      "gravityRange": 50,
-      "density": 0.1,
-      "planetType": "Earth"
+      "size": 75,
+      "fuelStorage": 100,
+      "homeStation": true
     },
     "obstacles":[
 
@@ -47,13 +45,11 @@
         "planetType": "Ice"
       }
     ],
-    "homePlanet":{
-      "name": "GenericPlanet",
+    "homeStation":{
       "pos": [240, 650],
-      "radius": 50,
-      "gravityRange": 50,
-      "density": 0.2,
-      "planetType": "Earth"
+      "size": 75,
+      "fuelStorage": 100,
+      "homeStation": true
     },
     "obstacles":[
       {
@@ -87,13 +83,11 @@
         "planetType": "Desert"
       }
     ],
-    "homePlanet":{
-      "name": "GenericPlanet",
+    "homeStation":{
       "pos": [100, 600],
-      "radius": 50,
-      "gravityRange": 50,
-      "density": 0.2,
-      "planetType": "Earth"
+      "size": 75,
+      "fuelStorage": 100,
+      "homeStation": true
     },
     "obstacles":[
 
@@ -125,13 +119,11 @@
         "planetType": "Desert"
       }
     ],
-    "homePlanet":{
-      "name": "GenericPlanet",
+    "homeStation":{
       "pos": [240, 650],
-      "radius": 50,
-      "gravityRange": 50,
-      "density": 0.2,
-      "planetType": "Earth"
+      "size": 75,
+      "fuelStorage": 100,
+      "homeStation": true
     },
     "obstacles":[
 

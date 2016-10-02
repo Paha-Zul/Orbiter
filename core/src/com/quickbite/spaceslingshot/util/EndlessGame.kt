@@ -33,11 +33,15 @@ class EndlessGame(val data:GameScreenData) : IUpdateable{
         data.ship.setPosition(MyGame.camera.position.x, MyGame.camera.position.y - MyGame.camera.viewportHeight/2f)
         data.ship.fuel = 50f
         data.ship.setVelocity(0f, 0.1f)
+
+//        data.stationList.add(SpaceStation(Vector2(240f, 300f), 50, 100f))
+
     }
 
     override fun update(delta: Float) {
         //TODO Add in some asteroid spawners
         //TODO Add in some obstacles?
+        //TODO Add in stations?
 
         if(nextPosition.y <= MyGame.camera.position.y + (randSize.second + randGravity.second)*2f)
             addPlanet()
