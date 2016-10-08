@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
+import com.quickbite.spaceslingshot.objects.Ship;
 
 /**
  * Created by Paha on 1/24/2016.
@@ -55,5 +56,19 @@ public class GH {
         pixmap.dispose();
 
         return pixmaptex;
+    }
+
+    public static float getRotationFromLocation(Ship.ShipLocation location){
+        //TODO For some reason the left and right need to be flipped here...
+        switch(location){
+            case Rear:
+                return 0f;
+            case Left:
+                return -90f;
+            case Right:
+                return 90f;
+            default:
+                return 0f;
+        }
     }
 }

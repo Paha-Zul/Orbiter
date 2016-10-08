@@ -64,7 +64,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable{
         bottomPauseButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 gameScreen.toggleGamePause()
-                when(gameScreen.paused){
+                when(GameScreen.paused){
                     true -> bottomPauseButton.setText("Resume")
                     false -> bottomPauseButton.setText("Pause")
                 }

@@ -5,16 +5,19 @@ import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.TimeUtils
+import com.quickbite.spaceslingshot.objects.Ship
 import com.quickbite.spaceslingshot.screens.GameScreen
+import com.quickbite.spaceslingshot.util.GH
 
 /**
  * Created by Paha on 8/7/2016.
  */
-
 class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
     var draggingRotateShip = false
     var draggingShipBurnTime = false
     var draggingScreen = false
+    var shipLocation:Ship.ShipLocation = Ship.ShipLocation.Rear
+    var rotationOffset:Float = 0f
 
     val startDragPos:Vector2 = Vector2()
     val offset:Vector2 = Vector2()
@@ -34,7 +37,7 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
         val timeDiff = (TimeUtils.millis() - tapTime)/1000f
         if(timeDiff <= 0.2f){
             if(draggingShipBurnTime) {
-                screen.toggleShipBurn()
+                screen.toggleShipBurn(shipLocation)
                 runPredictor = true
             }
         }
@@ -64,16 +67,18 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
 
         startDragPos.set(screenX.toFloat(), screenY.toFloat())
 
-        if(screen.paused) {
+        if(GameScreen.paused) {
+            rotationOffset = 0f
             val clicked = screen.data.ship.clickOnShip(worldPos.x, worldPos.y)
-            when (clicked) {
+            when (clicked.first) {
                 1 -> draggingRotateShip = true
                 2 -> draggingShipBurnTime = true
                 0 -> draggingScreen = true
             }
-        }else{
+            shipLocation = clicked.second
+            rotationOffset = GH.getRotationFromLocation(shipLocation)
+        }else
             draggingScreen = true
-        }
 
         tapTime = TimeUtils.millis()
 
@@ -87,7 +92,6 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
     override fun keyUp(keycode: Int): Boolean {
         if(keycode == Input.Keys.SPACE)
             screen.toggleGamePause()
-
 
         return false
     }
@@ -103,8 +107,8 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
             ship.setRotationTowardsMouse(worldPos.x, worldPos.y)
             screen.runPredictor()
         }else if(draggingShipBurnTime){
-            ship.dragBurn(worldPos.x, worldPos.y)
-            screen.gui.fuelBar.setAmounts(ship.fuel, ship.burnAmount)
+            ship.dragBurn(worldPos.x, worldPos.y, shipLocation)
+            screen.gui.fuelBar.setAmounts(ship.fuel, ship.fuelTaken)
             screen.runPredictor()
         }else if(draggingScreen){
             offset.set(screenX - startDragPos.x, screenY - startDragPos.y)

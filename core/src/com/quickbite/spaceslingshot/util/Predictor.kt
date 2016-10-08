@@ -20,8 +20,7 @@ object Predictor : Disposable{
     fun runPrediction(ship: Ship, pausePhysics:()->Unit, resumePhysics:()->Unit, physicsStep:()->Unit){
         predictorShip.reset(Vector2(ship.position), ship.fuel, Vector2(ship.velocity))
         predictorShip.setShipRotation(ship.rotation)
-        predictorShip.burnTime = ship.burnTime
-        predictorShip.setBurnForceAndPerTick(ship.burnForce, ship.burnPerTick)
+        predictorShip.copyThrusters(ship.thrusters)
 
 //        pausePhysics()
 //        predictorShip.setPosition(0f, -500f)

@@ -14,9 +14,7 @@ import com.quickbite.spaceslingshot.interfaces.IPhysicsBody
 import com.quickbite.spaceslingshot.interfaces.IUniqueID
 import com.quickbite.spaceslingshot.interfaces.IUpdateable
 import com.quickbite.spaceslingshot.screens.GameScreen
-import com.quickbite.spaceslingshot.util.BodyData
-import com.quickbite.spaceslingshot.util.Constants
-import com.quickbite.spaceslingshot.util.EventSystem
+import com.quickbite.spaceslingshot.util.*
 import java.util.*
 
 /**
@@ -24,6 +22,17 @@ import java.util.*
  * @param position The real 'world' coordinates of the ship. These will be used for everything (including rendering) except Box2D which is scaled.
  */
 class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val testShip:Boolean = false): IUpdateable, IDrawable, IUniqueID, IPhysicsBody, Disposable {
+    enum class ShipLocation {Rear, Left, Right, Front}
+
+    var rotationCounter = 0f
+
+    val fuelTaken:Float
+        get() {
+            var amount:Float = 0f
+            thrusters.forEach { amount += it.burnAmount }
+            return amount
+        }
+
     override val uniqueID: Long = MathUtils.random(Long.MAX_VALUE)
     override lateinit var body: Body
 
@@ -35,21 +44,21 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     get
     private set
 
-    var burnTime = 0 //Burn for 10 ticks
+//    private val mainThruster = Thruster(0.01f, 0.1f, Vector2(1f, 0f))
+//    private val leftThruster = Thruster(0.01f, 0.1f, Vector2(0f, -1f))
+//    private val rightThurster = Thruster(0.01f, 0.1f, Vector2(0f, 1f))
 
-    var burnPerTick = 0.1f //The amount of fuel burned per tick
-        get
-        private set
+    val thrusters:Array<Thruster> = arrayOf(
+            Thruster(0.01f, 0.1f, Vector2(1f, 0f), ShipLocation.Rear, 0f),
+            Thruster(0.005f, 0.1f, Vector2(0f, -1f), ShipLocation.Left, 90f),
+            Thruster(0.005f, 0.1f, Vector2(0f, 1f), ShipLocation.Right, -90f)
+    )
 
-    var burnForce:Float = 0.01f //The amount of burn force per tick
-        get
-        private set
-
-    val burnAmount:Float
-        get() = burnTime*burnPerTick
-
-    var doubleBurn = false
-        private set
+    val burnHandles:Array<BurnHandle> = arrayOf(
+            BurnHandle(this, ShipLocation.Rear, 0f),
+            BurnHandle(this, ShipLocation.Left, 90f),
+            BurnHandle(this, ShipLocation.Right, -90f)
+    )
 
     val velocity:Vector2
         get() = Vector2(body.linearVelocity.x*Constants.VELOCITY_INVERSESCALE, body.linearVelocity.y*Constants.VELOCITY_INVERSESCALE)
@@ -58,28 +67,16 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
     private lateinit var sprite:Sprite
     private lateinit var ring:Sprite
-    private lateinit var burnHandle:Sprite
     private lateinit var thrustFireSprite:Sprite
 
     private val ringRadius = 100f
     private val shipWidth = 50f
     private val shipHeight = 50f
-    private val burnBallRadius = 30f
 
-    val burnHandleLocation = Vector2()
-    val burnBallBasePosition = Vector2()
     private val thrustFirePositionPercent = Vector2(0.68f, 0f)
-
-    private lateinit var normalBurnTexture:Texture
-    private lateinit var doubleBurnTexture:Texture
 
     init{
         if(!testShip) {
-            normalBurnTexture = MyGame.manager["arrow", Texture::class.java]
-            normalBurnTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
-            doubleBurnTexture = MyGame.manager["doubleArrow", Texture::class.java]
-            doubleBurnTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
-
             sprite = Sprite(MyGame.manager["spaceship", Texture::class.java])
             sprite.setSize(shipHeight, shipWidth)
             sprite.setPosition(position.x - shipWidth / 2, position.y - shipHeight / 2)
@@ -93,12 +90,6 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
             ring.setSize(ringRadius * 2f, ringRadius * 2f)
             ring.color = Color.WHITE
             ring.setOrigin(ringRadius, ringRadius)
-
-            burnHandle = Sprite(normalBurnTexture)
-            burnHandle.setPosition(position.x - burnBallRadius, position.y - burnBallRadius)
-            burnHandle.setSize(burnBallRadius * 2f, burnBallRadius * 2f)
-            burnHandle.setOrigin(burnHandle.width/2f, burnHandle.height/2f)
-            burnHandle.color = Color.WHITE
 
             thrustFireSprite = Sprite(MyGame.manager["thrustFire", Texture::class.java])
             thrustFireSprite.setSize(24f, 24f)
@@ -188,15 +179,23 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
     override fun draw(batch: SpriteBatch) {
         sprite.draw(batch)
-        if(burnTime > 0){
-            setThrustFirePosition()
-            thrustFireSprite.draw(batch)
-        }
 
+        drawThrusters(batch)
+
+        //Adjust all sprites
         if(!testShip) {
             sprite.setPosition(position.x - shipWidth / 2f, position.y - shipHeight / 2f)
             ring.setPosition(position.x - ringRadius, position.y - ringRadius)
-            burnHandle.setPosition(position.x - burnBallRadius, position.y - burnBallRadius)
+            burnHandles.forEach(BurnHandle::setPosition)
+        }
+    }
+
+    fun drawThrusters(batch: SpriteBatch){
+        thrusters.forEach { thruster ->
+            if(thruster.burnTime > 0){
+                setThrustFirePosition()
+                thrustFireSprite.draw(batch)
+            }
         }
     }
 
@@ -204,7 +203,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         setBurnHandlePosition()
 
         ring.draw(batch)
-        burnHandle.draw(batch)
+        burnHandles.forEach { handle -> handle.draw(batch) }
     }
 
     fun addVelocity(x:Float, y:Float){
@@ -213,6 +212,13 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
     fun addVelocityForward(force:Float){
         val angle = rotation*MathUtils.degreesToRadians
+        val x = MathUtils.cos(angle)*force
+        val y = MathUtils.sin(angle)*force
+        addVelocity(x, y)
+    }
+
+    fun addVelocityDirection(force:Float, facing:Vector2){
+        val angle = (rotation + facing.angle())*MathUtils.degreesToRadians
         val x = MathUtils.cos(angle)*force
         val y = MathUtils.sin(angle)*force
         addVelocity(x, y)
@@ -227,9 +233,12 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         body.setLinearVelocity(x*Constants.VELOCITY_SCALE, y*Constants.VELOCITY_SCALE)
     }
 
-    fun setRotationTowardsMouse(mouseX:Float, mouseY:Float){
+    /**
+     * Sets the rotation of the ship towards the mouse. Also handles all graphics related to the ship.
+     */
+    fun setRotationTowardsMouse(mouseX:Float, mouseY:Float, rotationOffset:Float = 0f){
         val rot = MathUtils.atan2(mouseY - position.y, mouseX - position.x)*MathUtils.radiansToDegrees
-        setShipRotation(rot)
+        setShipRotation(rot, rotationOffset)
 
         setBurnHandlePosition()
     }
@@ -238,12 +247,12 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
      * Sets the ships rotation along with the graphics of the ship
      * @param rotation The rotation in degrees.
      */
-    fun setShipRotation(rotation:Float){
-        this.rotation = rotation
+    fun setShipRotation(rotation:Float, rotationOffset:Float = 0f){
+        this.rotation = rotation + rotationOffset
         if(!testShip) {
-            sprite.rotation = rotation
-            burnHandle.rotation = rotation
-            ring.rotation = rotation - 90 //Give an offset of 90 so the arrow doesn't sit under the burn ball
+            sprite.rotation = this.rotation
+            burnHandles.forEach { handle -> handle.burnHandle.rotation = this.rotation + handle.rotationOffset }
+            ring.rotation = this.rotation - 90 //Give an offset of 90 so the arrow doesn't sit under the burn ball
         }
     }
 
@@ -251,16 +260,21 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
      * Sets the burn handle's position using the ships rotation.
      */
     private fun setBurnHandlePosition(){
-        val angle = rotation*MathUtils.degreesToRadians
-        val x = ringRadius * MathUtils.cos(angle) - MathUtils.sin(angle) //Original X position of the burn ball
-        val y = ringRadius * MathUtils.sin(angle) + MathUtils.cos(angle) //Original Y position of the burn ball
-        val x2 = (ringRadius + burnTime) * MathUtils.cos(angle) - MathUtils.sin(angle) //Adjusted X position using the burn time.
-        val y2 = (ringRadius + burnTime) * MathUtils.sin(angle) + MathUtils.cos(angle) //Adjusted Y position using the burn time.
+        //TODO Need to handle mutliple burn handles
 
-        burnBallBasePosition.set(position.x + x, position.y + y)
+        burnHandles.forEach { handle ->
+            val thruster = getThruster(handle.burnHandleLocation)
 
-        burnHandleLocation.set(position.x + x2, position.y + y2 )
-        burnHandle.setPosition(burnHandleLocation.x - burnBallRadius, burnHandleLocation.y - burnBallRadius)
+            val angle = (rotation + thruster.rotationOffset)*MathUtils.degreesToRadians
+            val x = ringRadius * MathUtils.cos(angle) - MathUtils.sin(angle) //Original X position of the burn ball
+            val y = ringRadius * MathUtils.sin(angle) + MathUtils.cos(angle) //Original Y position of the burn ball
+            val x2 = (ringRadius + thruster.burnTime) * MathUtils.cos(angle) - MathUtils.sin(angle) //Adjusted X position using the burn time.
+            val y2 = (ringRadius + thruster.burnTime) * MathUtils.sin(angle) + MathUtils.cos(angle) //Adjusted Y position using the burn time.
+
+            handle.burnHandleBasePosition.set(position.x + x, position.y + y)
+            handle.burnHandlePosition.set(position.x + x2, position.y + y2 )
+            handle.burnHandle.setPosition(handle.burnHandlePosition.x - BurnHandle.burnHandleSize, handle.burnHandlePosition.y - BurnHandle.burnHandleSize)
+        }
     }
 
     /**
@@ -280,13 +294,11 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
      * Burns a tick of fuel.
      */
     private fun burnFuel(){
-        if(fuel <= 0 || burnTime <= 0)
-            return
-
-        addVelocityForward(burnForce)
-
-        fuel -= burnPerTick
-        burnTime--
+        thrusters.forEach { thruster ->
+            val result = thruster.burnFuel(fuel)
+            fuel -= result.first
+            addVelocityDirection(result.second, thruster.burnDirection)
+        }
     }
 
     /**
@@ -295,24 +307,42 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
      * @param mouseY The mouse's Y location
      * @return An integer representing what was clicked. 2 = burn handle, 1 = rotation ring, 0 = nothing
      */
-    fun clickOnShip(mouseX:Float, mouseY:Float):Int{
+    fun clickOnShip(mouseX:Float, mouseY:Float):Pair<Int, ShipLocation>{
         val dst = position.dst(mouseX, mouseY)
-        val dstToBurnBall = burnHandleLocation.dst(mouseX, mouseY)
-        if(dstToBurnBall <= burnBallRadius)
-            return 2
-        else if(dst <= ringRadius){
-            return 1
+        val result = findClickedOn(mouseX, mouseY, dst)
+        return Pair(result.first, result.second)
+    }
+
+    /**
+     *
+     */
+    private fun findClickedOn(mouseX:Float, mouseY: Float, dst:Float):MutablePair<Int, ShipLocation>{
+        val hit:MutablePair<Int, ShipLocation> = MutablePair(0, ShipLocation.Rear)
+
+        burnHandles.forEach { handle ->
+            val dstToHandle = handle.burnHandlePosition.dst(mouseX, mouseY)
+            if(dstToHandle <= BurnHandle.burnHandleSize){
+                hit.set(2, handle.burnHandleLocation)
+                return hit
+            }
         }
 
-        return 0
+        if(dst <= ringRadius){
+            hit.set(1, ShipLocation.Rear)
+            return hit
+        }
+
+        return hit
     }
 
     /** Toggles the double burn of the ship
      * @return True if the double burn is activated, false otherwise.
      */
-    fun toggleDoubleBurn():Boolean{
-        this.doubleBurn = !this.doubleBurn
-        return setDoubleBurn(doubleBurn)
+    fun toggleDoubleBurn(shipLocation: ShipLocation):Boolean{
+        val thruster = getThruster(shipLocation) //Get the thruster
+        val result = thruster.toggleDoubleBurn(fuel) //Toggle the burn
+        setDoubleBurnGraphic(getBurnHandle(shipLocation), result) //Set the graphic
+        return result //Return the result
     }
 
     /**
@@ -320,43 +350,44 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
      * @param burnValue The value to set the double burn as
      * @return What the burn value is.
      */
-    fun setDoubleBurn(burnValue:Boolean):Boolean{
-        if(burnValue == !this.doubleBurn) return doubleBurn
+    fun setDoubleBurn(burnValue:Boolean, shipLocation: ShipLocation):Boolean{
+        val thruster = getThruster(shipLocation) //Get the thruster
+        val handle = getBurnHandle(shipLocation) //Get the handle
 
-        when(burnValue){
+        val result = thruster.setDoubleBurn(burnValue, this.fuel) //Set the burn
+
+        setDoubleBurnGraphic(handle, result) //set the graphic
+
+        return result //Return the result
+    }
+
+    private fun setDoubleBurnGraphic(handle:BurnHandle, value:Boolean){
+        when(value){
+
             //If we are double burning, set the texture and apply the bonus burn.
             true -> {
                 if(!testShip) {
-                    burnHandle.texture = doubleBurnTexture
-                    burnHandle.color = Color.RED
+                    handle.burnHandle.texture = BurnHandle.doubleBurnTexture
+                    handle.burnHandle.color = Color.RED
                 }
-                burnForce *= 2f
-                burnPerTick *= 2f
             }
+
             //If we are not double burning, set the texture and reduce our burn.
             false ->{
                 if(!testShip) {
-                    burnHandle.texture = normalBurnTexture
-                    burnHandle.color = Color.WHITE
+                    handle.burnHandle.texture = BurnHandle.normalBurnTexture
+                    handle.burnHandle.color = Color.WHITE
                 }
-                burnForce /= 2f
-                burnPerTick /= 2f
             }
         }
-
-        //If we don't have enough fuel, clamp it
-        if(burnAmount > fuel)
-            burnTime = (fuel/burnPerTick).toInt()
-
-        return doubleBurn
     }
 
     /**
      * Used mostly for copying the burn force and burn per tick to another ship.
      */
-    fun setBurnForceAndPerTick(force:Float, amount:Float){
-        this.burnForce = force
-        this.burnPerTick = amount
+    fun setBurnForceAndPerTick(force:Float, amount:Float, ship: ShipLocation){
+        val thruster = getThruster(ship)
+        thruster.setBurnForceAndPerTick(force, amount)
     }
 
     /**
@@ -364,33 +395,39 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
      * @param mouseX The mouse's X position
      * @param mouseY The mouse's Y position
      */
-    fun dragBurn(mouseX:Float, mouseY:Float){
+    fun dragBurn(mouseX:Float, mouseY:Float, shipLocation: ShipLocation){
+        val rotationOffset = GH.getRotationFromLocation(shipLocation)
+
         var dst = position.dst(mouseX, mouseY) - ringRadius
         if(dst <= 0) dst = 0f
 
+        val thruster = getThruster(shipLocation)
+
         //The burn time is equal to the distance. If the burn amount is greater than the fuel we have, set it to the max
-        burnTime = dst.toInt()
-        if(burnAmount > fuel){
-            burnTime = (fuel/burnPerTick).toInt()
+        thruster.burnTime = dst.toInt()
+        if(thruster.burnAmount > fuel){
+            thruster.burnTime = (fuel/thruster.fuelBurnedPerTick).toInt()
         }
 
-        this.setRotationTowardsMouse(mouseX, mouseY)
+        this.setRotationTowardsMouse(mouseX, mouseY, rotationOffset)
     }
 
     fun reset(position:Vector2, fuel:Float, initialVelocity:Vector2){
         this.position.set(position.x, position.y)
         this.fuel = fuel
-        this.setDoubleBurn(false)
+        this.setDoubleBurn(false, ShipLocation.Rear)
+        this.setDoubleBurn(false, ShipLocation.Left)
+        this.setDoubleBurn(false, ShipLocation.Right)
         this.rotation = 0f
         this.body.setTransform(Vector2(position.x*Constants.BOX2D_SCALE, position.y*Constants.BOX2D_SCALE), 0f)
         this.body.setLinearVelocity(initialVelocity.x*Constants.VELOCITY_SCALE, initialVelocity.y*Constants.VELOCITY_SCALE)
 
         //If we are the test ship, don't do this!
-        if(!testShip) {
+        if(!testShip){
             this.planetList.clear()
             sprite.setPosition(position.x - shipWidth / 2f, position.y - shipHeight / 2f)
             ring.setPosition(position.x - ringRadius, position.y - ringRadius)
-            burnHandle.setPosition(position.x - burnBallRadius, position.y - burnBallRadius)
+            burnHandles.forEach(BurnHandle::setPosition)
             setBurnHandlePosition()
         }
     }
@@ -432,9 +469,25 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         if(!testShip) {
             sprite.setPosition(position.x - shipWidth / 2f, position.y - shipHeight / 2f)
             ring.setPosition(position.x - ringRadius, position.y - ringRadius)
-            burnHandle.setPosition(position.x - burnBallRadius, position.y - burnBallRadius)
+            burnHandles.forEach (BurnHandle::setPosition)
             setBurnHandlePosition()
         }
+    }
+
+    fun copyThrusters(thrustersToCopy:Array<Thruster>){
+        this.thrusters.forEachIndexed { i, thruster ->
+            thruster.setBurnForceAndPerTick(thrustersToCopy[i].burnForce, thrustersToCopy[i].fuelBurnedPerTick)
+            thruster.burnTime = thrustersToCopy[i].burnTime
+            thruster.setDoubleBurn(thrustersToCopy[i].doubleBurn, fuel)
+        }
+    }
+
+    private fun getThruster(shipLocation: ShipLocation):Thruster{
+        return thrusters.filter { it.location == shipLocation }[0]
+    }
+
+    private fun getBurnHandle(shipLocation: ShipLocation):BurnHandle{
+        return burnHandles.filter { it.burnHandleLocation == shipLocation }[0]
     }
 
     override fun dispose() {
@@ -459,5 +512,40 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         }
 
         physicsArePaused = pausePhysics
+    }
+
+    class BurnHandle(val ship: Ship, val burnHandleLocation:ShipLocation, val rotationOffset:Float){
+        companion object{
+            lateinit var normalBurnTexture:Texture
+            lateinit var doubleBurnTexture:Texture
+            val burnHandleSize = 30f
+
+            init{
+                normalBurnTexture = MyGame.manager["arrow", Texture::class.java]
+                normalBurnTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
+                doubleBurnTexture = MyGame.manager["doubleArrow", Texture::class.java]
+                doubleBurnTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
+            }
+        }
+
+        val burnHandlePosition = Vector2()
+        val burnHandleBasePosition = Vector2()
+        lateinit var burnHandle:Sprite
+
+        init{
+            burnHandle = Sprite(normalBurnTexture)
+            burnHandle.setPosition(ship.position.x - burnHandleSize, ship.position.y - burnHandleSize)
+            burnHandle.setSize(burnHandleSize * 2f, burnHandleSize * 2f)
+            burnHandle.setOrigin(burnHandle.width/2f, burnHandle.height/2f)
+            burnHandle.color = Color.WHITE
+        }
+
+        fun setPosition(){
+            burnHandle.setPosition(ship.position.x - burnHandleSize, ship.position.y - burnHandleSize)
+        }
+
+        fun draw(batch: SpriteBatch){
+            burnHandle.draw(batch)
+        }
     }
 }

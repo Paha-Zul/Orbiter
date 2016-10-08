@@ -29,7 +29,6 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     lateinit var gui:GameScreenGUI
     val lineDrawer = LineDraw()
 
-    var paused = true
     lateinit var points:List<Vector2>
 
     lateinit var starryBackground: TextureRegion
@@ -42,6 +41,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     companion object{
         var finished = false
         var lost = false
+        var paused = true
 
         fun applyGravity(planet:Planet, ship:Ship){
             val dst = planet.position.dst(ship.position)
@@ -123,7 +123,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
                 }
             }
 
-            gui.fuelBar.setAmounts(data.ship.fuel, data.ship.burnTime * data.ship.burnPerTick)
+            gui.fuelBar.setAmounts(data.ship.fuel, data.ship.fuelTaken)
 
             if(GameScreen.finished){
                 gui.showGameOver(lost)
@@ -132,7 +132,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
         //Paused update...
         }else{
-            lineDrawer.setStartAndEnd(data.ship.burnBallBasePosition, data.ship.burnHandleLocation)
+//            lineDrawer.setStartAndEnd(data.ship.burnBallBasePosition, data.ship.burnHandleLocation)
         }
     }
 
@@ -239,9 +239,9 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         return if(dead) 0 else if(passed) 1 else 2
     }
 
-    fun toggleShipBurn(){
-        data.ship.toggleDoubleBurn()
-        gui.fuelBar.setAmounts(data.ship.fuel, data.ship.burnAmount)
+    fun toggleShipBurn(shipLocation: Ship.ShipLocation){
+        data.ship.toggleDoubleBurn(shipLocation)
+        gui.fuelBar.setAmounts(data.ship.fuel, data.ship.fuelTaken)
     }
 
     fun reloadLevel():Boolean{
@@ -281,11 +281,11 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     }
 
     fun toggleGamePause(){
-        setGamePaused(!this.paused)
+        setGamePaused(!GameScreen.paused)
     }
 
     fun setGamePaused(paused:Boolean){
-        this.paused = paused
+        GameScreen.paused = paused
 
         if(paused) {
             runPredictor()

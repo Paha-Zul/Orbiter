@@ -111,7 +111,7 @@ project(":core") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.3"
-        compile 'com.flowpowered:flow-noise:1.0.1-SNAPSHOT'
+//        compile 'com.flowpowered:flow-noise:1.0.1-SNAPSHOT'
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
     }
 }

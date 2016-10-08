@@ -66,7 +66,7 @@ class SpaceStation(position: Vector2, size:Int, val fuelStorage:Float, val homeS
             //Set the ship rotation
             ship.setShipRotation(angle*MathUtils.radiansToDegrees)
             ship.setVelocity(0f, 0f)
-            ship.burnTime = 0
+            ship.thrusters.forEach { thruster -> thruster.burnTime = 0 }
 
         }, this.uniqueID)
 
