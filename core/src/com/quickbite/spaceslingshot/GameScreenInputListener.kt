@@ -101,8 +101,6 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
         val worldPos = Vector2(world.x, world.y) //Temp for now
         val ship = screen.data.ship
 
-        //TODO Figure out dragging camera
-
         if(draggingRotateShip) {
             ship.setRotationTowardsMouse(worldPos.x, worldPos.y)
             screen.runPredictor()

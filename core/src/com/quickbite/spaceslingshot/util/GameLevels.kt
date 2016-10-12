@@ -1,15 +1,17 @@
-package com.quickbite.spaceslingshot.data
+package com.quickbite.spaceslingshot.util
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.quickbite.spaceslingshot.MyGame
+import com.quickbite.spaceslingshot.data.GameScreenData
+import com.quickbite.spaceslingshot.data.PlanetData
+import com.quickbite.spaceslingshot.data.ProceduralPlanetTextureGenerator
 import com.quickbite.spaceslingshot.objects.AsteroidSpawner
 import com.quickbite.spaceslingshot.objects.Obstacle
 import com.quickbite.spaceslingshot.objects.Planet
 import com.quickbite.spaceslingshot.objects.SpaceStation
-import com.quickbite.spaceslingshot.util.JsonLevelLoader
 
 /**
  * Created by Paha on 8/8/2016.
@@ -43,9 +45,11 @@ object GameLevels {
             data.obstacleList.add(Obstacle(Rectangle(od.rect[0].toFloat(), od.rect[1].toFloat(), od.rect[2].toFloat(), od.rect[3].toFloat())))
         }
 
+        //TODO Add rotation to stations. Needs to be added in the JSON defs
+
         levelData.stations.forEach { sd ->
             planetTexture = ProceduralPlanetTextureGenerator.getNextTexture()
-            data.stationList.add(SpaceStation(Vector2(sd.pos[0].toFloat(), sd.pos[1].toFloat()), sd.size, sd.fuelStorage, true))
+            data.stationList.add(SpaceStation(Vector2(sd.pos[0].toFloat(), sd.pos[1].toFloat()), sd.size, sd.fuelStorage, 0f, true))
         }
 
         levelData.asteroidSpawners.forEach { spawner ->
@@ -53,9 +57,11 @@ object GameLevels {
                     Pair(spawner.spawnFreq[0], spawner.spawnFreq[1]), Pair(spawner.speedRange[0], spawner.speedRange[1]), data, spawner.immediate))
         }
 
+        //TODO Add rotation to station here too
+
         val hs = levelData.homeStation
         planetTexture = ProceduralPlanetTextureGenerator.getNextTexture(true)
-        data.stationList.add(SpaceStation(Vector2(hs.pos[0].toFloat(), hs.pos[1].toFloat()), hs.size, hs.fuelStorage, true))
+        data.stationList.add(SpaceStation(Vector2(hs.pos[0].toFloat(), hs.pos[1].toFloat()), hs.size, hs.fuelStorage, 0f, true))
 
         val sd = levelData.ship
         data.ship.reset(Vector2(sd.pos[0].toFloat(), sd.pos[1].toFloat()), sd.fuel, Vector2(sd.velocity[0].toFloat(), sd.velocity[1].toFloat()))
@@ -67,7 +73,7 @@ object GameLevels {
         return true
     }
 
-    private fun getPlanetType(name:String):PlanetData.PlanetType{
+    private fun getPlanetType(name:String): PlanetData.PlanetType {
         when(name){
             "Earth" -> return PlanetData.PlanetType.Earth
             "Ice" -> return PlanetData.PlanetType.Ice

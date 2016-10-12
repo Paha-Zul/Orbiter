@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.CircleShape
 import com.badlogic.gdx.physics.box2d.FixtureDef
 import com.badlogic.gdx.utils.Disposable
+import com.badlogic.gdx.utils.Timer
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.interfaces.IPhysicsBody
 import com.quickbite.spaceslingshot.interfaces.IUniqueID
@@ -22,10 +23,13 @@ import com.quickbite.spaceslingshot.util.EventSystem
  * Created by Paha on 9/23/2016.
  */
 
-class SpaceStation(position: Vector2, size:Int, val fuelStorage:Float, val homeStation:Boolean = false):SpaceBody(position, size, 0f, 0f), IUniqueID, IPhysicsBody, Disposable{
+class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotation:Float, val homeStation:Boolean = false):SpaceBody(position, size, 0f, 0f), IUniqueID, IPhysicsBody, Disposable{
     override val uniqueID: Long = MathUtils.random(Long.MAX_VALUE)
     override lateinit var body: Body
     override var physicsArePaused: Boolean = false
+
+    val secondsToRefuel = 2f
+    val fuelRechargeAmountPerTick = fuelStorage/(60f*secondsToRefuel) //Assuming 60 ticks per second
 
     var sprite: Sprite
 
@@ -33,6 +37,8 @@ class SpaceStation(position: Vector2, size:Int, val fuelStorage:Float, val homeS
         sprite = Sprite(MyGame.manager["station", Texture::class.java])
         sprite.setSize(radius*2f, radius*2f)
         sprite.setPosition(position.x - radius, position.y - radius)
+        sprite.setOrigin(radius/2f, radius/2f)
+        sprite.rotation = rotation
 
         EventSystem.onEvent("hit_station", { args ->
             val ship = args[0] as Ship
@@ -67,6 +73,17 @@ class SpaceStation(position: Vector2, size:Int, val fuelStorage:Float, val homeS
             ship.setShipRotation(angle*MathUtils.radiansToDegrees)
             ship.setVelocity(0f, 0f)
             ship.thrusters.forEach { thruster -> thruster.burnTime = 0 }
+
+            //Set a timer to refuel
+            Timer.schedule(object:Timer.Task(){
+                override fun run() {
+                    //Cancel the timer when we have no more fuel or the ship is full.
+                    if(this@SpaceStation.fuelStorage <= 0 || ship.addFuel(fuelRechargeAmountPerTick))
+                        this.cancel()
+
+                    this@SpaceStation.fuelStorage -= fuelRechargeAmountPerTick
+                }
+            }, 0f, 0.016f)
 
         }, this.uniqueID)
 

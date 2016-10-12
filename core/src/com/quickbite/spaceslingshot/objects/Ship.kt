@@ -24,7 +24,8 @@ import java.util.*
 class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val testShip:Boolean = false): IUpdateable, IDrawable, IUniqueID, IPhysicsBody, Disposable {
     enum class ShipLocation {Rear, Left, Right, Front}
 
-    var rotationCounter = 0f
+    var maxFuel = fuel
+        private set
 
     val fuelTaken:Float
         get() {
@@ -190,6 +191,11 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         }
     }
 
+    fun setAllFuel(fuel:Float, maxFuel:Float = fuel){
+        this.fuel = fuel
+        this.maxFuel = maxFuel
+    }
+
     fun drawThrusters(batch: SpriteBatch){
         thrusters.forEach { thruster ->
             if(thruster.burnTime > 0){
@@ -260,8 +266,6 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
      * Sets the burn handle's position using the ships rotation.
      */
     private fun setBurnHandlePosition(){
-        //TODO Need to handle mutliple burn handles
-
         burnHandles.forEach { handle ->
             val thruster = getThruster(handle.burnHandleLocation)
 
@@ -418,7 +422,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         this.setDoubleBurn(false, ShipLocation.Rear)
         this.setDoubleBurn(false, ShipLocation.Left)
         this.setDoubleBurn(false, ShipLocation.Right)
-        this.rotation = 0f
+        this.setShipRotation(0f)
         this.body.setTransform(Vector2(position.x*Constants.BOX2D_SCALE, position.y*Constants.BOX2D_SCALE), 0f)
         this.body.setLinearVelocity(initialVelocity.x*Constants.VELOCITY_SCALE, initialVelocity.y*Constants.VELOCITY_SCALE)
 
@@ -430,6 +434,13 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
             burnHandles.forEach(BurnHandle::setPosition)
             setBurnHandlePosition()
         }
+    }
+
+    fun addFuel(amount:Float):Boolean{
+        fuel += amount
+        val result = fuel >= maxFuel
+        fuel = Math.min(fuel, maxFuel) //Clamp the value to max fuel
+        return result
     }
 
     override fun createBody() {

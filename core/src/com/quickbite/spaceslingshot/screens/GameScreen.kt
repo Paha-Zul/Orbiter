@@ -13,7 +13,6 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.quickbite.spaceslingshot.GameScreenInputListener
 import com.quickbite.spaceslingshot.MyGame
-import com.quickbite.spaceslingshot.data.GameLevels
 import com.quickbite.spaceslingshot.data.GameScreenData
 import com.quickbite.spaceslingshot.guis.GameScreenGUI
 import com.quickbite.spaceslingshot.objects.Obstacle
@@ -35,6 +34,9 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
     var physicsAccumulator = 0f
     var updateAccumulator = 0f
+
+    var pauseLimit = 100f
+    var pauseAmtPerTick = 0.1f
 
     val endlessGame:EndlessGame? = if(endlessGame) EndlessGame(data) else null
 
@@ -109,6 +111,8 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
         //Not pausePhysics update...
         if(!paused) {
+            pauseLimit = Math.min(pauseLimit + pauseAmtPerTick, 100f)
+
 //            runPredictor()
             data.ship.update(delta)
             data.planetList.forEach { obj -> obj.update(delta)}
@@ -132,6 +136,9 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
         //Paused update...
         }else{
+            pauseLimit -= pauseAmtPerTick
+            if(pauseLimit <= 0)
+                setGamePaused(false)
 //            lineDrawer.setStartAndEnd(data.ship.burnBallBasePosition, data.ship.burnHandleLocation)
         }
     }
