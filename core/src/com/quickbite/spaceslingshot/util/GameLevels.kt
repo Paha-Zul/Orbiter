@@ -45,11 +45,10 @@ object GameLevels {
             data.obstacleList.add(Obstacle(Rectangle(od.rect[0].toFloat(), od.rect[1].toFloat(), od.rect[2].toFloat(), od.rect[3].toFloat())))
         }
 
-        //TODO Add rotation to stations. Needs to be added in the JSON defs
 
         levelData.stations.forEach { sd ->
             planetTexture = ProceduralPlanetTextureGenerator.getNextTexture()
-            data.stationList.add(SpaceStation(Vector2(sd.pos[0].toFloat(), sd.pos[1].toFloat()), sd.size, sd.fuelStorage, 0f, true))
+            data.stationList.add(SpaceStation(Vector2(sd.pos[0].toFloat(), sd.pos[1].toFloat()), sd.size, sd.fuelStorage, sd.rotation, true))
         }
 
         levelData.asteroidSpawners.forEach { spawner ->
@@ -61,7 +60,7 @@ object GameLevels {
 
         val hs = levelData.homeStation
         planetTexture = ProceduralPlanetTextureGenerator.getNextTexture(true)
-        data.stationList.add(SpaceStation(Vector2(hs.pos[0].toFloat(), hs.pos[1].toFloat()), hs.size, hs.fuelStorage, 0f, true))
+        data.stationList.add(SpaceStation(Vector2(hs.pos[0].toFloat(), hs.pos[1].toFloat()), hs.size, hs.fuelStorage, hs.rotation, true))
 
         val sd = levelData.ship
         data.ship.reset(Vector2(sd.pos[0].toFloat(), sd.pos[1].toFloat()), sd.fuel, Vector2(sd.velocity[0].toFloat(), sd.velocity[1].toFloat()))

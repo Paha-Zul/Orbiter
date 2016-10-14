@@ -37,7 +37,7 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotat
         sprite = Sprite(MyGame.manager["station", Texture::class.java])
         sprite.setSize(radius*2f, radius*2f)
         sprite.setPosition(position.x - radius, position.y - radius)
-        sprite.setOrigin(radius/2f, radius/2f)
+        sprite.setOrigin(radius.toFloat(), radius.toFloat())
         sprite.rotation = rotation
 
         EventSystem.onEvent("hit_station", { args ->

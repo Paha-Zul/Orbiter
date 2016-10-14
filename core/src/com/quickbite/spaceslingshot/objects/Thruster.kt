@@ -69,7 +69,6 @@ class Thruster(var burnForce:Float, var fuelBurnedPerTick:Float, val burnDirecti
         if(burnAmount > fuel)
             burnTime = (fuel/fuelBurnedPerTick).toInt()
 
-
         return burnValue
     }
 

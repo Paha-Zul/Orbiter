@@ -51,8 +51,8 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
     val thrusters:Array<Thruster> = arrayOf(
             Thruster(0.01f, 0.1f, Vector2(1f, 0f), ShipLocation.Rear, 0f),
-            Thruster(0.005f, 0.1f, Vector2(0f, -1f), ShipLocation.Left, 90f),
-            Thruster(0.005f, 0.1f, Vector2(0f, 1f), ShipLocation.Right, -90f)
+            Thruster(0.005f, 0.1f, Vector2(0f, -1f), ShipLocation.Left, -90f),
+            Thruster(0.005f, 0.1f, Vector2(0f, 1f), ShipLocation.Right, 90f)
     )
 
     val burnHandles:Array<BurnHandle> = arrayOf(
@@ -489,12 +489,24 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         this.thrusters.forEachIndexed { i, thruster ->
             thruster.setBurnForceAndPerTick(thrustersToCopy[i].burnForce, thrustersToCopy[i].fuelBurnedPerTick)
             thruster.burnTime = thrustersToCopy[i].burnTime
-            thruster.setDoubleBurn(thrustersToCopy[i].doubleBurn, fuel)
+            thruster.doubleBurn = thrusters[i].doubleBurn
+//            thruster.setDoubleBurn(thrustersToCopy[i].doubleBurn, fuel)  This causes the double burn to be applied twice
         }
     }
 
     private fun getThruster(shipLocation: ShipLocation):Thruster{
-        return thrusters.filter { it.location == shipLocation }[0]
+        val thruster:Thruster
+
+        //We do this because we want to flip left/right
+        when(shipLocation){
+            ShipLocation.Rear -> thruster = thrusters.filter { it.location == ShipLocation.Rear }[0]
+            ShipLocation.Left -> thruster = thrusters.filter { it.location == ShipLocation.Right }[0] //Get the opposite
+            ShipLocation.Right -> thruster = thrusters.filter { it.location == ShipLocation.Left }[0] //Get the opposite
+            else -> thruster = thrusters.filter { it.location == ShipLocation.Rear }[0]
+        }
+
+//        return thrusters.filter { it.location == shipLocation }[0]
+        return thruster
     }
 
     private fun getBurnHandle(shipLocation: ShipLocation):BurnHandle{
@@ -541,7 +553,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
         val burnHandlePosition = Vector2()
         val burnHandleBasePosition = Vector2()
-        lateinit var burnHandle:Sprite
+        var burnHandle:Sprite
 
         init{
             burnHandle = Sprite(normalBurnTexture)

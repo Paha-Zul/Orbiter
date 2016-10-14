@@ -5,10 +5,13 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
+import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.screens.GameScreen
@@ -30,9 +33,11 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable{
     lateinit var retryButton:TextButton
     lateinit var nextLevelButton:TextButton
 
-    lateinit var bottomPauseButton:TextButton
-    lateinit var relocateShipButton:Button
-    lateinit var bottomTable:Table
+    var bottomPauseText:Label
+
+    var bottomPauseButton:ProgressBar
+    var relocateShipButton:Button
+    var bottomTable:Table
 
     init{
         bottomTable = Table()
@@ -46,12 +51,26 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable{
         buttonStyle.fontColor = Color.BLACK
         buttonStyle.up = TextureRegionDrawable(TextureRegion(GH.createPixel(Color.WHITE), MyGame.viewport.worldWidth.toInt(), 100))
 
-        bottomPauseButton = TextButton("Resume", buttonStyle)
-        bottomPauseButton.label.setFontScale(0.2f)
+        val progressBarStyle = ProgressBar.ProgressBarStyle()
+        progressBarStyle.knobBefore = TextureRegionDrawable(TextureRegion(GH.createPixel(Color.WHITE, 1, 40)))
+
+        val stack = Stack()
+
+        bottomPauseText = Label("Paused", Label.LabelStyle(MyGame.font, Color.BLACK))
+        bottomPauseText.setSize(40f, 400f)
+        bottomPauseText.setFontScale(0.2f)
+        bottomPauseText.setAlignment(Align.center)
+
+        bottomPauseButton = ProgressBar(0f, 100f, 0.1f, false, progressBarStyle)
+        bottomPauseButton.setSize(40f, 400f)
+//        bottomPauseButton.label.setFontScale(0.2f)
+
+        stack.add(bottomPauseButton)
+        stack.add(bottomPauseText)
 
         relocateShipButton = Button(imageButtonStyle)
 
-        bottomTable.add(bottomPauseButton).height(40f).width(400f)
+        bottomTable.add(stack).height(40f).width(400f)
         bottomTable.add(relocateShipButton).size(40f).padLeft(20f).padRight(20f).fillX()
         bottomTable.bottom()
         bottomTable.width = 480f
@@ -61,12 +80,12 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable{
         mainMenuButton.setSize(50f, 50f)
         mainMenuButton.setPosition(0f, MyGame.UIViewport.worldHeight - mainMenuButton.height)
 
-        bottomPauseButton.addListener(object:ChangeListener(){
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
+        bottomPauseText.addListener(object:ClickListener(){
+            override fun clicked(event: InputEvent?, x: Float, y: Float) {
                 gameScreen.toggleGamePause()
                 when(GameScreen.paused){
-                    true -> bottomPauseButton.setText("Resume")
-                    false -> bottomPauseButton.setText("Pause")
+                    true -> bottomPauseText.setText("Resume")
+                    false -> bottomPauseText.setText("Pause")
                 }
             }
         })

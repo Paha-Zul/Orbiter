@@ -120,10 +120,11 @@
       }
     ],
     "homeStation":{
-      "pos": [240, 650],
+      "pos": [240, 750],
       "size": 75,
       "fuelStorage": 100,
-      "homeStation": true
+      "homeStation": true,
+      "rotation": 270
     },
     "obstacles":[
 

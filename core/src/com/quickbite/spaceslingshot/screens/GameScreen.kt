@@ -22,6 +22,7 @@ import com.quickbite.spaceslingshot.util.*
 
 /**
  * Created by Paha on 8/7/2016.
+ * Handles the Game Screen functionality.
  */
 class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = false) : Screen {
     val data = GameScreenData()
@@ -130,6 +131,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
             gui.fuelBar.setAmounts(data.ship.fuel, data.ship.fuelTaken)
 
             if(GameScreen.finished){
+                endlessGame?.reset()
                 gui.showGameOver(lost)
                 setGamePaused(true)
             }
@@ -141,6 +143,8 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
                 setGamePaused(false)
 //            lineDrawer.setStartAndEnd(data.ship.burnBallBasePosition, data.ship.burnHandleLocation)
         }
+
+        gui.bottomPauseButton.value = pauseLimit
     }
 
     private fun doPhysicsStep(deltaTime: Float) {
@@ -255,7 +259,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         GameScreen.lost = false
         GameScreen.finished = false
 
-        val success = GameLevels.loadLevel(data.currLevel, data)
+        val success = loadLevel(data.currLevel)
         runPredictor()
         gui.fuelBar.setAmounts(data.ship.fuel, 0f, data.ship.fuel)
         return success
@@ -265,10 +269,17 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         GameScreen.lost = false
         GameScreen.finished = false
 
-        val success = GameLevels.loadLevel(level, data)
-        data.currLevel = level
-        runPredictor()
-        gui.fuelBar.setAmounts(data.ship.fuel, 0f, data.ship.fuel)
+        val success:Boolean
+        if(endlessGame == null) {
+            success = GameLevels.loadLevel(level, data)
+            data.currLevel = level
+            runPredictor()
+            gui.fuelBar.setAmounts(data.ship.fuel, 0f, data.ship.fuel)
+        }else{
+            endlessGame.reset()
+            success = true
+        }
+
         return success
     }
 
@@ -296,7 +307,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
         if(paused) {
             runPredictor()
-            gui.bottomPauseButton.setText("Resume")
+            gui.bottomPauseText.setText("Resume")
 //            pauseAllPhysicsExceptPredictorShip()
 //            data.obstacleList.forEach { o ->  }
         }else{
@@ -334,9 +345,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
     override fun dispose() {
         gui.dispose()
-        data.obstacleList.clear()
-        data.planetList.forEach { p -> p.dispose() }
-        data.asteroidList.forEach { a -> a.dispose() }
+        data.reset()
         data.ship.dispose()
 //        Predictor.dispose()
     }

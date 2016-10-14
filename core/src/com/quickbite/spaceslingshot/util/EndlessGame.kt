@@ -3,6 +3,7 @@ package com.quickbite.spaceslingshot.util
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.QueryCallback
+import com.badlogic.gdx.utils.Disposable
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.data.GameScreenData
 import com.quickbite.spaceslingshot.data.ProceduralPlanetTextureGenerator
@@ -14,7 +15,7 @@ import com.quickbite.spaceslingshot.objects.SpaceStation
  * Created by Paha on 9/13/2016.
  * Handles the Endless Game type. Generates the planets/asteroids/obstacles/stations for the players to try and beat.
  */
-class EndlessGame(val data:GameScreenData) : IUpdateable{
+class EndlessGame(val data:GameScreenData) : IUpdateable, Disposable{
     var randDist = Pair(200f, 400f)
     var randSize = Pair(25, 75)
     var randGravity = Pair(50f, 200f)
@@ -27,13 +28,14 @@ class EndlessGame(val data:GameScreenData) : IUpdateable{
     var hitObject = false
 
     fun start(){
+        MyGame.camera.position.set(MyGame.camera.viewportWidth/2f, 0f, 0f)
+
         val planet = Planet(Vector2(MyGame.camera.position.x, MyGame.camera.position.y - 100f), 50, 75f, 0.1f, 0f,
                 ProceduralPlanetTextureGenerator.getNextTexture(), false)
 
         data.planetList.add(planet)
-        nextPosition.set(MyGame.camera.position.x, MyGame.camera.position.y - 100f)
-        nextStationPosition.set(0f, nextStationPosition.y +  MathUtils.random(randStationDist.first, randStationDist.second))
-
+        nextPosition.set(MyGame.camera.position.x, MyGame.camera.viewportHeight/2f - 100f)
+        nextStationPosition.set(0f, MyGame.camera.viewportHeight/2f  +  MathUtils.random(randStationDist.first, randStationDist.second))
 
         data.ship.setPosition(MyGame.camera.position.x, MyGame.camera.position.y - MyGame.camera.viewportHeight/2f)
         data.ship.setAllFuel(50f)
@@ -112,5 +114,14 @@ class EndlessGame(val data:GameScreenData) : IUpdateable{
         data.stationList.add(station)
 
         nextStationPosition.set(0f, nextStationPosition.y + MathUtils.random(randStationDist.first, randStationDist.second))
+    }
+
+    fun reset(){
+        data.reset()
+        start()
+    }
+
+    override fun dispose() {
+
     }
 }

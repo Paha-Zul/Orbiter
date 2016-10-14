@@ -9,4 +9,5 @@ class JsonStationData(){
     var size:Int = 0
     var fuelStorage:Float = 0f
     var homeStation = false
+    var rotation = 0f
 }

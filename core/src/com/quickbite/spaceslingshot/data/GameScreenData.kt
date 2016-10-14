@@ -14,4 +14,18 @@ class GameScreenData{
     val asteroidSpawnerList: Array<AsteroidSpawner> = Array()
     val asteroidList: Array<Asteroid> = Array()
     val stationList: Array<SpaceStation> = Array()
+
+    fun reset(){
+        planetList.forEach { it.dispose() }
+        obstacleList.forEach { it.dispose() }
+        asteroidSpawnerList.forEach { it.dispose() }
+        asteroidList.forEach { it.dispose() }
+        stationList.forEach { it.dispose() }
+
+        planetList.clear()
+        obstacleList.clear()
+        asteroidSpawnerList.clear()
+        asteroidList.clear()
+        stationList.clear()
+    }
 }
