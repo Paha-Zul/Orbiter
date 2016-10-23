@@ -77,6 +77,8 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     private val thrustFirePositionPercent = Vector2(0.68f, 0f)
 
     init{
+        this.createBody()
+
         if(!testShip) {
             sprite = Sprite(MyGame.manager["spaceship", Texture::class.java])
             sprite.setSize(shipHeight, shipWidth)
@@ -159,8 +161,6 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
             }, this.uniqueID)
         }
-
-        this.createBody()
     }
 
     //Empty constructor
@@ -179,9 +179,6 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     }
 
     override fun draw(batch: SpriteBatch) {
-        sprite.draw(batch)
-
-        drawThrusters(batch)
 
         //Adjust all sprites
         if(!testShip) {
@@ -189,6 +186,9 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
             ring.setPosition(position.x - ringRadius, position.y - ringRadius)
             burnHandles.forEach(BurnHandle::setPosition)
         }
+
+        sprite.draw(batch)
+        drawThrusters(batch)
     }
 
     fun setAllFuel(fuel:Float, maxFuel:Float = fuel){
@@ -255,6 +255,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
      */
     fun setShipRotation(rotation:Float, rotationOffset:Float = 0f){
         this.rotation = rotation + rotationOffset
+        this.body.setTransform(position.x*Constants.BOX2D_SCALE, position.y*Constants.BOX2D_SCALE, rotation*MathUtils.degreesToRadians)
         if(!testShip) {
             sprite.rotation = this.rotation
             burnHandles.forEach { handle -> handle.burnHandle.rotation = this.rotation + handle.rotationOffset }
@@ -419,9 +420,10 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     fun reset(position:Vector2, fuel:Float, initialVelocity:Vector2){
         this.position.set(position.x, position.y)
         this.fuel = fuel
-        this.setDoubleBurn(false, ShipLocation.Rear)
-        this.setDoubleBurn(false, ShipLocation.Left)
-        this.setDoubleBurn(false, ShipLocation.Right)
+        this.thrusters.forEach { thruster ->
+            thruster.reset()
+            thruster.setDoubleBurn(false ,this.fuel)
+        }
         this.setShipRotation(0f)
         this.body.setTransform(Vector2(position.x*Constants.BOX2D_SCALE, position.y*Constants.BOX2D_SCALE), 0f)
         this.body.setLinearVelocity(initialVelocity.x*Constants.VELOCITY_SCALE, initialVelocity.y*Constants.VELOCITY_SCALE)
@@ -453,17 +455,16 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
         //Create the main circle on the body.
         val mainFixture = FixtureDef()
-        val circle = CircleShape()
+        val shape = PolygonShape()
 
-        circle.position = Vector2(0f, 0f)
-        circle.radius = 2* Constants.BOX2D_SCALE
+        shape.setAsBox((shipWidth/2f)*Constants.BOX2D_SCALE, (shipHeight/2f)*Constants.BOX2D_SCALE)
 
-        mainFixture.shape = circle
+        mainFixture.shape = shape
         if(testShip) mainFixture.isSensor = true
 
         this.body.createFixture(mainFixture)
 
-        circle.dispose()
+        shape.dispose()
 
         this.body.userData = BodyData(BodyData.ObjectType.Ship, this.uniqueID, this)
     }
@@ -569,6 +570,10 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
         fun draw(batch: SpriteBatch){
             burnHandle.draw(batch)
+        }
+
+        fun reset(){
+            burnHandlePosition.set(0f, 0f)
         }
     }
 }

@@ -79,4 +79,8 @@ class Thruster(var burnForce:Float, var fuelBurnedPerTick:Float, val burnDirecti
         this.burnForce = force
         this.fuelBurnedPerTick = amount
     }
+
+    fun reset(){
+        burnTime = 0
+    }
 }

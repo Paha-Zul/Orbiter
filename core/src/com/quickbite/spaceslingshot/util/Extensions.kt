@@ -23,3 +23,6 @@ fun Color.set(r:Int, g:Int, b:Int, a:Int){
 fun Color.set(r:Int, g:Int, b:Int){
     this.set(r, g, b, 255)
 }
+
+fun Double.format(digits: Int):String = java.lang.String.format("%.${digits}f", this)
+fun Float.format(digits: Int):String = java.lang.String.format("%.${digits}f", this)

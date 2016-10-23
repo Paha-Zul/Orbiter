@@ -27,11 +27,13 @@ import com.quickbite.spaceslingshot.util.*
 class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = false) : Screen {
     val data = GameScreenData()
     lateinit var gui:GameScreenGUI
-    val lineDrawer = LineDraw()
+    val predictorLineDrawer = LineDraw(Vector2(), Vector2(), GH.createPixel(Color.WHITE))
+    lateinit var thrusterLineDrawers:List<LineDraw>
 
     lateinit var points:List<Vector2>
 
     lateinit var starryBackground: TextureRegion
+    lateinit var starryBackgroundStretched: TextureRegion
 
     var physicsAccumulator = 0f
     var updateAccumulator = 0f
@@ -39,12 +41,17 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     var pauseLimit = 100f
     var pauseAmtPerTick = 0.1f
 
-    val endlessGame:EndlessGame? = if(endlessGame) EndlessGame(data) else null
+    val endlessGame:EndlessGame? = if(endlessGame) EndlessGame(this) else null
 
     companion object{
         var finished = false
         var lost = false
         var paused = true
+
+        fun setGameOver(lost:Boolean){
+            finished = true
+            GameScreen.lost = lost
+        }
 
         fun applyGravity(planet:Planet, ship:Ship){
             val dst = planet.position.dst(ship.position)
@@ -69,7 +76,10 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat)
 
         starryBackground = TextureRegion(background)
-        starryBackground.setRegion(0,0,480, 800)
+        starryBackground.setRegion(0, 0, 480, 800)
+
+//        starryBackgroundStretched = TextureRegion(background, 240, 400)
+//        starryBackgroundStretched.setRegion(0, 0, 480, 800)
 
         if(levelToLoad != -1)
             loadLevel(levelToLoad)
@@ -79,6 +89,14 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         this.gui.fuelBar.setAmounts(data.ship.fuel, 0f, data.ship.fuel)
 
         runPredictor()
+
+        val list:MutableList<LineDraw> = mutableListOf()
+        data.ship.burnHandles.forEach { handle ->
+            list += LineDraw(Vector2(), Vector2(), MyGame.manager["dash", Texture::class.java])
+        }
+
+        thrusterLineDrawers = list.toList()
+        predictorLineDrawer.size = 3
 
 //        data.asteroidSpawnerList.add(AsteroidSpawner(Vector2(100f, 100f), Vector2(1f, 0f), Pair(1f, 5f), Pair(1f, 2f), data))
     }
@@ -112,6 +130,8 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
         //Not pausePhysics update...
         if(!paused) {
+            data.levelTimer += delta
+
             pauseLimit = Math.min(pauseLimit + pauseAmtPerTick, 100f)
 
 //            runPredictor()
@@ -131,20 +151,26 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
             gui.fuelBar.setAmounts(data.ship.fuel, data.ship.fuelTaken)
 
             if(GameScreen.finished){
-                endlessGame?.reset()
                 gui.showGameOver(lost)
                 setGamePaused(true)
             }
+
 
         //Paused update...
         }else{
             pauseLimit -= pauseAmtPerTick
             if(pauseLimit <= 0)
                 setGamePaused(false)
-//            lineDrawer.setStartAndEnd(data.ship.burnBallBasePosition, data.ship.burnHandleLocation)
+
+            thrusterLineDrawers.forEachIndexed { i, drawer ->
+                val handle = data.ship.burnHandles[i]
+                drawer.setStartAndEnd(handle.burnHandleBasePosition, handle.burnHandlePosition)
+            }
+//            predictorLineDrawer.setStartAndEnd(data.ship.burnBallBasePosition, data.ship.burnHandleLocation)
         }
 
         gui.bottomPauseButton.value = pauseLimit
+        gui.update(delta)
     }
 
     private fun doPhysicsStep(deltaTime: Float) {
@@ -167,8 +193,12 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         batch.draw(starryBackground, MyGame.camera.position.x - MyGame.camera.viewportWidth/2f, MyGame.camera.position.y- MyGame.camera.viewportHeight/2f,
                 MyGame.camera.viewportWidth, MyGame.camera.viewportHeight)
 
-        if(paused)
-            lineDrawer.draw(batch)
+//        batch.draw(starryBackgroundStretched, MyGame.camera.position.x - MyGame.camera.viewportWidth/2f, MyGame.camera.position.y- MyGame.camera.viewportHeight/2f,
+//                MyGame.camera.viewportWidth, MyGame.camera.viewportHeight)
+
+        if(paused) {
+            thrusterLineDrawers.forEach { drawer -> drawer.draw(batch) }
+        }
 
         //Draw planets
         data.planetList.forEach { obj -> obj.draw(batch)}
@@ -187,6 +217,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         if(paused)
             data.ship.drawHandles(batch)
 
+        predictorLineDrawer.draw(batch)
 
         batch.end()
 
@@ -195,7 +226,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         renderer.begin(ShapeRenderer.ShapeType.Filled)
 
 //        drawCenters()
-        drawPrediction(MyGame.shapeRenderer)
+//        drawPrediction(MyGame.shapeRenderer)
 
         renderer.end()
 
@@ -256,8 +287,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     }
 
     fun reloadLevel():Boolean{
-        GameScreen.lost = false
-        GameScreen.finished = false
+        reset()
 
         val success = loadLevel(data.currLevel)
         runPredictor()
@@ -266,8 +296,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     }
 
     fun loadLevel(level:Int):Boolean{
-        GameScreen.lost = false
-        GameScreen.finished = false
+        reset()
 
         val success:Boolean
         if(endlessGame == null) {
@@ -284,8 +313,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     }
 
     fun loadNextLevel():Boolean{
-        GameScreen.lost = false
-        GameScreen.finished = false
+        reset()
 
         val success = GameLevels.loadLevel(++data.currLevel, data)
         runPredictor()
@@ -293,9 +321,17 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         return success
     }
 
+    private fun reset(){
+        GameScreen.lost = false
+        GameScreen.finished = false
+        pauseLimit = 100f
+        endlessGame?.reset()
+    }
+
     fun runPredictor(){
         Predictor.runPrediction(data.ship, {pauseAllPhysicsExceptPredictorShip()}, {resumeAllPhysicsExceptPredictorShip()}, {doPhysicsStep(Constants.PHYSICS_TIME_STEP)})
         points = Predictor.pointsList
+        predictorLineDrawer.setPoints(points)
     }
 
     fun toggleGamePause(){
@@ -337,6 +373,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         val diff = Vector2(x - MyGame.camera.position.x, MyGame.camera.position.y - y)
         MyGame.camera.position.set(x, y, 0f)
         starryBackground.scroll(diff.x/MyGame.camera.viewportWidth, diff.y/MyGame.camera.viewportHeight)
+//        starryBackgroundStretched.scroll((diff.x*1.5f)/MyGame.camera.viewportWidth, (diff.y*1.5f)/MyGame.camera.viewportHeight)
     }
 
     override fun resume() {

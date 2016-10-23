@@ -14,16 +14,22 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
 import com.quickbite.spaceslingshot.MyGame
+import com.quickbite.spaceslingshot.interfaces.IUpdateable
 import com.quickbite.spaceslingshot.screens.GameScreen
 import com.quickbite.spaceslingshot.screens.MainMenuScreen
 import com.quickbite.spaceslingshot.util.GH
+import com.quickbite.spaceslingshot.util.format
 
 /**
  * Created by Paha on 8/7/2016.
  */
-class GameScreenGUI(val gameScreen: GameScreen) : Disposable{
+class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
     val fuelTable = Table()
+
     lateinit var fuelBar:CustomBar
+    lateinit var fuelText:Label
+    lateinit var levelTimerText:Label
+    lateinit var scoreLabel:Label
 
     /* Game Over Stuff */
     val gameOverTable = Table()
@@ -34,8 +40,8 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable{
     lateinit var nextLevelButton:TextButton
 
     var bottomPauseText:Label
-
     var bottomPauseButton:ProgressBar
+
     var relocateShipButton:Button
     var bottomTable:Table
 
@@ -54,19 +60,16 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable{
         val progressBarStyle = ProgressBar.ProgressBarStyle()
         progressBarStyle.knobBefore = TextureRegionDrawable(TextureRegion(GH.createPixel(Color.WHITE, 1, 40)))
 
-        val stack = Stack()
-
         bottomPauseText = Label("Paused", Label.LabelStyle(MyGame.font, Color.BLACK))
-        bottomPauseText.setSize(40f, 400f)
+        bottomPauseText.setSize(40f, 40f)
         bottomPauseText.setFontScale(0.2f)
         bottomPauseText.setAlignment(Align.center)
+//        bottomPauseText.style.background = TextureRegionDrawable(TextureRegion(GH.createPixel(Color.WHITE, 1, 40)))
 
         bottomPauseButton = ProgressBar(0f, 100f, 0.1f, false, progressBarStyle)
         bottomPauseButton.setSize(40f, 400f)
-//        bottomPauseButton.label.setFontScale(0.2f)
 
-        stack.add(bottomPauseButton)
-        stack.add(bottomPauseText)
+        val stack = Stack(bottomPauseButton, bottomPauseText)
 
         relocateShipButton = Button(imageButtonStyle)
 
@@ -111,12 +114,23 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable{
     }
 
     private fun makeTopInfo(){
+        fuelText = Label("Fuel: ", Label.LabelStyle(MyGame.font, Color.WHITE))
+        fuelText.setFontScale(0.2f)
+        fuelText.setAlignment(Align.center)
+
+        levelTimerText = Label("Time: ", Label.LabelStyle(MyGame.font, Color.WHITE))
+        levelTimerText.setFontScale(0.2f)
+        levelTimerText.setAlignment(Align.center)
+
         val background = NinePatchDrawable(NinePatch(MyGame.manager["box", Texture::class.java], 10, 10, 10, 10))
         fuelBar = CustomBar(gameScreen.data.ship.fuel, 0f, gameScreen.data.ship.fuel, background, TextureRegionDrawable(TextureRegion(GH.createPixel(Color.WHITE))))
 
         fuelTable.setFillParent(true)
-        fuelTable.add(fuelBar).top().size(100f, 25f)
         fuelTable.padTop(20f)
+        fuelTable.add(fuelText)
+        fuelTable.add(fuelBar).size(100f, 25f)
+        fuelTable.row()
+        fuelTable.add(levelTimerText).colspan(2)
         fuelTable.top()
 
         MyGame.stage.addActor(fuelTable)
@@ -205,5 +219,13 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable{
 
     override fun dispose() {
         MyGame.stage.clear()
+    }
+
+    override fun update(delta: Float) {
+        this.levelTimerText.setText("Time: ${gameScreen.data.levelTimer.format(2)}")
+    }
+
+    override fun fixedUpdate() {
+        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

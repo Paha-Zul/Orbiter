@@ -7,7 +7,11 @@ import com.quickbite.spaceslingshot.objects.*
  * Created by Paha on 8/6/2016.
  */
 class GameScreenData{
+
+    var currPlanetScore = 0
+    var levelTimer = 0f
     var currLevel = 0
+
     lateinit var ship: Ship
     val planetList: Array<Planet> = Array()
     val obstacleList: Array<Obstacle> = Array()

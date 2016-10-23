@@ -27,6 +27,7 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
     val mainMenuTable:Table = Table()
 
     init{
+
         buildMainMenu()
         showMainMenu()
     }
@@ -38,27 +39,28 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         buttonStyle.font = MyGame.font
         buttonStyle.fontColor = Color.WHITE
         buttonStyle.disabledFontColor = Color(0.5f, 0.5f, 0.5f, 0.75f)
+        buttonStyle.up = TextureRegionDrawable(TextureRegion(MyGame.manager["UIButton", Texture::class.java]))
 
         val titleLabel = Label("Orbiter", labelStyle)
         titleLabel.setFontScale(0.8f)
 
         val playButton = TextButton("Play", buttonStyle)
-        playButton.label.setFontScale(0.4f)
+        playButton.label.setFontScale(0.2f)
 
         val editorButton = TextButton("Editor", buttonStyle)
-        editorButton.label.setFontScale(0.4f)
+        editorButton.label.setFontScale(0.2f)
         editorButton.isDisabled = true
 
         val quitButton = TextButton("Quit", buttonStyle)
-        quitButton.label.setFontScale(0.4f)
+        quitButton.label.setFontScale(0.2f)
 
         mainMenuTable.add(titleLabel).spaceBottom(100f)
         mainMenuTable.row()
-        mainMenuTable.add(playButton)
+        mainMenuTable.add(playButton).size(128f, 64f).spaceBottom(20f)
         mainMenuTable.row()
-        mainMenuTable.add(editorButton)
+        mainMenuTable.add(editorButton).size(128f, 64f).spaceBottom(20f)
         mainMenuTable.row()
-        mainMenuTable.add(quitButton)
+        mainMenuTable.add(quitButton).size(128f, 64f)
 
         playButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
