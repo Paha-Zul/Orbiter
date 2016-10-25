@@ -10,7 +10,7 @@ import com.quickbite.spaceslingshot.objects.Ship
 object Predictor : Disposable{
     private val predictorShip = Ship(Vector2(0f,0f), 0f, Vector2(0f, 0f), true)
     val steps = 300
-    val stepSize = 10
+    val stepSize = 1
 
     private val points: Array<Vector2> = Array(steps/stepSize, { Vector2() })
 
@@ -21,11 +21,6 @@ object Predictor : Disposable{
         predictorShip.reset(Vector2(ship.position), ship.fuel, Vector2(ship.velocity))
         predictorShip.setShipRotation(ship.rotation)
         predictorShip.copyThrusters(ship.thrusters)
-
-//        pausePhysics()
-//        predictorShip.setPosition(0f, -500f)
-//        physicsStep()
-//        predictorShip.setPosition(ship.position.x, ship.position.y)
 
         pausePhysics()
         for(i in 0..steps-1){

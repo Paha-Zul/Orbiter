@@ -26,6 +26,11 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
 
     val mainMenuTable:Table = Table()
 
+    val buttonUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("button"))
+    val buttonDown = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("button_down"))
+    val boxUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("levelButton"))
+    val boxDown = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("levelButton_down"))
+
     init{
 
         buildMainMenu()
@@ -39,7 +44,9 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         buttonStyle.font = MyGame.font
         buttonStyle.fontColor = Color.WHITE
         buttonStyle.disabledFontColor = Color(0.5f, 0.5f, 0.5f, 0.75f)
-        buttonStyle.up = TextureRegionDrawable(TextureRegion(MyGame.manager["UIButton", Texture::class.java]))
+        buttonStyle.up = buttonUp
+        buttonStyle.over = buttonDown
+        buttonStyle.down = buttonDown
 
         val titleLabel = Label("Orbiter", labelStyle)
         titleLabel.setFontScale(0.8f)
@@ -96,21 +103,24 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
 
         val textButtonStyle = TextButton.TextButtonStyle()
         textButtonStyle.font = MyGame.font
+        textButtonStyle.up = buttonUp
+        textButtonStyle.over = buttonDown
+        textButtonStyle.down = buttonDown
 
         val levelsButton = TextButton("Levels", textButtonStyle)
-        levelsButton.label.setFontScale(0.4f)
+        levelsButton.label.setFontScale(0.2f)
 
         val endless = TextButton("Endless", textButtonStyle)
-        endless.label.setFontScale(0.4f)
+        endless.label.setFontScale(0.2f)
 
         val backButton = TextButton("Back", textButtonStyle)
-        backButton.label.setFontScale(0.4f)
+        backButton.label.setFontScale(0.2f)
 
-        buttonTable.add(levelsButton)
+        buttonTable.add(levelsButton).size(128f, 64f).spaceBottom(40f) //.padTop(270f)
         buttonTable.row()
-        buttonTable.add(endless)
+        buttonTable.add(endless).size(128f, 64f).spaceBottom(40f)
         buttonTable.row()
-        buttonTable.add(backButton)
+        buttonTable.add(backButton).size(128f, 64f)
 
         levelsButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -139,22 +149,30 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
 
     fun showLevels(){
         MyGame.stage.clear()
+        levelsTable.clear()
 
         val buttonTable = Table()
 
         val background = TextureRegionDrawable(TextureRegion(MyGame.manager["box", Texture::class.java]))
 
+
+
         val boxTextButtonStyle = TextButton.TextButtonStyle()
         boxTextButtonStyle.font = MyGame.font
         boxTextButtonStyle.fontColor = Color.WHITE
-        boxTextButtonStyle.up = background
+        boxTextButtonStyle.up = boxUp
+        boxTextButtonStyle.over = boxDown
+        boxTextButtonStyle.down = boxDown
 
         val textButtonStyle = TextButton.TextButtonStyle()
         textButtonStyle.font = MyGame.font
         textButtonStyle.fontColor = Color.WHITE
+        textButtonStyle.up = buttonUp
+        textButtonStyle.over = buttonDown
+        textButtonStyle.down = buttonDown
 
         val backButton = TextButton("Back", textButtonStyle)
-        backButton.label.setFontScale(0.4f)
+        backButton.label.setFontScale(0.2f)
 
         val buttonSize = 64
         val offsets:Padding = Padding(10, 10, 10, 10)
@@ -170,7 +188,7 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
 
         for(i in 1..numButtons){
             val level = i-1
-            val levelButton = TextButton("$level", boxTextButtonStyle)
+            val levelButton = TextButton("${level+1}", boxTextButtonStyle)
             levelButton.label.setFontScale(0.2f)
             levelButton.label.setAlignment(Align.center)
 
@@ -192,9 +210,9 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
             }
         })
 
-        levelsTable.add(buttonTable)
+        levelsTable.add(buttonTable).spaceBottom(20f)
         levelsTable.row()
-        levelsTable.add(backButton)
+        levelsTable.add(backButton).size(128f, 64f)
         levelsTable.setFillParent(true)
         MyGame.stage.addActor(levelsTable)
     }

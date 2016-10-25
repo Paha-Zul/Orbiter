@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -32,10 +33,13 @@ public class MyGame extends Game {
 	public static ShaderProgram shaderProgram;
 	public static EasyAssetManager manager;
 	public static World world;
+
+	public static TextureAtlas GUIAtlas;
 //	public static World testWorld;
 	public static Box2DDebugRenderer debugRenderer;
 
 	private static ExecutorService threadPool;
+
 
 	@Override
 	public void create () {
@@ -72,7 +76,10 @@ public class MyGame extends Game {
 
 		Loader.INSTANCE.loadAllImgs(manager, Gdx.files.internal("img"), false);
 		Loader.INSTANCE.loadMusic(manager, Gdx.files.internal("music"));
+		Loader.INSTANCE.loadAtlas(manager, Gdx.files.internal("atlas"), false);
         manager.finishLoading();
+
+		MyGame.GUIAtlas = manager.get("GUI", TextureAtlas.class);
 
 		int cores = Runtime.getRuntime().availableProcessors();
 		if(cores > 1){

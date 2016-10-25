@@ -5,6 +5,7 @@ import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 
 /**
  * Created by Paha on 6/19/2016.
@@ -20,6 +21,16 @@ object Loader {
                 loadAllImgs(manager, file, true)
             else if(file.extension() == "png"){
                 manager.load(file.path(), Texture::class.java, params)
+            }
+        }
+    }
+
+    fun loadAtlas(manager: EasyAssetManager, dir: FileHandle, recursive:Boolean = false){
+        for(file in dir.list()){
+            if(file.isDirectory && recursive)
+                loadAllImgs(manager, file, true)
+            else if(file.extension() == "pack"){
+                manager.load(file.path(), TextureAtlas::class.java)
             }
         }
     }
