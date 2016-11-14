@@ -70,58 +70,31 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotat
 
         EventSystem.onEvent("hit_station", { args ->
             val ship = args[0] as Ship
-//            val angle = MathUtils.atan2(ship.position.y - this.position.y, ship.position.x - this.position.x)
-//            val dockingPos = getDockingPosition()
-//            val angle = MathUtils.atan2(dockingPos.y - this.position.y, dockingPos.x - this.position.x)
-
-            //set the ship position
-//            val x = radius * MathUtils.cos(angle) - MathUtils.sin(angle) //Original X position
-//            val y = radius * MathUtils.sin(angle) +  MathUtils.cos(angle) //Original Y position
-
-//            val x = radius * MathUtils.cos(angle) - MathUtils.sin(angle) //Original X position
-//            val y = radius * MathUtils.sin(angle) +  MathUtils.cos(angle) //Original Y position
 
             //If the ship is a test ship, ignore
             if(ship.testShip) return@onEvent
 
             //If the ship is not docking in the right spot, lose!
+            //TODO Make this an explosion!
             if(!checkCloseToDocking(ship.position, dstToDock)){
                 GameScreen.setGameOver(true)
                 return@onEvent
             }
 
             //If the ship's velocity is too great, lose!
+            //TODO Make this an explosion!
             if(ship.velocity.x > 0.5f || ship.velocity.y > 0.5f){
                 GameScreen.setGameOver(true)
                 return@onEvent
             }
 
-//            //If it is the home station and we didn't go too fast, win!
-//            if(homeStation){
-//                GameScreen.setGameOver(false)
-//                return@onEvent
-//            }
-
-//            ship.setDocking(Vector2(position.x + x, position.y + y), angle*MathUtils.radiansToDegrees, {
-//                if(homeStation){
-//                    GameScreen.setGameOver(false)
-//                }
-//            })
-
+            //If we approached well, set the ship to docking!
             val dockingPos = getDockingPosition()
             ship.setDocking(Vector2(dockingPos.x, dockingPos.y), rotation, {
                 if(homeStation){
                     GameScreen.setGameOver(false)
                 }
             })
-
-            //Otherwise, attach to the station.
-//            ship.setPosition(position.x + x, position.y + y)
-
-            //Set the ship rotation
-//            ship.setShipRotation(angle*MathUtils.radiansToDegrees)
-            ship.setVelocity(0f, 0f)
-            ship.thrusters.forEach { thruster -> thruster.burnTime = 0 }
 
             //Set a timer to refuel
             Timer.schedule(object:Timer.Task(){
