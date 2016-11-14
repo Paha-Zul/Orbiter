@@ -74,7 +74,7 @@ class EndlessGame(val screen:GameScreen) : IUpdateable, Disposable{
         }
     }
 
-    override fun fixedUpdate() {
+    override fun fixedUpdate(delta: Float) {
 
     }
 

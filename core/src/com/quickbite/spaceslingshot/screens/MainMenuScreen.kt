@@ -7,27 +7,28 @@ import com.badlogic.gdx.graphics.Texture
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.data.ProceduralPlanetTextureGenerator
 import com.quickbite.spaceslingshot.guis.MainMenuGUI
-import com.quickbite.spaceslingshot.util.JsonLevelLoader
 
 /**
  * Created by Paha on 8/7/2016.
  */
 class MainMenuScreen(val game:MyGame) :Screen{
-    lateinit var background:Texture
+    val background:Texture = MyGame.manager["mainBackground", Texture::class.java]
+    var music:Music? = null
 
     override fun show() {
         MainMenuGUI(this)
 
-        JsonLevelLoader.loadLevels()
         Gdx.input.inputProcessor = MyGame.stage
 
-        val music = MyGame.manager["Action_In_Orbit", Music::class.java]
-        music.isLooping = true
-        music.play()
+        if(music == null)
+            music = MyGame.manager["Action_In_Orbit", Music::class.java]
+
+        if(!music!!.isPlaying) {
+            music!!.isLooping = true
+            music!!.play()
+        }
 
         ProceduralPlanetTextureGenerator.generatePlanetTexturesFromData()
-
-        background = MyGame.manager["mainBackground", Texture::class.java]
 
         MyGame.camera.position.set(MyGame.camera.viewportWidth/2f, MyGame.camera.viewportHeight/2f, 0f)
     }

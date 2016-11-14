@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
+import com.badlogic.gdx.utils.TimeUtils
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.interfaces.IUpdateable
 import com.quickbite.spaceslingshot.screens.GameScreen
@@ -39,17 +40,19 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
     lateinit var retryButton:TextButton
     lateinit var nextLevelButton:TextButton
 
-    var bottomPauseText:Label
-    var bottomPauseButton:ProgressBar
+    lateinit var bottomPauseText:Label
+    lateinit var bottomPauseButton:ProgressBar
 
-    var relocateShipButton:Button
+    lateinit var relocateShipButton:Button
     var bottomTable:Table
+
+    val buttonUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("button"))
+    val buttonDown = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("button_down"))
+    val boxUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("levelButton"))
+    val boxDown = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("levelButton_down"))
 
     init{
         bottomTable = Table()
-
-        val imageButtonStyle = Button.ButtonStyle()
-        imageButtonStyle.up = TextureRegionDrawable(TextureRegion(MyGame.manager["relocateButton", Texture::class.java]))
 
         //Need a bottom bar
         val buttonStyle = TextButton.TextButtonStyle()
@@ -57,31 +60,110 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         buttonStyle.fontColor = Color.BLACK
         buttonStyle.up = TextureRegionDrawable(TextureRegion(GH.createPixel(Color.WHITE), MyGame.viewport.worldWidth.toInt(), 100))
 
-        val progressBarStyle = ProgressBar.ProgressBarStyle()
-        progressBarStyle.knobBefore = TextureRegionDrawable(TextureRegion(GH.createPixel(Color.WHITE, 1, 40)))
+        val mainMenuButtonStyle = ImageButton.ImageButtonStyle()
+        mainMenuButtonStyle.imageUp = TextureRegionDrawable(TextureRegion(MyGame.manager["backButton", Texture::class.java]))
+        mainMenuButtonStyle.up = boxUp
+        mainMenuButtonStyle.over = boxDown
+        mainMenuButtonStyle.down = boxDown
 
-        bottomPauseText = Label("Paused", Label.LabelStyle(MyGame.font, Color.BLACK))
+        val mainMenuButton = ImageButton(mainMenuButtonStyle)
+        mainMenuButton.setSize(50f, 50f)
+        mainMenuButton.setPosition(0f, MyGame.UIViewport.worldHeight - mainMenuButton.height)
+        mainMenuButton.imageCell.size(25f)
+
+        mainMenuButton.addListener(object:ChangeListener(){
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                goToMainMenu()
+            }
+        })
+
+        makeGameOverStuff()
+        makeTopInfo()
+
+        MyGame.stage.addActor(bottomTable)
+        MyGame.stage.addActor(mainMenuButton)
+
+        makePauseButton()
+        makeFuelTable()
+    }
+
+    private fun makeFuelTable(){
+        val mainTable = Table()
+        val backTable = Table()
+        val frontTable = Table()
+
+        val background = NinePatchDrawable(NinePatch(MyGame.manager["box", Texture::class.java], 10, 10, 10, 10))
+        fuelBar = CustomBar(gameScreen.data.ship.fuel, 0f, gameScreen.data.ship.fuel, background, TextureRegionDrawable(TextureRegion(GH.createPixel(Color.WHITE))))
+
+        val fuelLabel = Label("Fuel", Label.LabelStyle(MyGame.font, Color.WHITE))
+        fuelLabel.setFontScale(0.2f)
+
+        backTable.background = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("fuelBarBackground"))
+        backTable.setSize(128f, 64f)
+        backTable.add(fuelBar).size(110f, 32f).bottom().padTop(25f)
+
+        frontTable.background = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("fuelBarOverlay"))
+        frontTable.setSize(128f, 64f)
+        frontTable.add(fuelLabel).top().padBottom(45f)
+
+        val stack = Stack(backTable, frontTable)
+        stack.setSize(128f, 64f)
+        stack.setPosition(MyGame.viewport.worldWidth - 128f, MyGame.viewport.worldHeight - 64f)
+
+        mainTable.add(stack).top().right().size(128f, 64f)
+
+        MyGame.stage.addActor(stack)
+    }
+
+    private fun makePauseButton(){
+        val mainTable = Table()
+        val backTable = Table()
+        val frontTable = Table()
+
+        val imageButtonStyle = Button.ButtonStyle()
+        imageButtonStyle.up = TextureRegionDrawable(TextureRegion(MyGame.manager["relocateButton", Texture::class.java]))
+
+        val progressBarStyle = ProgressBar.ProgressBarStyle()
+        progressBarStyle.knobBefore = TextureRegionDrawable(TextureRegion(GH.createPixel(Color.GREEN, 1, 20)))
+
+        bottomPauseText = Label("Paused", Label.LabelStyle(MyGame.font, Color.WHITE))
         bottomPauseText.setSize(40f, 40f)
         bottomPauseText.setFontScale(0.2f)
         bottomPauseText.setAlignment(Align.center)
 //        bottomPauseText.style.background = TextureRegionDrawable(TextureRegion(GH.createPixel(Color.WHITE, 1, 40)))
 
         bottomPauseButton = ProgressBar(0f, 100f, 0.1f, false, progressBarStyle)
-        bottomPauseButton.setSize(40f, 400f)
+        bottomPauseButton.setSize(400f, 40f)
 
-        val stack = Stack(bottomPauseButton, bottomPauseText)
+//        val pauseStack = Stack(bottomPauseButton, bottomPauseText)
 
         relocateShipButton = Button(imageButtonStyle)
 
-        bottomTable.add(stack).height(40f).width(400f)
-        bottomTable.add(relocateShipButton).size(40f).padLeft(20f).padRight(20f).fillX()
-        bottomTable.bottom()
-        bottomTable.width = 480f
-        bottomTable.setPosition(0f,0f)
+//        bottomTable.add(pauseStack).height(40f).width(400f)
+//        bottomTable.add(relocateShipButton).size(40f).padLeft(20f).padRight(20f).fillX()
+//        bottomTable.bottom()
+//        bottomTable.width = 480f
+//        bottomTable.setPosition(0f,0f)
 
-        val mainMenuButton = ImageButton(TextureRegionDrawable(TextureRegion(MyGame.manager["backButton", Texture::class.java])))
-        mainMenuButton.setSize(50f, 50f)
-        mainMenuButton.setPosition(0f, MyGame.UIViewport.worldHeight - mainMenuButton.height)
+        backTable.background = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("fuelBarBackground"), 10, 10, 10, 10))
+        backTable.setSize(MyGame.viewport.worldWidth - 100f, 20f)
+        backTable.add(bottomPauseButton).size(MyGame.viewport.worldWidth - 120f, 32f).bottom().padTop(25f)
+
+        frontTable.background = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("pauseBarOverlay"), 40, 40, 20, 30))
+        frontTable.setSize(MyGame.viewport.worldWidth - 80f, 64f)
+        frontTable.add(bottomPauseText).top().padBottom(20f)
+
+        val stack = Stack(backTable, frontTable)
+        stack.setSize(MyGame.viewport.worldWidth - 100f, 64f)
+        stack.setPosition(0f, 0f)
+
+        mainTable.add(stack).size(MyGame.viewport.worldWidth - 100f, 64f)
+        mainTable.add().fillX().expandX()
+        mainTable.add(relocateShipButton).size(64f, 64f)
+        mainTable.setPosition(0f, 0f)
+        mainTable.setSize(MyGame.viewport.worldWidth, 64f)
+
+//        mainTable.debugAll()
 
         bottomPauseText.addListener(object:ClickListener(){
             override fun clicked(event: InputEvent?, x: Float, y: Float) {
@@ -100,17 +182,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
             }
         })
 
-        mainMenuButton.addListener(object:ChangeListener(){
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                goToMainMenu()
-            }
-        })
-
-        makeGameOverStuff()
-        makeTopInfo()
-
-        MyGame.stage.addActor(bottomTable)
-        MyGame.stage.addActor(mainMenuButton)
+        MyGame.stage.addActor(mainTable)
     }
 
     private fun makeTopInfo(){
@@ -122,13 +194,9 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         levelTimerText.setFontScale(0.2f)
         levelTimerText.setAlignment(Align.center)
 
-        val background = NinePatchDrawable(NinePatch(MyGame.manager["box", Texture::class.java], 10, 10, 10, 10))
-        fuelBar = CustomBar(gameScreen.data.ship.fuel, 0f, gameScreen.data.ship.fuel, background, TextureRegionDrawable(TextureRegion(GH.createPixel(Color.WHITE))))
-
         fuelTable.setFillParent(true)
         fuelTable.padTop(20f)
         fuelTable.add(fuelText)
-        fuelTable.add(fuelBar).size(100f, 25f)
         fuelTable.row()
         fuelTable.add(levelTimerText).colspan(2)
         fuelTable.top()
@@ -181,8 +249,11 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
     }
 
     private fun goToMainMenu(){
+        val startTime = TimeUtils.millis()
+        System.out.println("Starting to main menu")
         gameScreen.dispose()
         gameScreen.game.screen = MainMenuScreen(gameScreen.game)
+        System.out.println("main menu took ${TimeUtils.millis() - startTime}")
     }
 
     fun showGameOver(failed:Boolean){
@@ -225,7 +296,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         this.levelTimerText.setText("Time: ${gameScreen.data.levelTimer.format(2)}")
     }
 
-    override fun fixedUpdate() {
+    override fun fixedUpdate(delta: Float) {
         throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

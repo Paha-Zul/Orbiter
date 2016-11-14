@@ -51,7 +51,7 @@ class Planet(position: Vector2, radius: Int, _gravityRangeRadius: Float, _densit
         createBody()
     }
 
-    override fun fixedUpdate() {
+    override fun fixedUpdate(delta: Float) {
 
     }
 

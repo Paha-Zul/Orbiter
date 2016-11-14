@@ -5,5 +5,5 @@ package com.quickbite.spaceslingshot.interfaces
  */
 interface IUpdateable {
     fun update(delta:Float)
-    fun fixedUpdate()
+    fun fixedUpdate(delta: Float)
 }

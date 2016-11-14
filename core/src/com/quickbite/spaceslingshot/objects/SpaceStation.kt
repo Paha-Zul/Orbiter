@@ -37,7 +37,6 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotat
         val dockingOffset = Vector2(70f, 0f)
     }
 
-
     override val uniqueID: Long = MathUtils.random(Long.MAX_VALUE)
     override lateinit var body: Body
     override var physicsArePaused: Boolean = false
@@ -71,6 +70,16 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotat
 
         EventSystem.onEvent("hit_station", { args ->
             val ship = args[0] as Ship
+//            val angle = MathUtils.atan2(ship.position.y - this.position.y, ship.position.x - this.position.x)
+//            val dockingPos = getDockingPosition()
+//            val angle = MathUtils.atan2(dockingPos.y - this.position.y, dockingPos.x - this.position.x)
+
+            //set the ship position
+//            val x = radius * MathUtils.cos(angle) - MathUtils.sin(angle) //Original X position
+//            val y = radius * MathUtils.sin(angle) +  MathUtils.cos(angle) //Original Y position
+
+//            val x = radius * MathUtils.cos(angle) - MathUtils.sin(angle) //Original X position
+//            val y = radius * MathUtils.sin(angle) +  MathUtils.cos(angle) //Original Y position
 
             //If the ship is a test ship, ignore
             if(ship.testShip) return@onEvent
@@ -87,23 +96,30 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotat
                 return@onEvent
             }
 
-            //If it is the home station and we didn't go too fast, win!
-            if(homeStation){
-                GameScreen.setGameOver(false)
-                return@onEvent
-            }
+//            //If it is the home station and we didn't go too fast, win!
+//            if(homeStation){
+//                GameScreen.setGameOver(false)
+//                return@onEvent
+//            }
+
+//            ship.setDocking(Vector2(position.x + x, position.y + y), angle*MathUtils.radiansToDegrees, {
+//                if(homeStation){
+//                    GameScreen.setGameOver(false)
+//                }
+//            })
+
+            val dockingPos = getDockingPosition()
+            ship.setDocking(Vector2(dockingPos.x, dockingPos.y), rotation, {
+                if(homeStation){
+                    GameScreen.setGameOver(false)
+                }
+            })
 
             //Otherwise, attach to the station.
-
-            val angle = MathUtils.atan2(ship.position.y - this.position.y, ship.position.x - this.position.x)
-
-            //set the ship position
-            val x = radius * MathUtils.cos(angle) - MathUtils.sin(angle) //Original X position
-            val y = radius * MathUtils.sin(angle) +  MathUtils.cos(angle) //Original Y position
-            ship.setPosition(position.x + x, position.y + y)
+//            ship.setPosition(position.x + x, position.y + y)
 
             //Set the ship rotation
-            ship.setShipRotation(angle*MathUtils.radiansToDegrees)
+//            ship.setShipRotation(angle*MathUtils.radiansToDegrees)
             ship.setVelocity(0f, 0f)
             ship.thrusters.forEach { thruster -> thruster.burnTime = 0 }
 
@@ -177,6 +193,14 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotat
             return true
 
         return false
+    }
+
+    private fun getDockingPosition():Vector2{
+        val angle = rotation*MathUtils.degreesToRadians
+        val x = dockingOffset.x * MathUtils.cos(angle) - dockingOffset.y*MathUtils.sin(angle) //Original X position
+        val y = dockingOffset.x * MathUtils.sin(angle) + dockingOffset.y*MathUtils.cos(angle) //Original Y position
+
+        return Vector2(this.position.x + x, this.position.y + y)
     }
 
     override fun setPhysicsPaused(pausePhysics: Boolean) {

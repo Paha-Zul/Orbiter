@@ -52,7 +52,7 @@ class LineDraw(start:Vector2, end:Vector2, texture:Texture) : IDrawable, IUpdate
 
     }
 
-    override fun fixedUpdate() {
+    override fun fixedUpdate(delta: Float) {
 
     }
 

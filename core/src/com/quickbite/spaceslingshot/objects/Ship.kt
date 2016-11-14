@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.*
@@ -37,6 +38,14 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     override val uniqueID: Long = MathUtils.random(Long.MAX_VALUE)
     override lateinit var body: Body
 
+    private val tmpVector:Vector2 = Vector2()
+
+    //Docking stuff.
+    private lateinit var dockingData:DockingData
+    var docking = false
+    val dockingTime = 2f
+    var dockingElapsed = 0f
+
     private val planetList:LinkedList<Planet> = LinkedList()
 
     private val velocityHolder = Vector2()
@@ -44,10 +53,6 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     var rotation = 0f
     get
     private set
-
-//    private val mainThruster = Thruster(0.01f, 0.1f, Vector2(1f, 0f))
-//    private val leftThruster = Thruster(0.01f, 0.1f, Vector2(0f, -1f))
-//    private val rightThurster = Thruster(0.01f, 0.1f, Vector2(0f, 1f))
 
     val thrusters:Array<Thruster> = arrayOf(
             Thruster(0.01f, 0.1f, Vector2(1f, 0f), ShipLocation.Rear, 0f),
@@ -75,6 +80,8 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     private val shipHeight = 50f
 
     private val thrustFirePositionPercent = Vector2(0.68f, 0f)
+
+    private val easeAlpha: Interpolation = Interpolation.linear
 
     init{
         this.createBody()
@@ -107,8 +114,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
                 if(otherData.type == BodyData.ObjectType.Planet) {
                     if (!other.isSensor) {
                         val planet = otherData.bodyOwner as Planet
-                        GameScreen.finished = true
-                        GameScreen.lost = !planet.homePlanet
+                        GameScreen.setGameOver(!planet.homePlanet)
                     }
                     //If the other fixture is a sensor and it's body belongs to a planet, we are in the gravity well
                     else if (other.isSensor) {
@@ -170,11 +176,27 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
     }
 
-    override fun fixedUpdate() {
+    override fun fixedUpdate(delta: Float) {
         if(!physicsArePaused) {
             burnFuel()
             planetList.forEach { planet -> GameScreen.applyGravity(planet, this) }
             position.set(body.position.x*Constants.BOX2D_INVERSESCALE, body.position.y*Constants.BOX2D_INVERSESCALE)
+        }
+
+        if(docking){
+            dockingElapsed += delta
+            val progress = Math.min(1f, dockingElapsed/dockingTime)
+
+            val rotation = easeAlpha.apply(this.rotation, dockingData.rotation, progress)
+            tmpVector.interpolate(dockingData.position, progress, Interpolation.linear)
+
+            setPosition(tmpVector)
+            setShipRotation(rotation)
+
+            if(dockingElapsed >= dockingTime){
+                docking = false
+                dockingData.callback()
+            }
         }
     }
 
@@ -469,6 +491,10 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         this.body.userData = BodyData(BodyData.ObjectType.Ship, this.uniqueID, this)
     }
 
+    fun setPosition(position:Vector2){
+        this.setPosition(position.x, position.y)
+    }
+
     /**
      * Sets the position of the ship. This sets both the rendering position and the physics body position.
      * @param x The X position (real value)
@@ -486,12 +512,23 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         }
     }
 
+    fun setDocking(position: Vector2, rotation:Float, callback:()->Unit){
+        docking = true
+        dockingData = DockingData(position, rotation, callback)
+        tmpVector.set(this.position) //We will use this to interpolate
+
+        setVelocity(0f, 0f)
+        thrusters.forEach { thruster -> thruster.burnTime = 0 }
+    }
+
+    /**
+     * Copies the thrusters passed in into this ship.
+     */
     fun copyThrusters(thrustersToCopy:Array<Thruster>){
         this.thrusters.forEachIndexed { i, thruster ->
             thruster.setBurnForceAndPerTick(thrustersToCopy[i].burnForce, thrustersToCopy[i].fuelBurnedPerTick)
             thruster.burnTime = thrustersToCopy[i].burnTime
             thruster.doubleBurn = thrusters[i].doubleBurn
-//            thruster.setDoubleBurn(thrustersToCopy[i].doubleBurn, fuel)  This causes the double burn to be applied twice
         }
     }
 
@@ -575,5 +612,9 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         fun reset(){
             burnHandlePosition.set(0f, 0f)
         }
+    }
+
+    private class DockingData(val position: Vector2, val rotation:Float, val callback:()->Unit){
+
     }
 }

@@ -25,7 +25,7 @@ class AsteroidSpawner(val position: Vector2, val spawnDirection:Vector2, val spa
         }
     }
 
-    override fun fixedUpdate() {
+    override fun fixedUpdate(delta: Float) {
 
     }
 

@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.quickbite.spaceslingshot.screens.MainMenuScreen;
 import com.quickbite.spaceslingshot.util.ContactListenerClass;
 import com.quickbite.spaceslingshot.util.EasyAssetManager;
+import com.quickbite.spaceslingshot.util.JsonLevelLoader;
 import com.quickbite.spaceslingshot.util.Loader;
 
 import java.util.concurrent.ExecutorService;
@@ -85,6 +86,8 @@ public class MyGame extends Game {
 		if(cores > 1){
 			threadPool = Executors.newFixedThreadPool(10);
 		}
+
+		JsonLevelLoader.INSTANCE.loadLevels();
 
 		this.setScreen(new MainMenuScreen(this));
 	}

@@ -49,7 +49,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         var paused = true
 
         fun setGameOver(lost:Boolean){
-            finished = true
+            GameScreen.finished = true
             GameScreen.lost = lost
         }
 
@@ -150,9 +150,12 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
             gui.fuelBar.setAmounts(data.ship.fuel, data.ship.fuelTaken)
 
+            //If the game is over, pause!
             if(GameScreen.finished){
                 gui.showGameOver(lost)
                 setGamePaused(true)
+                if(!lost)
+                    gameOver() //Run the game over logic
             }
 
 
@@ -179,8 +182,8 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         val frameTime = Math.min(deltaTime, 0.25f)
         physicsAccumulator += frameTime
         while (physicsAccumulator >= Constants.PHYSICS_TIME_STEP) {
-            data.ship.fixedUpdate()
-            data.planetList.forEach { p -> p.fixedUpdate() }
+            data.ship.fixedUpdate(Constants.PHYSICS_TIME_STEP)
+            data.planetList.forEach { p -> p.fixedUpdate(Constants.PHYSICS_TIME_STEP) }
             MyGame.world.step(Constants.PHYSICS_TIME_STEP, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS)
             physicsAccumulator -= Constants.PHYSICS_TIME_STEP
         }
@@ -284,6 +287,39 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     fun toggleShipBurn(shipLocation: Ship.ShipLocation){
         data.ship.toggleDoubleBurn(shipLocation)
         gui.fuelBar.setAmounts(data.ship.fuel, data.ship.fuelTaken)
+    }
+
+    fun gameOver(){
+        val level = JsonLevelLoader.levels[data.currLevel]
+        val flags = arrayOf("false", "false", "false")
+
+        level.achievements.forEachIndexed { i, achievement ->
+            when(achievement[0]){
+                "win" -> {
+                    //if we didn't lose, we're good!
+                    if(!GameScreen.lost)
+                        flags[i] = "true"
+                }
+                "time" -> {
+                    //If our total time is less than the achievement time, we're good!
+                    val time = achievement[1].toFloat()
+                    if(data.levelTimer <= time)
+                        flags[i] = "true"
+                }
+                "fuel" -> {
+                    //If the ship's fuel percentage is greater than the achievement goal, we're good!
+                    val fuel = achievement[1].toFloat()
+                    if(data.ship.fuel/data.ship.maxFuel >= fuel)
+                        flags[i] = "true"
+                }
+            }
+        }
+
+        val key = level.level.toString()
+        val combined = flags.joinToString()
+        System.out.println("Combined text: $combined")
+
+        PrefManager.addToPrefs(key, combined, "achievement")
     }
 
     fun reloadLevel():Boolean{

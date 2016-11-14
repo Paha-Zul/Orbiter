@@ -25,7 +25,8 @@
     },
     "obstacles":[
 
-    ]
+    ],
+    "achievements": [["win", ""], ["time", "10.0"], ["fuel", "50"]]
   },
   {
     "level": 2,
@@ -55,7 +56,8 @@
       {
         "rect":[50, 500, 200, 50]
       }
-    ]
+    ],
+    "achievements": [["win", ""], ["time", "10.0"], ["fuel", "50"]]
   },
   {
     "level": 3,
@@ -91,7 +93,8 @@
     },
     "obstacles":[
 
-    ]
+    ],
+    "achievements": [["win", ""], ["time", "10.0"], ["fuel", "50"]]
   },
   {
     "level": 4,
@@ -144,6 +147,7 @@
         "spawnFreq": [4, 8],
         "speedRange": [0.5, 1.5]
       }
-    ]
+    ],
+    "achievements": [["win", ""], ["time", "10.0"], ["fuel", "50"]]
   }
 ]

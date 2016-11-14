@@ -56,7 +56,7 @@ class Asteroid(val position: Vector2, val radius:Float, val velocity:Vector2, va
 
     }
 
-    override fun fixedUpdate() {
+    override fun fixedUpdate(delta: Float) {
 
     }
 

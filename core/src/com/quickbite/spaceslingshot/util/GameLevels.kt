@@ -18,7 +18,7 @@ import com.quickbite.spaceslingshot.objects.SpaceStation
  */
 object GameLevels {
     fun loadLevel(level:Int, data: GameScreenData):Boolean{
-        val levels = JsonLevelLoader.levels;
+        val levels = JsonLevelLoader.levels
 
         if(level >= levels.size) return false
 
