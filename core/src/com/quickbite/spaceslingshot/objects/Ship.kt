@@ -107,15 +107,19 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
             setRotationTowardsMouse(0f, 0f)
 
+            //When we collide with something
             EventSystem.onEvent("collide_begin", { args ->
                 val other = args[0] as Fixture
                 val otherData = other.body.userData as BodyData
 
+                //If the other thing was a planet
                 if(otherData.type == BodyData.ObjectType.Planet) {
+                    //If it wasn't a sensor, game over man!
                     if (!other.isSensor) {
                         val planet = otherData.bodyOwner as Planet
                         GameScreen.setGameOver(!planet.homePlanet)
                     }
+
                     //If the other fixture is a sensor and it's body belongs to a planet, we are in the gravity well
                     else if (other.isSensor) {
                         val planet = otherData.bodyOwner as Planet
@@ -179,7 +183,11 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     override fun fixedUpdate(delta: Float) {
         if(!physicsArePaused) {
             burnFuel()
-            planetList.forEach { planet -> GameScreen.applyGravity(planet, this) }
+            planetList.forEach { planet ->
+                val dst = planet.position.dst(this.position)
+                if(dst <= planet.gravityRange)
+                    GameScreen.applyGravity(planet, this)
+            }
             position.set(body.position.x*Constants.BOX2D_INVERSESCALE, body.position.y*Constants.BOX2D_INVERSESCALE)
         }
 

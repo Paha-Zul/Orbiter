@@ -66,6 +66,8 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     }
 
     override fun show() {
+        GameScreen.paused = true
+
         data.ship = Ship()
         runPredictor()
         gui = GameScreenGUI(this)

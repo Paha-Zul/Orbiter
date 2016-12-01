@@ -45,7 +45,7 @@ class Planet(position: Vector2, radius: Int, _gravityRangeRadius: Float, _densit
         ringTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
         ring = Sprite(TextureRegion(ringTexture))
         ring.setPosition(position.x - ringSize/2f, position.y - ringSize/2f)
-        ring.setSize(ringSize.toFloat(), ringSize.toFloat())
+        ring.setSize(ringSize, ringSize)
         ring.color = Color.GRAY
 
         createBody()
@@ -90,7 +90,7 @@ class Planet(position: Vector2, radius: Int, _gravityRangeRadius: Float, _densit
         val secondCircle = CircleShape()
 
         secondCircle.position = Vector2(0f, 0f)
-        secondCircle.radius = (radius + _gravityRangeRadius)*Constants.BOX2D_SCALE
+        secondCircle.radius = (radius + _gravityRangeRadius + Constants.GRAVITYRING_BONUS)*Constants.BOX2D_SCALE
 
         secondaryFixture.shape = secondCircle
         secondaryFixture.isSensor = true

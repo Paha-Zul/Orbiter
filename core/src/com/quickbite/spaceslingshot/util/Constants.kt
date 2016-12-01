@@ -9,6 +9,8 @@ object Constants {
     val BOX2D_INVERSESCALE: Float
         get() = 1/ BOX2D_SCALE
 
+    val GRAVITYRING_BONUS = 20
+
     val VELOCITY_SCALE = 10f
     val VELOCITY_INVERSESCALE:Float
         get() = 1/VELOCITY_SCALE
