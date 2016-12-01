@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
@@ -130,20 +131,11 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         bottomPauseText.setSize(40f, 40f)
         bottomPauseText.setFontScale(0.2f)
         bottomPauseText.setAlignment(Align.center)
-//        bottomPauseText.style.background = TextureRegionDrawable(TextureRegion(GH.createPixel(Color.WHITE, 1, 40)))
 
         bottomPauseButton = ProgressBar(0f, 100f, 0.1f, false, progressBarStyle)
         bottomPauseButton.setSize(400f, 40f)
 
-//        val pauseStack = Stack(bottomPauseButton, bottomPauseText)
-
         relocateShipButton = Button(imageButtonStyle)
-
-//        bottomTable.add(pauseStack).height(40f).width(400f)
-//        bottomTable.add(relocateShipButton).size(40f).padLeft(20f).padRight(20f).fillX()
-//        bottomTable.bottom()
-//        bottomTable.width = 480f
-//        bottomTable.setPosition(0f,0f)
 
         backTable.background = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("fuelBarBackground"), 10, 10, 10, 10))
         backTable.setSize(MyGame.viewport.worldWidth - 100f, 20f)
@@ -259,29 +251,36 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
     fun showGameOver(failed:Boolean){
         gameOverTable.clear()
 
-        val innerTable = Table()
-        innerTable.background = TextureRegionDrawable(TextureRegion(GH.createPixel(Color.BLACK)))
+//        val innerTable = Table()
+        gameOverTable.background = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("fuelBarBackground"), 10, 10, 10, 10))
 
         if(failed) gameOverStatusLabel.setText("Failed")
         else gameOverStatusLabel.setText("Success!")
 
-        innerTable.add(gameOverStatusLabel).colspan(2)
-        innerTable.row()
-        innerTable.add(timeLabel).colspan(2)
-        innerTable.row()
+        gameOverTable.add(gameOverStatusLabel).colspan(2)
+        gameOverTable.row()
+        gameOverTable.add(timeLabel).colspan(2)
+        gameOverTable.row()
 
         if(failed){
-            innerTable.add(mainMenuButton).spaceRight(20f)
-            innerTable.add(retryButton)
+            gameOverTable.add(mainMenuButton).spaceRight(20f)
+            gameOverTable.add(retryButton)
         }else{
-            innerTable.add(mainMenuButton).spaceRight(20f)
-            innerTable.add(nextLevelButton)
+            gameOverTable.add(mainMenuButton).spaceRight(20f)
+            gameOverTable.add(nextLevelButton)
         }
 
-        gameOverTable.add(innerTable)
-        gameOverTable.setFillParent(true)
+        gameOverTable.setSize(300f, 200f)
+//        gameOverTable.add(innerTable).size(300f, 400f)
+//        gameOverTable.setFillParent(true)
 
         MyGame.stage.addActor(gameOverTable)
+
+        gameOverTable.isTransform = true
+        gameOverTable.setOrigin(Align.center)
+        gameOverTable.setPosition(MyGame.viewport.worldWidth/2f - 150f, MyGame.viewport.worldHeight/2f - 200f)
+        gameOverTable.setScale(0f)
+        gameOverTable.addAction(Actions.scaleTo(1f, 1f, 0.1f))
     }
 
     fun hideGameOver(){

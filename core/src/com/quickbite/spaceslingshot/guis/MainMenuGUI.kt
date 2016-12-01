@@ -4,7 +4,10 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.math.Interpolation
+import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -23,6 +26,7 @@ import com.quickbite.spaceslingshot.util.Padding
 class MainMenuGUI(val mainMenu:MainMenuScreen) {
     val mainTable:Table = Table()
     val levelsTable:Table = Table()
+    val gameTypeSelectionTable:Table = Table()
 
     val mainMenuTable:Table = Table()
 
@@ -31,12 +35,18 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
     val boxUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("levelButton"))
     val boxDown = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("levelButton_down"))
 
-    init{
+    val scaleSpeed = 0.3f
 
+    init{
         buildMainMenu()
+        buildGameTypeSelection()
+        buildLevelSelection()
         showMainMenu()
     }
 
+    /**
+     * Builds and lays out the main menu table. Use mainMenuTable to add or remove from the stage.
+     */
     fun buildMainMenu(){
         val labelStyle = Label.LabelStyle(MyGame.font, Color.WHITE)
 
@@ -69,9 +79,15 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         mainMenuTable.row()
         mainMenuTable.add(quitButton).size(128f, 64f)
 
+        //On hitting the play button, show us the level select
         playButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
+                gameTypeSelectionTable.color.a = 0f
+                gameTypeSelectionTable.setScale(0f)
+
                 showGameTypeSelection()
+                scaleTableIn(gameTypeSelectionTable, scaleSpeed, null, Interpolation.circle, Interpolation.circle)
+                scaleTableOut(mainMenuTable, scaleSpeed, 8f, {mainMenuTable.remove()}, Interpolation.circle, Interpolation.circle)
             }
         })
 
@@ -91,15 +107,41 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         mainMenuTable.setFillParent(true)
     }
 
+    private fun scaleTableOut(table:Table, speed:Float, scale:Float, callback:(()->Unit)? = null, scaleInterp:Interpolation = Interpolation.linear, fadeInterp:Interpolation = Interpolation.linear){
+        table.isTransform = true
+        table.setOrigin(Align.center)
+
+        table.addAction(Actions.scaleTo(scale, scale, speed, scaleInterp))
+        table.addAction(Actions.sequence(Actions.alpha(0f, speed, fadeInterp), object:Action(){
+            override fun act(delta: Float): Boolean {
+                callback?.invoke()
+                return true
+            }
+        }))
+    }
+
+    private fun scaleTableIn(table:Table, speed:Float, callback:(()->Unit)? = null, scaleInterp:Interpolation = Interpolation.linear, fadeInterp:Interpolation = Interpolation.linear){
+        table.isTransform = true
+        table.setOrigin(Align.center)
+
+        table.addAction(Actions.scaleTo(1f, 1f, speed, scaleInterp))
+        table.addAction(Actions.sequence(Actions.alpha(1f, speed, fadeInterp), object:Action(){
+            override fun act(delta: Float): Boolean {
+                callback?.invoke()
+                return true
+            }
+        }))
+    }
+
+    /**
+     * Shows the main menu. Simply adds mainMenuTable to the game stage.
+     */
     fun showMainMenu(){
-        MyGame.stage.clear()
         MyGame.stage.addActor(mainMenuTable)
     }
 
-    fun showGameTypeSelection(){
-        MyGame.stage.clear()
-
-        val buttonTable = Table()
+    fun buildGameTypeSelection(){
+        gameTypeSelectionTable.clear()
 
         val textButtonStyle = TextButton.TextButtonStyle()
         textButtonStyle.font = MyGame.font
@@ -116,15 +158,20 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         val backButton = TextButton("Back", textButtonStyle)
         backButton.label.setFontScale(0.2f)
 
-        buttonTable.add(levelsButton).size(128f, 64f).spaceBottom(40f) //.padTop(270f)
-        buttonTable.row()
-        buttonTable.add(endless).size(128f, 64f).spaceBottom(40f)
-        buttonTable.row()
-        buttonTable.add(backButton).size(128f, 64f)
+        gameTypeSelectionTable.add(levelsButton).size(128f, 64f).spaceBottom(40f) //.padTop(270f)
+        gameTypeSelectionTable.row()
+        gameTypeSelectionTable.add(endless).size(128f, 64f).spaceBottom(40f)
+        gameTypeSelectionTable.row()
+        gameTypeSelectionTable.add(backButton).size(128f, 64f)
 
         levelsButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                showLevels()
+                levelsTable.setScale(0f)
+                levelsTable.color.a = 0f
+
+                showLevelSelection()
+                scaleTableOut(gameTypeSelectionTable, scaleSpeed, 8f, { gameTypeSelectionTable.remove() }, Interpolation.circle, Interpolation.circle)
+                scaleTableIn(levelsTable, scaleSpeed, null, Interpolation.circle, Interpolation.circle)
             }
         })
 
@@ -138,24 +185,25 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
 
         backButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
+                scaleTableOut(gameTypeSelectionTable, scaleSpeed, 0f, {gameTypeSelectionTable.remove()}, Interpolation.circle, Interpolation.circle)
+                scaleTableIn(mainMenuTable, scaleSpeed, null, Interpolation.circle, Interpolation.circle)
+
                 showMainMenu()
             }
         })
 
-        buttonTable.setFillParent(true)
-
-        MyGame.stage.addActor(buttonTable)
+        gameTypeSelectionTable.validate()
+        gameTypeSelectionTable.setPosition(MyGame.viewport.worldWidth/2f - gameTypeSelectionTable.width/2f, MyGame.viewport.worldHeight/2f - gameTypeSelectionTable.height/2f)
     }
 
-    fun showLevels(){
-        MyGame.stage.clear()
-        levelsTable.clear()
+    fun showGameTypeSelection(){
+        MyGame.stage.addActor(gameTypeSelectionTable)
+    }
 
+    fun buildLevelSelection(){
         val buttonTable = Table()
 
         val background = TextureRegionDrawable(TextureRegion(MyGame.manager["box", Texture::class.java]))
-
-
 
         val boxTextButtonStyle = TextButton.TextButtonStyle()
         boxTextButtonStyle.font = MyGame.font
@@ -206,14 +254,26 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
 
         backButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                showMainMenu()
+                gameTypeSelectionTable.color.a = 0f
+                gameTypeSelectionTable.setScale(8f)
+
+                scaleTableOut(levelsTable, scaleSpeed, 0f, {levelsTable.remove()}, Interpolation.circle, Interpolation.circle)
+                scaleTableIn(gameTypeSelectionTable, scaleSpeed, null, Interpolation.circle, Interpolation.circle)
+                showGameTypeSelection()
+//                showMainMenu()
             }
         })
 
         levelsTable.add(buttonTable).spaceBottom(20f)
         levelsTable.row()
         levelsTable.add(backButton).size(128f, 64f)
-        levelsTable.setFillParent(true)
+
+        levelsTable.validate()
+        levelsTable.setPosition(MyGame.viewport.worldWidth/2f - levelsTable.width/2f, MyGame.viewport.worldHeight/2f - levelsTable.height/2f)
+        levelsTable.setOrigin(Align.center)
+    }
+
+    fun showLevelSelection(){
         MyGame.stage.addActor(levelsTable)
     }
 }
