@@ -14,7 +14,6 @@ import com.badlogic.gdx.utils.Array
 import com.quickbite.spaceslingshot.GameScreenInputListener
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.data.GameScreenData
-import com.quickbite.spaceslingshot.data.ProceduralPlanetTextureGenerator
 import com.quickbite.spaceslingshot.guis.GameScreenGUI
 import com.quickbite.spaceslingshot.objects.Obstacle
 import com.quickbite.spaceslingshot.objects.Planet
@@ -102,10 +101,6 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         thrusterLineDrawers = list.toList()
         predictorLineDrawer.size = 3
 
-        val planet = Planet(Vector2(300f, 300f), 100, 100f, 0.01f, 0f, ProceduralPlanetTextureGenerator.getNextTexture(), false)
-        UpdateManager.addUpdateableAndDrawable(planet, 0, 0)
-
-//        data.asteroidSpawnerList.add(AsteroidSpawner(Vector2(100f, 100f), Vector2(1f, 0f), Pair(1f, 5f), Pair(1f, 2f), data))
     }
 
     override fun pause() {
@@ -146,8 +141,6 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
             data.planetList.forEach { obj -> obj.update(delta)}
             data.asteroidSpawnerList.forEach { spawner -> spawner.update(delta) }
             data.stationList.forEach { station -> station.update(delta) }
-
-            UpdateManager.update(delta)
 
             for(i in (data.asteroidList.size-1).downTo(0)){
                 data.asteroidList[i].update(delta)
@@ -226,8 +219,6 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
         //draw stations
         data.stationList.forEach { station -> station.draw(batch) }
-
-        UpdateManager.render(batch)
 
         data.ship.draw(batch)
 

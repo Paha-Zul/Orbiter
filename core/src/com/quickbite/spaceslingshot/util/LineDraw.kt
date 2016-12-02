@@ -76,4 +76,8 @@ class LineDraw(start:Vector2, end:Vector2, texture:Texture) : IDrawable, IUpdate
     fun setPoints(points:List<Vector2>){
         this.pointList = points.toList()
     }
+
+    override fun dispose() {
+
+    }
 }

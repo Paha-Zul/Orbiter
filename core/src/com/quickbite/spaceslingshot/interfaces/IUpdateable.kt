@@ -1,7 +1,5 @@
 package com.quickbite.spaceslingshot.interfaces
 
-import com.quickbite.spaceslingshot.util.IKillable
-
 /**
  * Created by Paha on 8/6/2016.
  */

@@ -32,4 +32,8 @@ open class SpaceBody(val position: Vector2, val radius: Int, protected val _grav
     override fun fixedUpdate(delta: Float) {
 
     }
+
+    override fun dispose() {
+
+    }
 }
