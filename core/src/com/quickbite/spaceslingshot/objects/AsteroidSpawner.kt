@@ -10,6 +10,7 @@ import com.quickbite.spaceslingshot.interfaces.IUpdateable
  * Created by Paha on 9/11/2016.
  */
 class AsteroidSpawner(val position: Vector2, val spawnDirection:Vector2, val spawnFrequency:Pair<Float, Float>, val speedRange:Pair<Float, Float>, val data:GameScreenData, immediate:Boolean = false) : IUpdateable, Disposable {
+    override var dead: Boolean = false
 
     var counter = 0f
     var chosenTime:Float = if(immediate) 0f else MathUtils.random(spawnFrequency.first, spawnFrequency.second)

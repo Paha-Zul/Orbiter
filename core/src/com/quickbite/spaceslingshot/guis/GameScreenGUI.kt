@@ -26,6 +26,7 @@ import com.quickbite.spaceslingshot.util.format
  * Created by Paha on 8/7/2016.
  */
 class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
+    override var dead: Boolean = false
     val fuelTable = Table()
 
     lateinit var fuelBar:CustomBar

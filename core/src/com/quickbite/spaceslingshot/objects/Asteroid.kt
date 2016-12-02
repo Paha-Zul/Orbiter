@@ -22,6 +22,8 @@ import com.quickbite.spaceslingshot.util.Constants
  * Created by Paha on 8/13/2016.
  */
 class Asteroid(val position: Vector2, val radius:Float, val velocity:Vector2, val lifetimeSeconds:Float) : IDrawable, IUpdateable, Disposable, IPhysicsBody, IUniqueID{
+    override var dead: Boolean = false
+
     override val uniqueID: Long = MathUtils.random(Long.MAX_VALUE)
     override var physicsArePaused: Boolean = false
     lateinit var sprite:Sprite
@@ -29,8 +31,6 @@ class Asteroid(val position: Vector2, val radius:Float, val velocity:Vector2, va
     val tempVel:Vector2 = Vector2()
 
     var lifeCounter = 0f
-
-    var dead = false
 
     override lateinit var body: Body
 

@@ -36,11 +36,9 @@ public class MyGame extends Game {
 	public static World world;
 
 	public static TextureAtlas GUIAtlas;
-//	public static World testWorld;
 	public static Box2DDebugRenderer debugRenderer;
 
 	private static ExecutorService threadPool;
-
 
 	@Override
 	public void create () {

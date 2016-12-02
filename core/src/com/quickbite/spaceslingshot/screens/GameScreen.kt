@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Array
 import com.quickbite.spaceslingshot.GameScreenInputListener
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.data.GameScreenData
+import com.quickbite.spaceslingshot.data.ProceduralPlanetTextureGenerator
 import com.quickbite.spaceslingshot.guis.GameScreenGUI
 import com.quickbite.spaceslingshot.objects.Obstacle
 import com.quickbite.spaceslingshot.objects.Planet
@@ -83,6 +84,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 //        starryBackgroundStretched = TextureRegion(background, 240, 400)
 //        starryBackgroundStretched.setRegion(0, 0, 480, 800)
 
+        //If we aren't doing endless (which is -1), load the level.
         if(levelToLoad != -1)
             loadLevel(levelToLoad)
         else
@@ -99,6 +101,9 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
         thrusterLineDrawers = list.toList()
         predictorLineDrawer.size = 3
+
+        val planet = Planet(Vector2(300f, 300f), 100, 100f, 0.01f, 0f, ProceduralPlanetTextureGenerator.getNextTexture(), false)
+        UpdateManager.addUpdateableAndDrawable(planet, 0, 0)
 
 //        data.asteroidSpawnerList.add(AsteroidSpawner(Vector2(100f, 100f), Vector2(1f, 0f), Pair(1f, 5f), Pair(1f, 2f), data))
     }
@@ -142,6 +147,8 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
             data.asteroidSpawnerList.forEach { spawner -> spawner.update(delta) }
             data.stationList.forEach { station -> station.update(delta) }
 
+            UpdateManager.update(delta)
+
             for(i in (data.asteroidList.size-1).downTo(0)){
                 data.asteroidList[i].update(delta)
                 if(data.asteroidList[i].dead) {
@@ -163,9 +170,11 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
         //Paused update...
         }else{
-            pauseLimit -= pauseAmtPerTick
-            if(pauseLimit <= 0)
-                setGamePaused(false)
+            if(!GameScreen.finished) {
+                pauseLimit -= pauseAmtPerTick
+                if (pauseLimit <= 0)
+                    setGamePaused(false)
+            }
 
             thrusterLineDrawers.forEachIndexed { i, drawer ->
                 val handle = data.ship.burnHandles[i]
@@ -201,6 +210,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 //        batch.draw(starryBackgroundStretched, MyGame.camera.position.x - MyGame.camera.viewportWidth/2f, MyGame.camera.position.y- MyGame.camera.viewportHeight/2f,
 //                MyGame.camera.viewportWidth, MyGame.camera.viewportHeight)
 
+        //When we're paused, draw the thruster handles and lines.
         if(paused) {
             thrusterLineDrawers.forEach { drawer -> drawer.draw(batch) }
         }
@@ -216,6 +226,8 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
         //draw stations
         data.stationList.forEach { station -> station.draw(batch) }
+
+        UpdateManager.render(batch)
 
         data.ship.draw(batch)
 

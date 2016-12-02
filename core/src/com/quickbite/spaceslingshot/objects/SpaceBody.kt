@@ -9,6 +9,7 @@ import com.quickbite.spaceslingshot.interfaces.IUpdateable
  * Created by Paha on 8/12/2016.
  */
 open class SpaceBody(val position: Vector2, val radius: Int, protected val _gravityRangeRadius: Float, protected val _density: Float) : IDrawable, IUpdateable {
+    override var dead: Boolean = false
 
     val gravityRange:Float
         get() = radius + _gravityRangeRadius

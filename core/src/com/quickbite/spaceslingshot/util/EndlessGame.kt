@@ -16,6 +16,8 @@ import com.quickbite.spaceslingshot.screens.GameScreen
  * Handles the Endless Game type. Generates the planets/asteroids/obstacles/stations for the players to try and beat.
  */
 class EndlessGame(val screen:GameScreen) : IUpdateable, Disposable{
+    override var dead: Boolean = false
+
     var randDist = Pair(200f, 400f)
     var randSize = Pair(25, 75)
     var randGravity = Pair(50f, 200f)

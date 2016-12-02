@@ -12,6 +12,7 @@ import com.quickbite.spaceslingshot.util.GH
  * Created by Paha on 8/9/2016.
  */
 class Obstacle(val rect:Rectangle) :IDrawable, Disposable{
+    override var dead: Boolean = false
     var sprite:Sprite
 
     init{

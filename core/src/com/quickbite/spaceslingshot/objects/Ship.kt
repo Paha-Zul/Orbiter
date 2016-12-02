@@ -25,6 +25,8 @@ import java.util.*
 class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val testShip:Boolean = false): IUpdateable, IDrawable, IUniqueID, IPhysicsBody, Disposable {
     enum class ShipLocation {Rear, Left, Right, Front}
 
+    override var dead:Boolean  = false
+
     var maxFuel = fuel
         private set
 

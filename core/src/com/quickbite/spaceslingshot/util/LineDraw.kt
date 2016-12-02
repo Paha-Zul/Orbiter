@@ -12,6 +12,8 @@ import com.quickbite.spaceslingshot.interfaces.IUpdateable
  * Created by Paha on 8/19/2016.
  */
 class LineDraw(start:Vector2, end:Vector2, texture:Texture) : IDrawable, IUpdateable{
+    override var dead: Boolean = false
+
     private val startPoint:Vector2 = Vector2(start.x, start.y)
     private val endPoint:Vector2 = Vector2(end.x, end.x)
     private var pointList:List<Vector2> = listOf()
