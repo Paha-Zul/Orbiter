@@ -10,9 +10,8 @@ import com.quickbite.spaceslingshot.data.json.JsonLevelData
 
 object JsonLevelLoader{
     val json:Json = Json()
-    lateinit var levels:Array<JsonLevelData>
 
     fun loadLevels(){
-        levels = json.fromJson(Array<JsonLevelData>::class.java, Gdx.files.internal("data/levels.json"))
+        GameLevels.levels = json.fromJson(Array<JsonLevelData>::class.java, Gdx.files.internal("data/levels.json"))
     }
 }

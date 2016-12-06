@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
@@ -14,12 +16,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
-import com.badlogic.gdx.utils.TimeUtils
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.interfaces.IUpdateable
 import com.quickbite.spaceslingshot.screens.GameScreen
 import com.quickbite.spaceslingshot.screens.MainMenuScreen
 import com.quickbite.spaceslingshot.util.GH
+import com.quickbite.spaceslingshot.util.Util
 import com.quickbite.spaceslingshot.util.format
 
 /**
@@ -52,6 +54,11 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
     val buttonDown = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("button_down"))
     val boxUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("levelButton"))
     val boxDown = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("levelButton_down"))
+
+    val checks = arrayOf(
+            Image(MyGame.GUIAtlas.findRegion("checkmark")),
+            Image(MyGame.GUIAtlas.findRegion("checkmark")),
+            Image(MyGame.GUIAtlas.findRegion("checkmark")))
 
     init{
         bottomTable = Table()
@@ -205,9 +212,11 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
 
         gameOverStatusLabel = Label("Lost", labelStyle)
         gameOverStatusLabel.setFontScale(0.2f)
+        gameOverStatusLabel.setAlignment(Align.center)
 
         timeLabel = Label("Some Time...", labelStyle)
         timeLabel.setFontScale(0.2f)
+        timeLabel.setAlignment(Align.center)
 
         mainMenuButton = TextButton("Main Menu", textButtonStyle)
         mainMenuButton.label.setFontScale(0.2f)
@@ -242,50 +251,127 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
     }
 
     private fun goToMainMenu(){
-        val startTime = TimeUtils.millis()
-        System.out.println("Starting to main menu")
         gameScreen.dispose()
         gameScreen.game.screen = MainMenuScreen(gameScreen.game)
-        System.out.println("main menu took ${TimeUtils.millis() - startTime}")
     }
 
     fun showGameOver(failed:Boolean){
         gameOverTable.clear()
 
-//        val innerTable = Table()
+        val completedTable = Table()
+        val buttonTable = Table()
+
+        val labelStyle = Label.LabelStyle(MyGame.font, Color.WHITE)
+
+        val label1 = Label(GH.getAchievementMessage(0, gameScreen), labelStyle)
+        label1.setFontScale(0.15f)
+        label1.setAlignment(Align.center)
+        label1.setWrap(true)
+
+        val label2 = Label(GH.getAchievementMessage(1, gameScreen), labelStyle)
+        label2.setFontScale(0.15f)
+        label2.setAlignment(Align.center)
+        label2.setWrap(true)
+
+        val label3 = Label(GH.getAchievementMessage(2, gameScreen), labelStyle)
+        label3.setFontScale(0.15f)
+        label3.setAlignment(Align.center)
+        label3.setWrap(true)
+
+        //The boxes
+        val image1 = Image(MyGame.GUIAtlas.findRegion("checkmark_background"))
+        val image2 = Image(MyGame.GUIAtlas.findRegion("checkmark_background"))
+        val image3 = Image(MyGame.GUIAtlas.findRegion("checkmark_background"))
+
+        val stack1 = Stack(image1)
+        val stack2 = Stack(image2)
+        val stack3 = Stack(image3)
+
+        completedTable.add(label1).fillX().expandX()
+        completedTable.add(label2).fillX().expandX()
+        completedTable.add(label3).fillX().expandX()
+        completedTable.row()
+        completedTable.add(stack1).size(64f)
+        completedTable.add(stack2).size(64f)
+        completedTable.add(stack3).size(64f)
+
         gameOverTable.background = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("fuelBarBackground"), 10, 10, 10, 10))
 
         if(failed) gameOverStatusLabel.setText("Failed")
         else gameOverStatusLabel.setText("Success!")
 
-        gameOverTable.add(gameOverStatusLabel).colspan(2)
-        gameOverTable.row()
-        gameOverTable.add(timeLabel).colspan(2)
-        gameOverTable.row()
+        gameOverTable.add(gameOverStatusLabel).fillX().expandX()
+        gameOverTable.row().spaceTop(10f)
+        gameOverTable.add(timeLabel).fillX().expandX()
+        gameOverTable.row().spaceTop(10f)
+        gameOverTable.add(buttonTable).fillX().expandX()
+        gameOverTable.row().spaceTop(10f)
+        gameOverTable.add(completedTable).fillX().expandX()
 
         if(failed){
-            gameOverTable.add(mainMenuButton).spaceRight(20f)
-            gameOverTable.add(retryButton)
+            buttonTable.add(mainMenuButton).spaceRight(20f).width(100f)
+            buttonTable.add(retryButton).width(100f)
         }else{
-            gameOverTable.add(mainMenuButton).spaceRight(20f)
-            gameOverTable.add(nextLevelButton)
+            buttonTable.add(mainMenuButton).spaceRight(20f).width(100f)
+            buttonTable.add(nextLevelButton).width(100f)
         }
 
-        gameOverTable.setSize(300f, 200f)
-//        gameOverTable.add(innerTable).size(300f, 400f)
-//        gameOverTable.setFillParent(true)
-
-        MyGame.stage.addActor(gameOverTable)
-
+        gameOverTable.setSize(300f, 300f)
         gameOverTable.isTransform = true
         gameOverTable.setOrigin(Align.center)
         gameOverTable.setPosition(MyGame.viewport.worldWidth/2f - 150f, MyGame.viewport.worldHeight/2f - 200f)
         gameOverTable.setScale(0f)
-        gameOverTable.addAction(Actions.scaleTo(1f, 1f, 0.1f))
+
+        MyGame.stage.addActor(gameOverTable)
+
+        val prefAchievements = Util.loadAchievementsFromPref((gameScreen.data.currLevel+1).toString())
+        if(prefAchievements[0]) stack1.add(checks[0])
+        if(prefAchievements[1]) stack2.add(checks[1])
+        if(prefAchievements[2]) stack3.add(checks[2])
+
+        gameOverTable.addAction(Actions.sequence(Actions.scaleTo(1f, 1f, 0.1f), Actions.delay(1f), object: Action() {
+            override fun act(delta: Float): Boolean {
+                val ach1 = gameScreen.achievementFlags[0]
+                val ach2 = gameScreen.achievementFlags[1]
+                val ach3 = gameScreen.achievementFlags[2]
+
+                if(ach1) fadeInCheckmark(image1, checks[0], 0f)
+                if(ach2) fadeInCheckmark(image2, checks[1], 0.2f)
+                if(ach3) fadeInCheckmark(image3, checks[2], 0.4f)
+                return true
+            }
+        }))
+
+//        gameOverTable.debugAll()
+    }
+
+    private fun fadeInCheckmark(box:Actor, checkmark:Actor, delay:Float, speed:Float = 0.3f){
+        val startSize = 512f
+
+        val coords = Vector2(0f, 0f) // (0,0) for the bottom left of the actor
+        box.localToStageCoordinates(coords) //Translate to stage
+        MyGame.stage.stageToScreenCoordinates(coords) //Translate to scren
+        coords.y = MyGame.UIViewport.worldHeight - coords.y //Gotta flip the Y here
+
+        checkmark.color.a = 0f
+        checkmark.setSize(startSize, startSize)
+        checkmark.setPosition(coords.x, coords.y)
+
+        checkmark.addAction(Actions.sequence(Actions.delay(delay), object :Action(){
+            override fun act(delta: Float): Boolean {
+                checkmark.addAction(Actions.fadeIn(speed))
+                checkmark.addAction(Actions.sizeTo(64f, 64f, speed))
+                checkmark.addAction(Actions.moveTo(coords.x, coords.y, speed))
+                return true
+            }
+        }))
+
+        MyGame.stage.addActor(checkmark)
     }
 
     fun hideGameOver(){
         gameOverTable.remove()
+        checks.forEach { it.remove() }
     }
 
     override fun dispose() {

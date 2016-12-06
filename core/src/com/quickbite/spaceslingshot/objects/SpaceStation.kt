@@ -88,6 +88,9 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotat
                 return@onEvent
             }
 
+            //If we made it here, we docked well!
+            GameScreen.pauseTimer = true
+
             //If we approached well, set the ship to docking!
             val dockingPos = getDockingPosition()
             ship.setDocking(Vector2(dockingPos.x, dockingPos.y), rotation, {
@@ -96,16 +99,18 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotat
                 }
             })
 
-            //Set a timer to refuel
-            Timer.schedule(object:Timer.Task(){
-                override fun run() {
-                    //Cancel the timer when we have no more fuel or the ship is full.
-                    if(this@SpaceStation.fuelStorage <= 0 || ship.addFuel(fuelRechargeAmountPerTick))
-                        this.cancel()
+            if(!homeStation) {
+                //Set a timer to refuel
+                Timer.schedule(object : Timer.Task() {
+                    override fun run() {
+                        //Cancel the timer when we have no more fuel or the ship is full.
+                        if (this@SpaceStation.fuelStorage <= 0 || ship.addFuel(fuelRechargeAmountPerTick))
+                            this.cancel()
 
-                    this@SpaceStation.fuelStorage -= fuelRechargeAmountPerTick
-                }
-            }, 0f, 0.016f)
+                        this@SpaceStation.fuelStorage -= fuelRechargeAmountPerTick
+                    }
+                }, 0f, 0.016f)
+            }
 
         }, this.uniqueID)
 

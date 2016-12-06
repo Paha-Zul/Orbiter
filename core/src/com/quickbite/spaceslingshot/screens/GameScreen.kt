@@ -41,12 +41,15 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     var pauseLimit = 100f
     var pauseAmtPerTick = 0.1f
 
+    var achievementFlags = arrayOf(false, false, false)
+
     val endlessGame:EndlessGame? = if(endlessGame) EndlessGame(this) else null
 
     companion object{
         var finished = false
         var lost = false
         var paused = true
+        var pauseTimer = false
 
         fun setGameOver(lost:Boolean){
             GameScreen.finished = true
@@ -132,7 +135,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
         //Not pausePhysics update...
         if(!paused) {
-            data.levelTimer += delta
+            if(!pauseTimer) data.levelTimer += delta
 
             pauseLimit = Math.min(pauseLimit + pauseAmtPerTick, 100f)
 
@@ -295,40 +298,39 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     }
 
     fun gameOver(){
-        val level = JsonLevelLoader.levels[data.currLevel]
-        val flags = arrayOf("false", "false", "false")
+        val level = GameLevels.levels[data.currLevel]
 
         level.achievements.forEachIndexed { i, achievement ->
             when(achievement[0]){
                 "win" -> {
                     //if we didn't lose, we're good!
                     if(!GameScreen.lost)
-                        flags[i] = "true"
+                        achievementFlags[i] = true
                 }
                 "time" -> {
                     //If our total time is less than the achievement time, we're good!
                     val time = achievement[1].toFloat()
                     if(data.levelTimer <= time)
-                        flags[i] = "true"
+                        achievementFlags[i] = true
                 }
                 "fuel" -> {
                     //If the ship's fuel percentage is greater than the achievement goal, we're good!
                     val fuel = achievement[1].toFloat()
                     if(data.ship.fuel/data.ship.maxFuel >= fuel)
-                        flags[i] = "true"
+                        achievementFlags[i] = true
                 }
             }
         }
 
-        val key = level.level.toString()
-        val combined = flags.joinToString()
-        System.out.println("Combined text: $combined")
-
-        PrefManager.addToPrefs(key, combined, "achievement")
+        Util.saveAchievementsToPref(achievementFlags, level.level.toString())
     }
 
     fun reloadLevel():Boolean{
         reset()
+
+        //TODO Need to load these achievements from playerprefs (if they have already beat it before)
+        for(i in 0..achievementFlags.size - 1)
+            achievementFlags[i] = false
 
         val success = loadLevel(data.currLevel)
         runPredictor()
@@ -338,6 +340,10 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
     fun loadLevel(level:Int):Boolean{
         reset()
+
+        //TODO Need to load these achievements from playerprefs (if they have already beat it before)
+        for(i in 0..achievementFlags.size - 1)
+            achievementFlags[i] = false
 
         val success:Boolean
         if(endlessGame == null) {
@@ -356,6 +362,10 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     fun loadNextLevel():Boolean{
         reset()
 
+        //TODO Need to load these achievements from playerprefs (if they have already beat it before)
+        for(i in 0..achievementFlags.size - 1)
+            achievementFlags[i] = false
+
         val success = GameLevels.loadLevel(++data.currLevel, data)
         runPredictor()
         gui.fuelBar.setAmounts(data.ship.fuel, 0f, data.ship.fuel)
@@ -365,8 +375,10 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     private fun reset(){
         GameScreen.lost = false
         GameScreen.finished = false
+        data.levelTimer = 0f
         pauseLimit = 100f
         endlessGame?.reset()
+        GameScreen.pauseTimer = false
     }
 
     fun runPredictor(){

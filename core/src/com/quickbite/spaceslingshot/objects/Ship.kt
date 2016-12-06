@@ -205,6 +205,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
             if(dockingElapsed >= dockingTime){
                 docking = false
+                dockingElapsed = 0f
                 dockingData.callback()
             }
         }
@@ -523,6 +524,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     }
 
     fun setDocking(position: Vector2, rotation:Float, callback:()->Unit){
+        dockingElapsed = 0f
         docking = true
         dockingData = DockingData(position, rotation, callback)
         tmpVector.set(this.position) //We will use this to interpolate

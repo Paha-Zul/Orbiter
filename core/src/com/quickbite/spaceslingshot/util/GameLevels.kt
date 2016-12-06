@@ -8,31 +8,30 @@ import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.data.GameScreenData
 import com.quickbite.spaceslingshot.data.PlanetData
 import com.quickbite.spaceslingshot.data.ProceduralPlanetTextureGenerator
-import com.quickbite.spaceslingshot.objects.AsteroidSpawner
-import com.quickbite.spaceslingshot.objects.Obstacle
-import com.quickbite.spaceslingshot.objects.Planet
-import com.quickbite.spaceslingshot.objects.SpaceStation
+import com.quickbite.spaceslingshot.data.json.JsonLevelData
+import com.quickbite.spaceslingshot.objects.*
 
 /**
  * Created by Paha on 8/8/2016.
  */
 object GameLevels {
-    fun loadLevel(level:Int, data: GameScreenData):Boolean{
-        val levels = JsonLevelLoader.levels
+    lateinit var levels:Array<JsonLevelData>
 
+    fun loadLevel(level:Int, data: GameScreenData):Boolean{
         if(level >= levels.size) return false
 
-        System.out.println("Loading level $level")
-
         val levelData = levels[level]
-        data.planetList.forEach { planet -> planet.dispose() }
-        data.asteroidList.forEach { a -> a.dispose() }
+        data.planetList.forEach(Planet::dispose)
+        data.asteroidList.forEach(Asteroid::dispose)
+        data.obstacleList.forEach(Obstacle::dispose)
+        data.stationList.forEach(SpaceStation::dispose)
 
         data.planetList.clear()
         data.obstacleList.clear()
         data.asteroidList.clear()
+        data.stationList.clear()
 
-        var planetTexture: Texture?
+        var planetTexture: Texture
         val planetRotation:() -> Float = { MathUtils.random(360f)}
 
         levelData.planets.forEach { pd ->

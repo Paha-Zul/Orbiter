@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.quickbite.spaceslingshot.objects.Ship;
+import com.quickbite.spaceslingshot.screens.GameScreen;
 
 /**
  * Created by Paha on 1/24/2016.
@@ -71,4 +72,29 @@ public class GH {
                 return 0f;
         }
     }
+
+    public static String getAchievementMessage(int index, GameScreen gameScreen){
+        String achType = GameLevels.INSTANCE.getLevels()[gameScreen.getData().getCurrLevel()].achievements[index][0];
+        String message = "";
+        switch(achType){
+            case "win":
+                message = "Win the Map";
+                break;
+            case "time":
+                message = "Within time: "+ GameLevels.INSTANCE.getLevels()[gameScreen.getData().getCurrLevel()].achievements[index][1];
+                break;
+            case "fuel":
+                message = "Remaining fuel: "+GameLevels.INSTANCE.getLevels()[gameScreen.getData().getCurrLevel()].achievements[index][1];
+                break;
+
+        }
+
+        return message;
+    }
+
+    public static boolean getAchievementSuccessful(int index, GameScreen gameScreen){
+        return gameScreen.getAchievementFlags()[index];
+    }
+
+
 }

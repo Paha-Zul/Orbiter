@@ -17,7 +17,7 @@ import com.badlogic.gdx.utils.Align
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.screens.GameScreen
 import com.quickbite.spaceslingshot.screens.MainMenuScreen
-import com.quickbite.spaceslingshot.util.JsonLevelLoader
+import com.quickbite.spaceslingshot.util.GameLevels
 import com.quickbite.spaceslingshot.util.Padding
 
 /**
@@ -232,7 +232,7 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         val numX = (maxWidth - offsets.left - offsets.right)/(buttonSize+spaceX)
         val numY = (maxHeight - offsets.top - offsets.bottom)/(buttonSize+spaceX)
 
-        val numButtons = JsonLevelLoader.levels.size
+        val numButtons = GameLevels.levels.size
 
         for(i in 1..numButtons){
             val level = i-1
