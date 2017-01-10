@@ -453,9 +453,10 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     fun reset(position:Vector2, fuel:Float, initialVelocity:Vector2){
         this.position.set(position.x, position.y)
         this.fuel = fuel
-        this.thrusters.forEach { thruster ->
+        this.thrusters.forEachIndexed {i, thruster ->
             thruster.reset()
-            thruster.setDoubleBurn(false ,this.fuel)
+            this.setDoubleBurn(false, thruster.location)
+//            thruster.setDoubleBurn(false ,this.fuel)
         }
         this.setShipRotation(0f)
         this.body.setTransform(Vector2(position.x*Constants.BOX2D_SCALE, position.y*Constants.BOX2D_SCALE), 0f)

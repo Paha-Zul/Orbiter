@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -16,12 +17,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
+import com.badlogic.gdx.utils.Timer
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.interfaces.IUpdateable
 import com.quickbite.spaceslingshot.screens.GameScreen
 import com.quickbite.spaceslingshot.screens.MainMenuScreen
+import com.quickbite.spaceslingshot.util.AchievementManager
 import com.quickbite.spaceslingshot.util.GH
-import com.quickbite.spaceslingshot.util.Util
 import com.quickbite.spaceslingshot.util.format
 
 /**
@@ -178,7 +180,24 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         relocateShipButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 val ship = gameScreen.data.ship
-                MyGame.camera.position.set(ship.position.x, ship.position.y, 0f)
+//                gameScreen.scrollScreen(ship.position.x, ship.position.y)
+
+                val ease = Interpolation.circleOut
+                val currPos = Vector2(MyGame.camera.position.x, MyGame.camera.position.y)
+                val targetPos = Vector2(ship.position)
+                var counter = 0f
+
+                Timer.schedule(object:Timer.Task(){
+                    override fun run() {
+                        counter += 0.032f
+                        val x = ease.apply(currPos.x, targetPos.x, counter)
+                        val y = ease.apply(currPos.y, targetPos.y, counter)
+                        gameScreen.scrollScreen(x, y)
+
+                        if(counter >= 1)
+                            this.cancel()
+                    }
+                }, 0f, 0.016f)
             }
         })
 
@@ -324,7 +343,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
 
         MyGame.stage.addActor(gameOverTable)
 
-        val prefAchievements = Util.loadAchievementsFromPref((gameScreen.data.currLevel+1).toString())
+        val prefAchievements = AchievementManager.loadAchievementsFromPref((gameScreen.data.currLevel+1).toString())
         if(prefAchievements[0]) stack1.add(checks[0])
         if(prefAchievements[1]) stack2.add(checks[1])
         if(prefAchievements[2]) stack3.add(checks[2])

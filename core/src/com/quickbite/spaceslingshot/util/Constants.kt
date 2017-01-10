@@ -20,4 +20,6 @@ object Constants {
     val PHYSICS_TIME_STEP = 1/60f
     val VELOCITY_ITERATIONS = 6
     val POSITION_ITERATIONS = 2
+
+    val PAUSE_AMTPERTICK = 0.0f
 }

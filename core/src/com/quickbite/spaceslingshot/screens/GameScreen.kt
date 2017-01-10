@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Array
 import com.quickbite.spaceslingshot.GameScreenInputListener
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.data.GameScreenData
+import com.quickbite.spaceslingshot.data.json.JsonLevelData
 import com.quickbite.spaceslingshot.guis.GameScreenGUI
 import com.quickbite.spaceslingshot.objects.Obstacle
 import com.quickbite.spaceslingshot.objects.Planet
@@ -37,9 +38,6 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
     var physicsAccumulator = 0f
     var updateAccumulator = 0f
-
-    var pauseLimit = 100f
-    var pauseAmtPerTick = 0.1f
 
     var achievementFlags = arrayOf(false, false, false)
 
@@ -137,7 +135,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         if(!paused) {
             if(!pauseTimer) data.levelTimer += delta
 
-            pauseLimit = Math.min(pauseLimit + pauseAmtPerTick, 100f)
+            data.pauseLimit = Math.min(data.pauseLimit + Constants.PAUSE_AMTPERTICK, 100f)
 
 //            runPredictor()
             data.ship.update(delta)
@@ -167,8 +165,8 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         //Paused update...
         }else{
             if(!GameScreen.finished) {
-                pauseLimit -= pauseAmtPerTick
-                if (pauseLimit <= 0)
+                data.pauseLimit -= Constants.PAUSE_AMTPERTICK
+                if (data.pauseLimit <= 0)
                     setGamePaused(false)
             }
 
@@ -179,7 +177,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 //            predictorLineDrawer.setStartAndEnd(data.ship.burnBallBasePosition, data.ship.burnHandleLocation)
         }
 
-        gui.bottomPauseButton.value = pauseLimit
+        gui.bottomPauseButton.value = data.pauseLimit
         gui.update(delta)
     }
 
@@ -299,7 +297,10 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
     fun gameOver(){
         val level = GameLevels.levels[data.currLevel]
+        checkAchievementCompletion(level)
+    }
 
+    private fun checkAchievementCompletion(level:JsonLevelData){
         level.achievements.forEachIndexed { i, achievement ->
             when(achievement[0]){
                 "win" -> {
@@ -316,13 +317,14 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
                 "fuel" -> {
                     //If the ship's fuel percentage is greater than the achievement goal, we're good!
                     val fuel = achievement[1].toFloat()
-                    if(data.ship.fuel/data.ship.maxFuel >= fuel)
+                    if(data.ship.fuel/data.ship.maxFuel >= fuel/100f)
                         achievementFlags[i] = true
                 }
             }
         }
 
-        Util.saveAchievementsToPref(achievementFlags, level.level.toString())
+        //Save the achievements
+        AchievementManager.saveAchievementsToPref(achievementFlags, level.level.toString())
     }
 
     fun reloadLevel():Boolean{
@@ -376,7 +378,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         GameScreen.lost = false
         GameScreen.finished = false
         data.levelTimer = 0f
-        pauseLimit = 100f
+        data.pauseLimit = 100f
         endlessGame?.reset()
         GameScreen.pauseTimer = false
     }
@@ -426,7 +428,6 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         val diff = Vector2(x - MyGame.camera.position.x, MyGame.camera.position.y - y)
         MyGame.camera.position.set(x, y, 0f)
         starryBackground.scroll(diff.x/MyGame.camera.viewportWidth, diff.y/MyGame.camera.viewportHeight)
-//        starryBackgroundStretched.scroll((diff.x*1.5f)/MyGame.camera.viewportWidth, (diff.y*1.5f)/MyGame.camera.viewportHeight)
     }
 
     override fun resume() {

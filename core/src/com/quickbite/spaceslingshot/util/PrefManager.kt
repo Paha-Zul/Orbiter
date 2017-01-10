@@ -8,52 +8,56 @@ import com.badlogic.gdx.Preferences
  */
 object PrefManager {
 
+    public enum class PrefType{
+        Achievement, Data;
+    }
+
     var achievementPrefs = Gdx.app.getPreferences("Achievements")
     var dataPrefs = Gdx.app.getPreferences("Data")
 
-    fun addToPrefs(name:String, value:Int, type:String){
+    fun addToPrefs(name:String, value:Int, type:PrefType){
         val prefs = getPref(type)
         prefs.putInteger(name, value)
     }
 
-    fun addToPrefs(name:String, value:String, type:String){
+    fun addToPrefs(name:String, value:String, type:PrefType){
         val prefs = getPref(type)
         prefs.putString(name, value)
     }
 
-    fun addToPrefs(name:String, value:Float, type:String){
+    fun addToPrefs(name:String, value:Float, type:PrefType){
         val prefs = getPref(type)
         prefs.putFloat(name, value)
     }
 
-    fun addToPrefs(name:String, value:Boolean, type:String){
+    fun addToPrefs(name:String, value:Boolean, type:PrefType){
         val prefs = getPref(type)
         prefs.putBoolean(name, value)
     }
 
-    fun getIntFromPrefs(name:String, type:String):Int{
+    fun getIntFromPrefs(name:String, type:PrefType):Int{
         val prefs = getPref(type)
         return prefs.getInteger(name)
     }
 
-    fun getFloatFromPrefs(name:String, type:String):Float{
+    fun getFloatFromPrefs(name:String, type:PrefType):Float{
         val prefs = getPref(type)
         return prefs.getFloat(name)
     }
 
-    fun getStringFromPrefs(name:String, type:String):String{
+    fun getStringFromPrefs(name:String, type:PrefType):String{
         val prefs = getPref(type)
         return prefs.getString(name)
     }
 
-    fun getBooleanFromPrefs(name:String, type:String):Boolean{
+    fun getBooleanFromPrefs(name:String, type:PrefType):Boolean{
         val prefs = getPref(type)
         return prefs.getBoolean(name)
     }
 
-    private fun getPref(type:String):Preferences{
+    private fun getPref(type:PrefType):Preferences{
         when(type){
-            "achievement" -> return achievementPrefs
+            PrefType.Achievement -> return achievementPrefs
             else -> return dataPrefs
         }
     }

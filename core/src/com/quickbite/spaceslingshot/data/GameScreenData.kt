@@ -11,6 +11,7 @@ class GameScreenData{
     var currPlanetScore = 0
     var levelTimer = 0f
     var currLevel = 0
+    var pauseLimit = 0f
 
     lateinit var ship: Ship
     val planetList: Array<Planet> = Array()

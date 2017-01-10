@@ -109,12 +109,10 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
             screen.gui.fuelBar.setAmounts(ship.fuel, ship.fuelTaken)
             screen.runPredictor()
         }else if(draggingScreen){
-            offset.set(screenX - startDragPos.x, screenY - startDragPos.y)
-            val x = if(screen.endlessGame == null) originalCameraPos.x - offset.x else MyGame.camera.viewportWidth/2f
-            val y = originalCameraPos.y + offset.y
+            offset.set(screenX - startDragPos.x, screenY - startDragPos.y) //The difference between where the screen was and is now.
+            val x = if(screen.endlessGame == null) originalCameraPos.x - offset.x else MyGame.camera.viewportWidth/2f //If it's an endless game mode, don't allow X scrolling.
+            val y = originalCameraPos.y + offset.y //We have to add here because the Y is flipped
             screen.scrollScreen(x, y)
-//            MyGame.camera.position.set(originalCameraPos.x - offset.x, originalCameraPos.y + offset.y, 0f)
-//            System.out.println("Dragging, offset: $offset, camera: ${MyGame.camera.position}, worldPos: $worldPos, screen: X: $screenX, Y: $screenY")
         }
 
         return false

@@ -10,6 +10,36 @@
     "planets":[
       {
         "name": "GenericPlanet",
+        "pos": [400, 400],
+        "radius": 30,
+        "gravityRange": 75,
+        "density": 0.1,
+        "planetType": "Earth"
+      }
+    ],
+    "homeStation":{
+      "pos": [240, 650],
+      "size": 75,
+      "fuelStorage": 100,
+      "homeStation": true,
+      "rotation": 270
+    },
+    "obstacles":[
+
+    ],
+    "achievements": [["win", ""], ["time", "10.0"], ["fuel", "50"]]
+  },
+  {
+    "level": 2,
+    "name": "Such",
+    "ship": {
+      "pos": [240, 50],
+      "fuel": 50,
+      "velocity": [0, 1]
+    },
+    "planets":[
+      {
+        "name": "GenericPlanet",
         "pos": [240, 400],
         "radius": 30,
         "gravityRange": 75,
@@ -29,7 +59,7 @@
     "achievements": [["win", ""], ["time", "10.0"], ["fuel", "50"]]
   },
   {
-    "level": 2,
+    "level": 3,
     "name": "Such",
     "ship": {
       "pos": [240, 50],
@@ -60,11 +90,11 @@
     "achievements": [["win", ""], ["time", "10.0"], ["fuel", "50"]]
   },
   {
-    "level": 3,
+    "level": 4,
     "name": "Such",
     "ship": {
       "pos": [240, 50],
-      "fuel": 10,
+      "fuel": 20,
       "velocity": [1, 1]
     },
     "planets":[
@@ -73,7 +103,7 @@
         "pos": [370, 400],
         "radius": 50,
         "gravityRange": 75,
-        "density": 0.15,
+        "density": 0.1,
         "planetType": "Ice"
       },
       {
@@ -81,12 +111,12 @@
         "pos": [300, 600],
         "radius": 50,
         "gravityRange": 75,
-        "density": 0.15,
+        "density": 0.1,
         "planetType": "Desert"
       }
     ],
     "homeStation":{
-      "pos": [100, 600],
+      "pos": [0, 600],
       "size": 75,
       "fuelStorage": 100,
       "homeStation": true
@@ -97,11 +127,11 @@
     "achievements": [["win", ""], ["time", "10.0"], ["fuel", "50"]]
   },
   {
-    "level": 4,
+    "level": 5,
     "name": "Such",
     "ship": {
       "pos": [240, 50],
-      "fuel": 10,
+      "fuel": 20,
       "velocity": [0, 1]
     },
     "planets":[
@@ -123,7 +153,7 @@
       }
     ],
     "homeStation":{
-      "pos": [240, 750],
+      "pos": [240, 800],
       "size": 75,
       "fuelStorage": 100,
       "homeStation": true,
@@ -143,6 +173,13 @@
       {
         "immediate": true,
         "pos": [-100, 150],
+        "spawnDir": [1, 0],
+        "spawnFreq": [4, 8],
+        "speedRange": [0.5, 1.5]
+      },
+      {
+        "immediate": true,
+        "pos": [-100, 700],
         "spawnDir": [1, 0],
         "spawnFreq": [4, 8],
         "speedRange": [0.5, 1.5]

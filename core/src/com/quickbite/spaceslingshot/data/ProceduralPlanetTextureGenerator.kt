@@ -80,69 +80,8 @@ object ProceduralPlanetTextureGenerator {
         }
 
         for(i in 1..amount) {
-            val createPixmapFromNoise: () -> Pixmap = {
-
-                val seed = if(seeds.size > i - 1) seeds[i - 1] else MathUtils.random(Long.MAX_VALUE)
-                Noise.setSeedEnabled(true)
-                Noise.setSeed(seed)
-
-                val noise = OpenSimplexNoise(seed)
-
-                val planetType = PlanetData.PlanetType.values()[MathUtils.random(3)]
-                System.out.println("planetType : $planetType")
-
-                val smooth:Float
-                when (planetType) {
-                    PlanetData.PlanetType.Earth -> smooth = 1.5f
-                    PlanetData.PlanetType.Ice -> smooth = 1.5f
-                    PlanetData.PlanetType.Desert -> smooth = 1.8f
-                    PlanetData.PlanetType.Lava -> smooth = 1.2f
-                    else -> smooth = 1.5f
-                }
-
-//                val map = Noise.diamondSquare(8, smooth, range, true, true, true, 1f, 4, 2)
-
-                val cloudSeed = if(cloudSeeds.size > i - 1) cloudSeeds[i - 1] else MathUtils.random(Long.MAX_VALUE)
-                Noise.setSeed(cloudSeed)
-                val cloudMap = Noise.diamondSquare(8, 1.4f, range, false, false, true, 1f, 1, 1)
-
-                val pixmap: Pixmap = Pixmap(256, 256, Pixmap.Format.RGBA8888)
-                pixmap.setColor(Color.RED)
-
-                pixmap.fillCircle(128, 128, 128)
-
-                for (x in 0..pixmap.width - 1) {
-                    for (y in 0..pixmap.height - 1) {
-                        if (pixmap.getPixel(x, y) != Color.rgba8888(1f, 0f, 0f, 1f))
-                            continue
-
-                        val value = noise.eval(x.toDouble()/100.0, y.toDouble()/100.0) + 1
-//                        Gdx.app.log(tag, "Value: $value")
-                        val adjustedValue = MathUtils.clamp(value.toFloat(), 0f, 1f) //Adjust by 1 and clamp at 0 to 2
-                        val adjustedSecondaryValue = MathUtils.clamp((cloudMap[x][y] + range / 2f), 0f, 1f) //Adjust by 1 and clamp at 0 to 2
-                        val color = getColor(planetType, adjustedValue, adjustedSecondaryValue, shadowPixels[x][y])
-                        pixmap.drawPixel(x, y, Color.rgba8888(color))
-                    }
-                }
-
-                pixmap
-            }
-
-            val createTextureFromPixmap: (Pixmap) -> Texture = { pixmap: Pixmap ->
-                val texture = Texture(pixmap)
-
-                if (writeToFile) {
-                    PixmapIO.writePNG(Gdx.files.local("planet_$textureCounter.png"), pixmap)
-                    textureCounter++
-                }
-                pixmap.dispose()
-
-                textureCounter = 0
-                texture
-            }
-
             MyGame.postRunnable({
-                val pixmap = createPixmapFromNoise() //Execute the main function
+                val pixmap = generatePixMap(seeds, cloudSeeds, shadowPixels, i-1) //Execute the main function
 
                 //Call this on the main thread. This will create the texture.
                 MyGame.postRunnable({
@@ -154,6 +93,67 @@ object ProceduralPlanetTextureGenerator {
         }
 
         shadowPixmap.dispose()
+    }
+
+    private fun generatePixMap(seeds:Array<Long>, cloudSeeds:Array<Long>, shadowPixels:Array<Array<Float>>, index:Int):Pixmap{
+        val seed = if(seeds.size > index) seeds[index] else MathUtils.random(Long.MAX_VALUE)
+        Noise.setSeedEnabled(true)
+        Noise.setSeed(seed)
+
+        val noise = OpenSimplexNoise(seed)
+
+        val planetType = PlanetData.PlanetType.values()[MathUtils.random(3)]
+        System.out.println("planetType : $planetType")
+
+        val smooth:Float
+        when (planetType) {
+            PlanetData.PlanetType.Earth -> smooth = 1.5f
+            PlanetData.PlanetType.Ice -> smooth = 1.5f
+            PlanetData.PlanetType.Desert -> smooth = 1.8f
+            PlanetData.PlanetType.Lava -> smooth = 1.2f
+            else -> smooth = 1.5f
+        }
+
+//                val map = Noise.diamondSquare(8, smooth, range, true, true, true, 1f, 4, 2)
+
+        val cloudSeed = if(cloudSeeds.size > index) cloudSeeds[index] else MathUtils.random(Long.MAX_VALUE)
+        Noise.setSeed(cloudSeed)
+        val cloudMap = Noise.diamondSquare(8, 1.4f, range, false, false, true, 1f, 1, 1)
+
+        val pixmap: Pixmap = Pixmap(256, 256, Pixmap.Format.RGBA8888)
+        pixmap.setColor(Color.RED)
+
+        pixmap.fillCircle(128, 128, 128)
+
+        for (x in 0..pixmap.width - 1) {
+            for (y in 0..pixmap.height - 1) {
+                if (pixmap.getPixel(x, y) != Color.rgba8888(1f, 0f, 0f, 1f))
+                    continue
+
+                val value = noise.eval(x.toDouble()/100.0, y.toDouble()/100.0) + 1
+//                        Gdx.app.log(tag, "Value: $value")
+                val adjustedValue = MathUtils.clamp(value.toFloat(), 0f, 1f) //Adjust by 1 and clamp at 0 to 2
+                val adjustedSecondaryValue = MathUtils.clamp((cloudMap[x][y] + range / 2f), 0f, 1f) //Adjust by 1 and clamp at 0 to 2
+                val color = getColor(planetType, adjustedValue, adjustedSecondaryValue, shadowPixels[x][y])
+                pixmap.drawPixel(x, y, Color.rgba8888(color))
+            }
+        }
+
+        return pixmap
+    }
+
+    private fun createTextureFromPixmap(pixmap:Pixmap):Texture{
+        val texture = Texture(pixmap)
+
+        if (writeToFile) {
+            PixmapIO.writePNG(Gdx.files.local("planet_$textureCounter.png"), pixmap)
+            textureCounter++
+        }
+
+        pixmap.dispose()
+
+        textureCounter = 0
+        return texture
     }
 
     fun generatePlanetTexturesFromData(){
