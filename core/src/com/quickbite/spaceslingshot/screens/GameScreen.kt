@@ -131,6 +131,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         EventSystem.executeEventQueue()
         endlessGame?.update(delta)
 
+
         //Not pausePhysics update...
         if(!paused) {
             if(!pauseTimer) data.levelTimer += delta
@@ -161,8 +162,9 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
                     gameOver() //Run the game over logic
             }
 
+            Predictor.runPrediction(data.ship, {pauseAllPhysicsExceptPredictorShip()}, {resumeAllPhysicsExceptPredictorShip()}, {doPhysicsStep(Constants.PHYSICS_TIME_STEP)})
 
-        //Paused update...
+            //Paused update...
         }else{
             if(!GameScreen.finished) {
                 data.pauseLimit -= Constants.PAUSE_AMTPERTICK
@@ -186,11 +188,13 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         // max frame time to avoid spiral of death (on slow devices)
         val frameTime = Math.min(deltaTime, 0.25f)
         physicsAccumulator += frameTime
+
         while (physicsAccumulator >= Constants.PHYSICS_TIME_STEP) {
-            data.ship.fixedUpdate(Constants.PHYSICS_TIME_STEP)
-            data.planetList.forEach { p -> p.fixedUpdate(Constants.PHYSICS_TIME_STEP) }
-            MyGame.world.step(Constants.PHYSICS_TIME_STEP, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS)
-            physicsAccumulator -= Constants.PHYSICS_TIME_STEP
+            data.ship.fixedUpdate(Constants.PHYSICS_TIME_STEP) //Update the ship
+            data.planetList.forEach { p -> p.fixedUpdate(Constants.PHYSICS_TIME_STEP) } //Update the planets
+            MyGame.world.step(Constants.PHYSICS_TIME_STEP, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS) //Update the physics world
+
+            physicsAccumulator -= Constants.PHYSICS_TIME_STEP //Decrement the accumulator
         }
     }
 

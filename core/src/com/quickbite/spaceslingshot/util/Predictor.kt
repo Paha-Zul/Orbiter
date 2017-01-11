@@ -2,6 +2,7 @@ package com.quickbite.spaceslingshot.util
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
+import com.quickbite.spaceslingshot.data.GameScreenData
 import com.quickbite.spaceslingshot.objects.Ship
 
 /**
@@ -10,7 +11,7 @@ import com.quickbite.spaceslingshot.objects.Ship
 object Predictor : Disposable{
     private val predictorShip = Ship(Vector2(0f,0f), 0f, Vector2(0f, 0f), true)
     val steps = 300
-    val stepSize = 1
+    val stepSize = 10
 
     private val points: Array<Vector2> = Array(steps/stepSize, { Vector2() })
 
@@ -34,6 +35,15 @@ object Predictor : Disposable{
 
         //Resume physics now that we are done
         resumePhysics()
+    }
+
+    private fun simulate(data:GameScreenData, ship:Ship){
+        data.planetList.forEach { planet ->
+            val dst = ship.position.dst(planet.position)
+            if(dst <= planet.gravityRange){
+
+            }
+        }
     }
 
     override fun dispose() {

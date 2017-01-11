@@ -17,7 +17,7 @@ object Constants {
 
     val UPDATE_TIME_STEP = 1/60f
 
-    val PHYSICS_TIME_STEP = 1/60f
+    val PHYSICS_TIME_STEP = 1/45f
     val VELOCITY_ITERATIONS = 6
     val POSITION_ITERATIONS = 2
 

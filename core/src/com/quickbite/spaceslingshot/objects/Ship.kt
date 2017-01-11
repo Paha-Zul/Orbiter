@@ -247,7 +247,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
     fun addVelocity(x:Float, y:Float){
         body.setLinearVelocity(body.linearVelocity.x + x*Constants.VELOCITY_SCALE, body.linearVelocity.y + y*Constants.VELOCITY_SCALE)
-}
+    }
 
     fun addVelocityForward(force:Float){
         val angle = rotation*MathUtils.degreesToRadians
@@ -456,8 +456,8 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         this.thrusters.forEachIndexed {i, thruster ->
             thruster.reset()
             this.setDoubleBurn(false, thruster.location)
-//            thruster.setDoubleBurn(false ,this.fuel)
         }
+
         this.setShipRotation(0f)
         this.body.setTransform(Vector2(position.x*Constants.BOX2D_SCALE, position.y*Constants.BOX2D_SCALE), 0f)
         this.body.setLinearVelocity(initialVelocity.x*Constants.VELOCITY_SCALE, initialVelocity.y*Constants.VELOCITY_SCALE)
