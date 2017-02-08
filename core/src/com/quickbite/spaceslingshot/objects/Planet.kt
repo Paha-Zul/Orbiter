@@ -99,7 +99,7 @@ class Planet(position: Vector2, radius: Int, _gravityRangeRadius: Float, _densit
 
         secondCircle.dispose()
 
-        this.body.userData = BodyData(BodyData.ObjectType.Planet, this.uniqueID, this)
+        this.body.userData = BodyData(BodyData.ObjectType.Planet, this.uniqueID, this, this)
     }
 
     override fun dispose() {

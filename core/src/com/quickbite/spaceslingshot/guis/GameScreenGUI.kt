@@ -52,8 +52,9 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
     lateinit var relocateShipButton:Button
     var bottomTable:Table
 
-    val buttonUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("button"))
-    val buttonDown = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("button_down"))
+    val buttonUp = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("button"), 40, 40, 25, 25))
+    val buttonDown = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("button_down"), 40, 40, 25, 25))
+
     val boxUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("levelButton"))
     val boxDown = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("levelButton_down"))
 
@@ -226,6 +227,9 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
     private fun makeGameOverStuff(){
         val textButtonStyle = TextButton.TextButtonStyle()
         textButtonStyle.font = MyGame.font
+        textButtonStyle.up = buttonUp
+        textButtonStyle.over = buttonDown
+        textButtonStyle.down = buttonDown
 
         val labelStyle = Label.LabelStyle(MyGame.font, Color.WHITE)
 
@@ -233,18 +237,18 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         gameOverStatusLabel.setFontScale(0.2f)
         gameOverStatusLabel.setAlignment(Align.center)
 
-        timeLabel = Label("Some Time...", labelStyle)
+        timeLabel = Label("haha", labelStyle)
         timeLabel.setFontScale(0.2f)
         timeLabel.setAlignment(Align.center)
 
         mainMenuButton = TextButton("Main Menu", textButtonStyle)
-        mainMenuButton.label.setFontScale(0.2f)
+        mainMenuButton.label.setFontScale(0.15f)
 
         retryButton = TextButton("Retry", textButtonStyle)
-        retryButton.label.setFontScale(0.2f)
+        retryButton.label.setFontScale(0.15f)
 
-        nextLevelButton = TextButton("Next ->", textButtonStyle)
-        nextLevelButton.label.setFontScale(0.2f)
+        nextLevelButton = TextButton("Next", textButtonStyle)
+        nextLevelButton.label.setFontScale(0.15f)
 
         mainMenuButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -310,29 +314,31 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         completedTable.add(label2).fillX().expandX()
         completedTable.add(label3).fillX().expandX()
         completedTable.row()
-        completedTable.add(stack1).size(64f)
-        completedTable.add(stack2).size(64f)
-        completedTable.add(stack3).size(64f)
+        completedTable.add(stack1).size(50f)
+        completedTable.add(stack2).size(50f)
+        completedTable.add(stack3).size(50f)
 
-        gameOverTable.background = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("fuelBarBackground"), 10, 10, 10, 10))
+        gameOverTable.background = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("UIButtonSquare"), 50, 50, 50, 50))
 
         if(failed) gameOverStatusLabel.setText("Failed")
         else gameOverStatusLabel.setText("Success!")
 
         gameOverTable.add(gameOverStatusLabel).fillX().expandX()
         gameOverTable.row().spaceTop(10f)
-        gameOverTable.add(timeLabel).fillX().expandX()
-        gameOverTable.row().spaceTop(10f)
-        gameOverTable.add(buttonTable).fillX().expandX()
-        gameOverTable.row().spaceTop(10f)
-        gameOverTable.add(completedTable).fillX().expandX()
+//        gameOverTable.add(timeLabel).fillX().expandX()
+//        gameOverTable.row().spaceTop(10f)
+//        gameOverTable.add(completedTable).fillX().expandX()
+//        gameOverTable.row().spaceTop(10f)
+//        gameOverTable.add(buttonTable).fillX().expandX().padBottom(5f)
+
+        timeLabel.setText("Completed in ${gameScreen.data.levelTimer.format(2)}s")
 
         if(failed){
-            buttonTable.add(mainMenuButton).spaceRight(20f).width(100f)
-            buttonTable.add(retryButton).width(100f)
+            buttonTable.add(mainMenuButton).spaceRight(20f).width(100f).height(50f)
+            buttonTable.add(retryButton).width(100f).height(50f)
         }else{
-            buttonTable.add(mainMenuButton).spaceRight(20f).width(100f)
-            buttonTable.add(nextLevelButton).width(100f)
+            buttonTable.add(mainMenuButton).spaceRight(20f).width(100f).height(50f)
+            buttonTable.add(nextLevelButton).width(100f).height(50f)
         }
 
         gameOverTable.setSize(300f, 300f)
@@ -361,7 +367,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
             }
         }))
 
-//        gameOverTable.debugAll()
+        gameOverTable.debugAll()
     }
 
     private fun fadeInCheckmark(box:Actor, checkmark:Actor, delay:Float, speed:Float = 0.3f){

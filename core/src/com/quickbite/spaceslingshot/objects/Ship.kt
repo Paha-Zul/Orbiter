@@ -28,7 +28,6 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     override var dead:Boolean  = false
 
     var maxFuel = fuel
-        private set
 
     val fuelTaken:Float
         get() {
@@ -57,7 +56,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     private set
 
     val thrusters:Array<Thruster> = arrayOf(
-            Thruster(0.01f, 0.1f, Vector2(1f, 0f), ShipLocation.Rear, 0f),
+            Thruster(0.005f, 0.1f, Vector2(1f, 0f), ShipLocation.Rear, 0f),
             Thruster(0.005f, 0.1f, Vector2(0f, -1f), ShipLocation.Left, -90f),
             Thruster(0.005f, 0.1f, Vector2(0f, 1f), ShipLocation.Right, 90f)
     )
@@ -131,6 +130,10 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
                     //Call this event but delay it. Since this event will be called during a physics step, we can not
                     //change anything physics related, so instead, delay it!
                     EventSystem.callEvent("hit_station", listOf(this), otherData.id, true)
+                }else if(otherData.type == BodyData.ObjectType.FuelContainer){
+                    val container = otherData.dataObject as FuelContainer
+                    this.fuel = Math.min(this.fuel + container.fuel, this.maxFuel)
+                    container.dead = true
                 }
 
             }, this.uniqueID)
@@ -203,7 +206,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
             setPosition(tmpVector)
             setShipRotation(rotation)
 
-            if(dockingElapsed >= dockingTime){
+            if(progress >= 1){
                 docking = false
                 dockingElapsed = 0f
                 dockingData.callback()
@@ -453,6 +456,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     fun reset(position:Vector2, fuel:Float, initialVelocity:Vector2){
         this.position.set(position.x, position.y)
         this.fuel = fuel
+        this.maxFuel = fuel
         this.thrusters.forEachIndexed {i, thruster ->
             thruster.reset()
             this.setDoubleBurn(false, thruster.location)
@@ -500,7 +504,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
         shape.dispose()
 
-        this.body.userData = BodyData(BodyData.ObjectType.Ship, this.uniqueID, this)
+        this.body.userData = BodyData(BodyData.ObjectType.Ship, this.uniqueID, this, this)
     }
 
     fun setPosition(position:Vector2){

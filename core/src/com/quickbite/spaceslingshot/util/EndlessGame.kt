@@ -7,8 +7,8 @@ import com.badlogic.gdx.utils.Disposable
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.data.ProceduralPlanetTextureGenerator
 import com.quickbite.spaceslingshot.interfaces.IUpdateable
+import com.quickbite.spaceslingshot.objects.FuelContainer
 import com.quickbite.spaceslingshot.objects.Planet
-import com.quickbite.spaceslingshot.objects.SpaceStation
 import com.quickbite.spaceslingshot.screens.GameScreen
 
 /**
@@ -27,12 +27,14 @@ class EndlessGame(val screen:GameScreen) : IUpdateable, Disposable{
     lateinit var nextPlanetToPass:Planet
     var planetCounter = 0
 
-    val randStationDist = Pair(800f, 1600f)
+    val randStationDist = Pair(400f, 1000f)
     val nextStationPosition = Vector2()
 
     var hitObject = false
 
     val data = screen.data
+
+    val xSpots = arrayOf(68f, 136f, 204f, 272f, 340f, 408f)
 
     fun start(){
         MyGame.camera.position.set(MyGame.camera.viewportWidth/2f, 0f, 0f)
@@ -108,56 +110,27 @@ class EndlessGame(val screen:GameScreen) : IUpdateable, Disposable{
     private fun addStation(){
         hitObject = false
 
-        val position:Vector2
-        val size = 75
+        GH.shuffleArray(xSpots) //Shuffle the x spots.
+
+        val position:Vector2 = Vector2()
         val physSize = 75*Constants.BOX2D_SCALE
-        var rotation = 0f
 
-        var left:Boolean = MathUtils.random() >= 0.5f
+        xSpots.forEach { x ->
+            position.set(x, nextStationPosition.y)
+            val physPos = Vector2(position.x*Constants.BOX2D_SCALE, position.y*Constants.BOX2D_SCALE)
+            MyGame.world.QueryAABB(callback, physPos.x - physSize/2f, physPos.y - physSize/2f, physPos.x + physSize/2f, physPos.y + physSize/2)
 
-        when(left){
-            true -> {
-                position = Vector2(50f, nextStationPosition.y)
-                rotation = 0f
-            }
-            else -> {
-                position = Vector2(MyGame.camera.viewportWidth - size/2f, nextStationPosition.y)
-                rotation = 180f
-            }
+            //If we hit something, we need to try again
+            if(hitObject){
+                hitObject = false
+
+            //Otherwise, let's move on outta here!
+            }else
+                return@forEach
         }
 
-        val physPos = Vector2(position.x*Constants.BOX2D_SCALE, position.y*Constants.BOX2D_SCALE)
-
-        MyGame.world.QueryAABB(callback, physPos.x - physSize/2f, physPos.y - physSize/2f, physPos.x + physSize/2f, physPos.y + physSize/2)
-
-        //If we hit an object (can't be placed there), flip the sides
-        if(hitObject){
-            hitObject = false
-            left = !left
-
-            when(left){
-                true -> {
-                    position.set(50f, nextStationPosition.y)
-                    rotation = 0f
-                }
-                else -> {
-                    position.set(MyGame.camera.viewportWidth - size/2f, nextStationPosition.y)
-                    rotation = 180f
-                }
-            }
-
-            physPos.set(position.x*Constants.BOX2D_SCALE, position.y*Constants.BOX2D_SCALE)
-
-            MyGame.world.QueryAABB(callback, physPos.x - physSize/2, physPos.y - physSize/2, physPos.x + physSize/2, physPos.y + physSize/2)
-
-            if(hitObject) {
-                nextStationPosition.set(0f, nextStationPosition.y + MathUtils.random(randStationDist.first, randStationDist.second))
-                return
-            }
-        }
-
-        val station = SpaceStation(position, size, 100f, rotation)
-        data.stationList.add(station)
+        val container = FuelContainer(position, 100)
+        data.fuelContainerList.add(container)
 
         nextStationPosition.set(0f, nextStationPosition.y + MathUtils.random(randStationDist.first, randStationDist.second))
     }

@@ -15,9 +15,7 @@ open class SpaceBody(val position: Vector2, val radius: Int, protected val _grav
         get() = radius + _gravityRangeRadius
 
     fun getPull(dst:Float):Float{
-//        val multiplier = (1.1f - (dst/gravityRange))*20
-//        val logValue = (MathUtils.log2(multiplier)*_density)/20f
-        val normalValue = 1.1f - (dst/gravityRange)
+        val normalValue = 1f - (dst/gravityRange)
         return normalValue*_density
     }
 

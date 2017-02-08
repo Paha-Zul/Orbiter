@@ -37,7 +37,8 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     lateinit var starryBackgroundStretched: TextureRegion
 
     var physicsAccumulator = 0f
-    var updateAccumulator = 0f
+    var physicsCounter = 0f
+    var tickCounter = 0
 
     var achievementFlags = arrayOf(false, false, false)
 
@@ -67,7 +68,10 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     }
 
     override fun show() {
-        GameScreen.paused = true
+        finished = false
+        lost = false
+        paused = true
+        pauseTimer = false
 
         data.ship = Ship()
         runPredictor()
@@ -80,9 +84,6 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
         starryBackground = TextureRegion(background)
         starryBackground.setRegion(0, 0, 480, 800)
-
-//        starryBackgroundStretched = TextureRegion(background, 240, 400)
-//        starryBackgroundStretched.setRegion(0, 0, 480, 800)
 
         //If we aren't doing endless (which is -1), load the level.
         if(levelToLoad != -1)
@@ -101,7 +102,6 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
         thrusterLineDrawers = list.toList()
         predictorLineDrawer.size = 3
-
     }
 
     override fun pause() {
@@ -131,10 +131,10 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         EventSystem.executeEventQueue()
         endlessGame?.update(delta)
 
-
         //Not pausePhysics update...
         if(!paused) {
-            if(!pauseTimer) data.levelTimer += delta
+            if(!pauseTimer)
+                data.levelTimer += delta
 
             data.pauseLimit = Math.min(data.pauseLimit + Constants.PAUSE_AMTPERTICK, 100f)
 
@@ -143,12 +143,21 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
             data.planetList.forEach { obj -> obj.update(delta)}
             data.asteroidSpawnerList.forEach { spawner -> spawner.update(delta) }
             data.stationList.forEach { station -> station.update(delta) }
+            data.fuelContainerList.forEach { station -> station.update(delta) }
 
             for(i in (data.asteroidList.size-1).downTo(0)){
                 data.asteroidList[i].update(delta)
                 if(data.asteroidList[i].dead) {
                     data.asteroidList[i].dispose()
                     data.asteroidList.removeIndex(i)
+                }
+            }
+
+            for(i in (data.fuelContainerList.size-1).downTo(0)){
+                data.fuelContainerList[i].update(delta)
+                if(data.fuelContainerList[i].dead) {
+                    data.fuelContainerList[i].dispose()
+                    data.fuelContainerList.removeIndex(i)
                 }
             }
 
@@ -162,7 +171,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
                     gameOver() //Run the game over logic
             }
 
-            Predictor.runPrediction(data.ship, {pauseAllPhysicsExceptPredictorShip()}, {resumeAllPhysicsExceptPredictorShip()}, {doPhysicsStep(Constants.PHYSICS_TIME_STEP)})
+            runPredictor()
 
             //Paused update...
         }else{
@@ -190,11 +199,12 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         physicsAccumulator += frameTime
 
         while (physicsAccumulator >= Constants.PHYSICS_TIME_STEP) {
+            physicsAccumulator -= Constants.PHYSICS_TIME_STEP //Decrement the accumulator
+
             data.ship.fixedUpdate(Constants.PHYSICS_TIME_STEP) //Update the ship
             data.planetList.forEach { p -> p.fixedUpdate(Constants.PHYSICS_TIME_STEP) } //Update the planets
+            data.fuelContainerList.forEach { p -> p.fixedUpdate(Constants.PHYSICS_TIME_STEP) } //Update the planets
             MyGame.world.step(Constants.PHYSICS_TIME_STEP, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS) //Update the physics world
-
-            physicsAccumulator -= Constants.PHYSICS_TIME_STEP //Decrement the accumulator
         }
     }
 
@@ -204,9 +214,6 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
         batch.draw(starryBackground, MyGame.camera.position.x - MyGame.camera.viewportWidth/2f, MyGame.camera.position.y- MyGame.camera.viewportHeight/2f,
                 MyGame.camera.viewportWidth, MyGame.camera.viewportHeight)
-
-//        batch.draw(starryBackgroundStretched, MyGame.camera.position.x - MyGame.camera.viewportWidth/2f, MyGame.camera.position.y- MyGame.camera.viewportHeight/2f,
-//                MyGame.camera.viewportWidth, MyGame.camera.viewportHeight)
 
         //When we're paused, draw the thruster handles and lines.
         if(paused) {
@@ -224,6 +231,9 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
         //draw stations
         data.stationList.forEach { station -> station.draw(batch) }
+
+        //draw fuel containers
+        data.fuelContainerList.forEach { station -> station.draw(batch) }
 
         data.ship.draw(batch)
 
@@ -388,7 +398,9 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     }
 
     fun runPredictor(){
-        Predictor.runPrediction(data.ship, {pauseAllPhysicsExceptPredictorShip()}, {resumeAllPhysicsExceptPredictorShip()}, {doPhysicsStep(Constants.PHYSICS_TIME_STEP)})
+        Predictor.runPrediction(data.ship, {pauseAllPhysicsExceptPredictorShip()}, {resumeAllPhysicsExceptPredictorShip()},
+                {MyGame.world.step(Constants.PHYSICS_TIME_STEP, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS)})
+
         points = Predictor.pointsList
         predictorLineDrawer.setPoints(points)
     }
@@ -416,6 +428,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     fun pauseAllPhysicsExceptPredictorShip(){
         data.planetList.forEach { p -> p.setPhysicsPaused(true) }
         data.asteroidList.forEach { a -> a.setPhysicsPaused(true) }
+        data.fuelContainerList.forEach { a -> a.setPhysicsPaused(true) }
         data.ship.setPhysicsPaused(true)
     }
 
@@ -425,6 +438,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     fun resumeAllPhysicsExceptPredictorShip(){
         data.planetList.forEach { p -> p.setPhysicsPaused(false) }
         data.asteroidList.forEach { a -> a.setPhysicsPaused(false) }
+        data.fuelContainerList.forEach { a -> a.setPhysicsPaused(false) }
         data.ship.setPhysicsPaused(false)
     }
 

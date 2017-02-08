@@ -15,6 +15,9 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.quickbite.spaceslingshot.interfaces.ActionResolver;
+import com.quickbite.spaceslingshot.interfaces.AdInterface;
+import com.quickbite.spaceslingshot.interfaces.Transactions;
 import com.quickbite.spaceslingshot.screens.MainMenuScreen;
 import com.quickbite.spaceslingshot.util.ContactListenerClass;
 import com.quickbite.spaceslingshot.util.EasyAssetManager;
@@ -39,6 +42,17 @@ public class MyGame extends Game {
 	public static Box2DDebugRenderer debugRenderer;
 
 	private static ExecutorService threadPool;
+
+	public static AdInterface ads;
+	public static Transactions transactions;
+	public static ActionResolver actionResolver;
+
+	public MyGame(AdInterface ads, Transactions transactions, ActionResolver actionResolver){
+
+		MyGame.ads = ads;
+		MyGame.transactions = transactions;
+		MyGame.actionResolver = actionResolver;
+	}
 
 	@Override
 	public void create () {

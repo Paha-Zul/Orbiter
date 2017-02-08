@@ -150,7 +150,7 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotat
 
         circle.dispose()
 
-        this.body.userData = BodyData(BodyData.ObjectType.Station, this.uniqueID, this)
+        this.body.userData = BodyData(BodyData.ObjectType.Station, this.uniqueID, this, this)
     }
 
     private fun setArrowOffset(arrowOffset:Vector2){

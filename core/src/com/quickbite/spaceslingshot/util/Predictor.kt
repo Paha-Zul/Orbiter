@@ -24,6 +24,7 @@ object Predictor : Disposable{
         predictorShip.copyThrusters(ship.thrusters)
 
         pausePhysics()
+
         for(i in 0..steps-1){
             predictorShip.update(0.016f)
             predictorShip.fixedUpdate(0.016f)

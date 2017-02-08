@@ -9,7 +9,10 @@ import com.quickbite.spaceslingshot.data.GameScreenData
 import com.quickbite.spaceslingshot.data.PlanetData
 import com.quickbite.spaceslingshot.data.ProceduralPlanetTextureGenerator
 import com.quickbite.spaceslingshot.data.json.JsonLevelData
-import com.quickbite.spaceslingshot.objects.*
+import com.quickbite.spaceslingshot.objects.AsteroidSpawner
+import com.quickbite.spaceslingshot.objects.Obstacle
+import com.quickbite.spaceslingshot.objects.Planet
+import com.quickbite.spaceslingshot.objects.SpaceStation
 
 /**
  * Created by Paha on 8/8/2016.
@@ -21,15 +24,7 @@ object GameLevels {
         if(level >= levels.size) return false
 
         val levelData = levels[level]
-        data.planetList.forEach(Planet::dispose)
-        data.asteroidList.forEach(Asteroid::dispose)
-        data.obstacleList.forEach(Obstacle::dispose)
-        data.stationList.forEach(SpaceStation::dispose)
-
-        data.planetList.clear()
-        data.obstacleList.clear()
-        data.asteroidList.clear()
-        data.stationList.clear()
+        data.disposeAndClearLists()
 
         var planetTexture: Texture
         val planetRotation:() -> Float = { MathUtils.random(360f)}

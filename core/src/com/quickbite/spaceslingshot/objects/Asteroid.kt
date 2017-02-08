@@ -86,7 +86,7 @@ class Asteroid(val position: Vector2, val radius:Float, val velocity:Vector2, va
 
         circle.dispose()
 
-        this.body.userData = BodyData(BodyData.ObjectType.Ship, this.uniqueID, this)
+        this.body.userData = BodyData(BodyData.ObjectType.Ship, this.uniqueID, this, this)
     }
 
     override fun setPhysicsPaused(pausePhysics: Boolean) {
