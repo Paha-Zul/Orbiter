@@ -171,7 +171,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
                     gameOver() //Run the game over logic
             }
 
-            runPredictor()
+//            runPredictor()
 
             //Paused update...
         }else{
@@ -188,7 +188,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 //            predictorLineDrawer.setStartAndEnd(data.ship.burnBallBasePosition, data.ship.burnHandleLocation)
         }
 
-        gui.bottomPauseButton.value = data.pauseLimit
+        gui.bottomPauseProgressBar.value = data.pauseLimit
         gui.update(delta)
     }
 

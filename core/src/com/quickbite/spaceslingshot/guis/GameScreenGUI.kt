@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
@@ -47,7 +48,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
     lateinit var nextLevelButton:TextButton
 
     lateinit var bottomPauseText:Label
-    lateinit var bottomPauseButton:ProgressBar
+    lateinit var bottomPauseProgressBar:ProgressBar
 
     lateinit var relocateShipButton:Button
     var bottomTable:Table
@@ -132,33 +133,50 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         val backTable = Table()
         val frontTable = Table()
 
+        frontTable.touchable = Touchable.enabled
+
         val imageButtonStyle = Button.ButtonStyle()
         imageButtonStyle.up = TextureRegionDrawable(TextureRegion(MyGame.manager["relocateButton", Texture::class.java]))
 
         val progressBarStyle = ProgressBar.ProgressBarStyle()
         progressBarStyle.knobBefore = TextureRegionDrawable(TextureRegion(GH.createPixel(Color.GREEN, 1, 20)))
 
+        //The text that says the state of pasued
         bottomPauseText = Label("Paused", Label.LabelStyle(MyGame.font, Color.WHITE))
         bottomPauseText.setSize(40f, 40f)
         bottomPauseText.setFontScale(0.2f)
         bottomPauseText.setAlignment(Align.center)
 
-        bottomPauseButton = ProgressBar(0f, 100f, 0.1f, false, progressBarStyle)
-        bottomPauseButton.setSize(400f, 40f)
+        //The progress bar for pause timer
+        bottomPauseProgressBar = ProgressBar(0f, 100f, 0.1f, false, progressBarStyle)
+        bottomPauseProgressBar.setSize(400f, 40f)
 
         relocateShipButton = Button(imageButtonStyle)
 
+        //The table behind the progress bar. Also includes the progress bar
         backTable.background = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("fuelBarBackground"), 10, 10, 10, 10))
         backTable.setSize(MyGame.viewport.worldWidth - 100f, 20f)
-        backTable.add(bottomPauseButton).size(MyGame.viewport.worldWidth - 120f, 32f).bottom().padTop(25f)
+        backTable.add(bottomPauseProgressBar).size(MyGame.viewport.worldWidth - 120f, 32f).bottom().padTop(25f)
 
+        //The table overlaying on top of the progress bar
         frontTable.background = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("pauseBarOverlay"), 40, 40, 20, 30))
         frontTable.setSize(MyGame.viewport.worldWidth - 80f, 64f)
-        frontTable.add(bottomPauseText).top().padBottom(20f)
+        frontTable.add(bottomPauseText).top().padBottom(20f).fillX().expandX()
 
+        //Stack the back table and front table
         val stack = Stack(backTable, frontTable)
         stack.setSize(MyGame.viewport.worldWidth - 100f, 64f)
         stack.setPosition(0f, 0f)
+
+        frontTable.addListener(object:ClickListener(){
+            override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                gameScreen.toggleGamePause()
+                when(GameScreen.paused){
+                    true -> bottomPauseText.setText("Resume")
+                    false -> bottomPauseText.setText("Pause")
+                }
+            }
+        })
 
         mainTable.add(stack).size(MyGame.viewport.worldWidth - 100f, 64f)
         mainTable.add().fillX().expandX()
@@ -168,15 +186,15 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
 
 //        mainTable.debugAll()
 
-        bottomPauseText.addListener(object:ClickListener(){
-            override fun clicked(event: InputEvent?, x: Float, y: Float) {
-                gameScreen.toggleGamePause()
-                when(GameScreen.paused){
-                    true -> bottomPauseText.setText("Resume")
-                    false -> bottomPauseText.setText("Pause")
-                }
-            }
-        })
+//        bottomPauseText.addListener(object:ClickListener(){
+//            override fun clicked(event: InputEvent?, x: Float, y: Float) {
+//                gameScreen.toggleGamePause()
+//                when(GameScreen.paused){
+//                    true -> bottomPauseText.setText("Resume")
+//                    false -> bottomPauseText.setText("Pause")
+//                }
+//            }
+//        })
 
         relocateShipButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -281,6 +299,8 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
     fun showGameOver(failed:Boolean){
         gameOverTable.clear()
 
+        val innerTable = Table()
+
         val completedTable = Table()
         val buttonTable = Table()
 
@@ -323,13 +343,15 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         if(failed) gameOverStatusLabel.setText("Failed")
         else gameOverStatusLabel.setText("Success!")
 
-        gameOverTable.add(gameOverStatusLabel).fillX().expandX()
-        gameOverTable.row().spaceTop(10f)
-//        gameOverTable.add(timeLabel).fillX().expandX()
-//        gameOverTable.row().spaceTop(10f)
-//        gameOverTable.add(completedTable).fillX().expandX()
-//        gameOverTable.row().spaceTop(10f)
-//        gameOverTable.add(buttonTable).fillX().expandX().padBottom(5f)
+        innerTable.add(gameOverStatusLabel).width(280f)
+        innerTable.row().spaceTop(10f).width(280f)
+        innerTable.add(timeLabel).width(280f)
+        innerTable.row().spaceTop(10f).width(280f)
+        innerTable.add(completedTable).width(280f)
+        innerTable.row().spaceTop(10f).width(280f)
+        innerTable.add(buttonTable).width(280f).padBottom(5f)
+
+        gameOverTable.add(innerTable).fill().expand()
 
         timeLabel.setText("Completed in ${gameScreen.data.levelTimer.format(2)}s")
 
@@ -367,7 +389,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
             }
         }))
 
-        gameOverTable.debugAll()
+//        gameOverTable.debugAll()
     }
 
     private fun fadeInCheckmark(box:Actor, checkmark:Actor, delay:Float, speed:Float = 0.3f){
