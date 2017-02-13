@@ -135,12 +135,8 @@ class EndlessGame(val screen:GameScreen) : IUpdateable, Disposable{
         nextStationPosition.set(0f, nextStationPosition.y + MathUtils.random(randStationDist.first, randStationDist.second))
     }
 
-    private fun addStationLeft(){
-
-    }
-
-    private fun addStationRight(){
-
+    fun finish(){
+        MyGame.actionResolver.submitLeaderboardScore(Constants.LEADERBOARD, data.currPlanetScore)
     }
 
     fun reset(){

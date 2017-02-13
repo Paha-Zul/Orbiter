@@ -167,14 +167,14 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
             if(GameScreen.finished){
                 gui.showGameOver(lost)
                 setGamePaused(true)
-                if(!lost)
-                    gameOver() //Run the game over logic
+                gameOver() //Run the game over logic
             }
 
 //            runPredictor()
 
             //Paused update...
         }else{
+            //Don't allow the pause counter to go down if we are on the game over screen
             if(!GameScreen.finished) {
                 data.pauseLimit -= Constants.PAUSE_AMTPERTICK
                 if (data.pauseLimit <= 0)
@@ -310,8 +310,11 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     }
 
     fun gameOver(){
-        val level = GameLevels.levels[data.currLevel]
-        checkAchievementCompletion(level)
+        if(!lost) {
+            val level = GameLevels.levels[data.currLevel]
+            checkAchievementCompletion(level)
+        }
+        endlessGame?.finish()
     }
 
     private fun checkAchievementCompletion(level:JsonLevelData){

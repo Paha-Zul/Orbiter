@@ -22,4 +22,6 @@ object Constants {
     val POSITION_ITERATIONS = 2
 
     val PAUSE_AMTPERTICK = 0.0f
+
+    val LEADERBOARD = "CgkI9L3rnvoREAIQAQ"
 }

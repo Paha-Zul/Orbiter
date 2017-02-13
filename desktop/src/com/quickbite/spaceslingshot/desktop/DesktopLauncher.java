@@ -36,8 +36,8 @@ public class DesktopLauncher implements ActionResolver, AdInterface, Transaction
 	}
 
 	@Override
-	public void submitScoreGPGS(String tableID, long score) {
-
+	public void submitLeaderboardScore(String tableID, long score) {
+		System.out.println("Submitted score of "+score+" to "+tableID);
 	}
 
 	@Override

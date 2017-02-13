@@ -7,9 +7,9 @@ import com.quickbite.spaceslingshot.objects.*
  * Created by Paha on 8/6/2016.
  */
 class GameScreenData{
-    var currPlanetScore = 0
+    var currPlanetScore = 0L //The number of planets we passed (in endless)
     var levelTimer = 0f //The time recorded of the level
-    var currLevel = 0
+    var currLevel = 0 //The current level index
     var pauseLimit = 100f //The amount of pause time we have
 
     lateinit var ship: Ship
@@ -33,6 +33,7 @@ class GameScreenData{
         asteroidSpawnerList.clear()
         asteroidList.clear()
         stationList.clear()
+        fuelContainerList.clear()
     }
 
     fun disposeAndClearLists(){

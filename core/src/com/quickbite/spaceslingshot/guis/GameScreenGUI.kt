@@ -353,7 +353,10 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
 
         gameOverTable.add(innerTable).fill().expand()
 
-        timeLabel.setText("Completed in ${gameScreen.data.levelTimer.format(2)}s")
+        if(gameScreen.endlessGame == null)
+            timeLabel.setText("Completed in ${gameScreen.data.levelTimer.format(2)}s")
+        else
+            timeLabel.setText("Passed ${gameScreen.data.currPlanetScore} planets!")
 
         if(failed){
             buttonTable.add(mainMenuButton).spaceRight(20f).width(100f).height(50f)

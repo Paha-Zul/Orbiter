@@ -43,7 +43,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 //		GameAnalytics.configureBuild("1.0.2");
 //		GameAnalytics.initializeWithGameKey(this, "06fb38014af7b80c56da048dc58621f1", "33294fa657a1b0ccca1fecac2c80ae1b2e7e1ff8");
 
-		initBilling();
+//		initBilling();
 
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		initialize(game, config);
@@ -52,10 +52,12 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 
 		super.onCreate(savedInstanceState);
 
-		setupAds(game);
+//		setupAds(game);
 	}
 
-
+	/**
+	 * Sets up the gameHelper for Google Play Games
+	 */
 	private void setupUpGameHelper(){
 		if (gameHelper == null) {
 			gameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
@@ -177,13 +179,15 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 	@Override
 	public void onStart(){
 		super.onStart();
-		gameHelper.onStart(this);
+
+//		gameHelper.onStart(this);
 	}
 
 	@Override
 	public void onStop(){
 		super.onStop();
-		gameHelper.onStop();
+
+//		gameHelper.onStop();
 	}
 
 	@Override
@@ -271,7 +275,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 	}
 
 	@Override
-	public void submitScoreGPGS(String tableID, long score) {
+	public void submitLeaderboardScore(String tableID, long score) {
 		if (getSignedInGPGS()) {
 			Games.Leaderboards.submitScore(gameHelper.getApiClient(), tableID, score);
 		}

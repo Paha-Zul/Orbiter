@@ -3,20 +3,24 @@ package com.quickbite.spaceslingshot.guis
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.screens.GameScreen
 import com.quickbite.spaceslingshot.screens.MainMenuScreen
+import com.quickbite.spaceslingshot.util.Constants
 import com.quickbite.spaceslingshot.util.GameLevels
 import com.quickbite.spaceslingshot.util.Padding
 
@@ -30,8 +34,10 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
 
     val mainMenuTable:Table = Table()
 
-    val buttonUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("button"))
-    val buttonDown = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("button_down"))
+    val buttonUp = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("buttonNew"), 25, 25, 25, 25))
+//    val buttonDown = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("button_down"), 25, 25, 25, 25))
+    val buttonDown = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("buttonNew_down"), 25, 25, 25, 25))
+
     val boxUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("levelButton"))
     val boxDown = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("levelButton_down"))
 
@@ -58,26 +64,64 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         buttonStyle.over = buttonDown
         buttonStyle.down = buttonDown
 
+        val buttonStyle2 = TextButton.TextButtonStyle()
+        buttonStyle2.font = MyGame.font
+        buttonStyle2.fontColor = Color.WHITE
+        buttonStyle2.disabledFontColor = Color(0.5f, 0.5f, 0.5f, 0.75f)
+        buttonStyle2.up = boxUp
+        buttonStyle2.over = boxDown
+        buttonStyle2.down = boxDown
+
+        val playButtonStyle = ImageButton.ImageButtonStyle()
+        playButtonStyle.up = buttonUp
+        playButtonStyle.over = buttonDown
+        playButtonStyle.down = buttonDown
+        playButtonStyle.imageUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("playButtonIcon"))
+
+        val leaderboardButtonStyle = ImageButton.ImageButtonStyle()
+        leaderboardButtonStyle.up = buttonUp
+        leaderboardButtonStyle.over = buttonDown
+        leaderboardButtonStyle.down = buttonDown
+        leaderboardButtonStyle.imageUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("leaderboardIcon"))
+
+        val quitButtonStyle = ImageButton.ImageButtonStyle()
+        quitButtonStyle.up = buttonUp
+        quitButtonStyle.over = buttonDown
+        quitButtonStyle.down = buttonDown
+        quitButtonStyle.imageUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("quitButtonIcon"))
+
         val titleLabel = Label("Orbiter", labelStyle)
         titleLabel.setFontScale(0.8f)
+        titleLabel.setAlignment(Align.center)
 
-        val playButton = TextButton("Play", buttonStyle)
-        playButton.label.setFontScale(0.2f)
+        val loginButton = TextButton("Log-in", buttonStyle2)
+        loginButton.label.setFontScale(0.15f)
 
-        val editorButton = TextButton("Editor", buttonStyle)
-        editorButton.label.setFontScale(0.2f)
-        editorButton.isDisabled = true
+        val playButton = ImageButton(playButtonStyle)
+        playButton.imageCell.size(55f, 55f)
 
-        val quitButton = TextButton("Quit", buttonStyle)
-        quitButton.label.setFontScale(0.2f)
+//        playButton.debugAll()
 
-        mainMenuTable.add(titleLabel).spaceBottom(100f)
-        mainMenuTable.row()
-        mainMenuTable.add(playButton).size(128f, 64f).spaceBottom(20f)
-        mainMenuTable.row()
-        mainMenuTable.add(editorButton).size(128f, 64f).spaceBottom(20f)
-        mainMenuTable.row()
-        mainMenuTable.add(quitButton).size(128f, 64f)
+//        val editorButton = TextButton("Editor", buttonStyle)
+//        editorButton.label.setFontScale(0.2f)
+//        editorButton.isDisabled = true
+
+        val leaderboardButton = ImageButton(leaderboardButtonStyle)
+        leaderboardButton.imageCell.size(55f, 55f)
+        leaderboardButton.isDisabled = true
+
+        val quitButton = ImageButton(quitButtonStyle)
+        quitButton.imageCell.size(55f, 55f)
+
+        mainMenuTable.add(loginButton).top().left()
+        mainMenuTable.row().expandX().fillX()
+        mainMenuTable.add(titleLabel).spaceBottom(100f).expandX().fillX()
+        mainMenuTable.row().expandX().fillX()
+        mainMenuTable.add(playButton).size(128f, 64f).spaceBottom(20f).expandX().fillX()
+        mainMenuTable.row().expandX().fillX()
+        mainMenuTable.add(leaderboardButton).size(128f, 64f).spaceBottom(20f).expandX().fillX()
+        mainMenuTable.row().expandX().fillX()
+        mainMenuTable.add(quitButton).size(128f, 64f).expandX().fillX()
 
         //On hitting the play button, show us the level select
         playButton.addListener(object:ChangeListener(){
@@ -97,13 +141,13 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
             }
         })
 
-//        editorButton.addListener(object:ChangeListener(){
-//            override fun changed(event: ChangeEvent?, actor: Actor?) {
-//                MyGame.stage.clear()
-//                mainMenu.game.screen = EditorScreen(mainMenu.game)
-//            }
-//        })
+        leaderboardButton.addListener(object:ChangeListener(){
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                MyGame.actionResolver.getLeaderboardGPGS(Constants.LEADERBOARD)
+            }
+        })
 
+        mainMenuTable.top().left()
         mainMenuTable.setFillParent(true)
     }
 

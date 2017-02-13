@@ -9,7 +9,7 @@ public interface ActionResolver {
     boolean getSignedInGPGS();
     void loginGPGS();
     void logoutGPGS();
-    void submitScoreGPGS(String tableID, long score);
+    void submitLeaderboardScore(String tableID, long score);
 
     /**
      * Submits an event to analytics
