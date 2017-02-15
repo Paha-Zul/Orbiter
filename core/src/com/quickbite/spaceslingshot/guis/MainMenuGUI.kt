@@ -9,14 +9,12 @@ import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.Timer
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.screens.GameScreen
 import com.quickbite.spaceslingshot.screens.MainMenuScreen
@@ -38,8 +36,8 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
 //    val buttonDown = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("button_down"), 25, 25, 25, 25))
     val buttonDown = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("buttonNew_down"), 25, 25, 25, 25))
 
-    val boxUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("levelButton"))
-    val boxDown = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("levelButton_down"))
+    val boxUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("buttonNewSmall"))
+    val boxDown = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("buttonNewSmall_down"))
 
     val scaleSpeed = 0.3f
 
@@ -94,26 +92,23 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         titleLabel.setFontScale(0.8f)
         titleLabel.setAlignment(Align.center)
 
-        val loginButton = TextButton("Log-in", buttonStyle2)
+        val loginButton = TextButton("Log-Out", buttonStyle2)
         loginButton.label.setFontScale(0.15f)
+        if(!MyGame.actionResolver.signedInGPGS)
+            loginButton.setText("Log-In")
 
         val playButton = ImageButton(playButtonStyle)
         playButton.imageCell.size(55f, 55f)
 
-//        playButton.debugAll()
-
-//        val editorButton = TextButton("Editor", buttonStyle)
-//        editorButton.label.setFontScale(0.2f)
-//        editorButton.isDisabled = true
-
         val leaderboardButton = ImageButton(leaderboardButtonStyle)
         leaderboardButton.imageCell.size(55f, 55f)
-        leaderboardButton.isDisabled = true
+        if(!MyGame.actionResolver.signedInGPGS)
+            disableButton(leaderboardButton)
 
         val quitButton = ImageButton(quitButtonStyle)
         quitButton.imageCell.size(55f, 55f)
 
-        mainMenuTable.add(loginButton).top().left()
+        mainMenuTable.add(loginButton).top().left().size(64f, 64f).pad(5f, 5f, 0f, 0f)
         mainMenuTable.row().expandX().fillX()
         mainMenuTable.add(titleLabel).spaceBottom(100f).expandX().fillX()
         mainMenuTable.row().expandX().fillX()
@@ -138,6 +133,38 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         quitButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 Gdx.app.exit()
+            }
+        })
+
+        loginButton.addListener(object:ChangeListener(){
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                if(!MyGame.actionResolver.signedInGPGS) {
+                    MyGame.actionResolver.loginGPGS() //Login
+
+                    //Make a timer to check if we are logged in. When we are, enable the button
+                    Timer.schedule(object:Timer.Task(){
+                        override fun run() {
+                            if(MyGame.actionResolver.signedInGPGS){
+                                enableButton(leaderboardButton)
+                                loginButton.setText("Log-Out")
+                                this.cancel()
+                            }
+                        }
+                    }, 0f, 0.3f, 100)
+                }else {
+                    MyGame.actionResolver.logoutGPGS()
+
+                    //Make a timer to check if we are logged out. When we are, disable the button
+                    Timer.schedule(object:Timer.Task(){
+                        override fun run() {
+                            if(!MyGame.actionResolver.signedInGPGS){
+                                disableButton(leaderboardButton)
+                                loginButton.setText("Log-In")
+                                this.cancel()
+                            }
+                        }
+                    }, 0f, 0.3f, 100)
+                }
             }
         })
 
@@ -175,6 +202,16 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
                 return true
             }
         }))
+    }
+
+    private fun disableButton(button: Button){
+        button.isDisabled = true
+        button.color.a = 0.5f
+    }
+
+    private fun enableButton(button: Button){
+        button.isDisabled = false
+        button.color.a = 1f
     }
 
     /**

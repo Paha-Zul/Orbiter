@@ -38,6 +38,8 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
+		setupUpGameHelper();
+
 		Game game = new MyGame(this, this, this);
 
 //		GameAnalytics.configureBuild("1.0.2");
@@ -47,8 +49,6 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		initialize(game, config);
-
-		setupUpGameHelper();
 
 		super.onCreate(savedInstanceState);
 
@@ -180,20 +180,20 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 	public void onStart(){
 		super.onStart();
 
-//		gameHelper.onStart(this);
+		gameHelper.onStart(this);
 	}
 
 	@Override
 	public void onStop(){
 		super.onStop();
 
-//		gameHelper.onStop();
+		gameHelper.onStop();
 	}
 
 	@Override
 	public void onActivityResult(int request, int response, Intent data) {
-//		super.onActivityResult(request, response, data);
-//		gameHelper.onActivityResult(request, response, data);
+		super.onActivityResult(request, response, data);
+		gameHelper.onActivityResult(request, response, data);
 //		mHelper.handleActivityResult(request, response, data);
 
 		/** Don't uncomment below? */
@@ -240,7 +240,6 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 	public void onDestroy() {
 		super.onDestroy();
 	}
-
 
 	@Override
 	public void onBackPressed() {
@@ -295,7 +294,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 	@Override
 	public void unlockAchievementGPGS(String achievementId) {
 		if (getSignedInGPGS()) {
-//			Games.Achievements.unlock(gameHelper.getApiClient(), achievementId);
+			Games.Achievements.unlock(gameHelper.getApiClient(), achievementId);
 		}
 	}
 

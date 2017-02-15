@@ -9,6 +9,8 @@ import com.quickbite.spaceslingshot.interfaces.AdInterface;
 import com.quickbite.spaceslingshot.interfaces.Transactions;
 
 public class DesktopLauncher implements ActionResolver, AdInterface, Transactions {
+	boolean loggedInGPG = false; //Fake logged in value for testing.
+
 	public static void main (String[] arg) {
 		DesktopLauncher instance = new DesktopLauncher();
 
@@ -22,17 +24,19 @@ public class DesktopLauncher implements ActionResolver, AdInterface, Transaction
 
 	@Override
 	public boolean getSignedInGPGS() {
-		return false;
+		return this.loggedInGPG;
 	}
 
 	@Override
 	public void loginGPGS() {
-
+		System.out.println("[DesktopLauncher] Logged in");
+		this.loggedInGPG = true;
 	}
 
 	@Override
 	public void logoutGPGS() {
-
+		System.out.println("[DesktopLauncher] Logged out");
+		this.loggedInGPG = false;
 	}
 
 	@Override
