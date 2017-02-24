@@ -2,14 +2,20 @@ package com.quickbite.spaceslingshot;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
+import com.appodeal.gdx.GdxAppodeal;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.Timer;
+import com.example.android.trivialdrivesample.util.IabHelper;
+import com.example.android.trivialdrivesample.util.IabResult;
+import com.example.android.trivialdrivesample.util.Inventory;
+import com.example.android.trivialdrivesample.util.Purchase;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.games.Games;
@@ -19,6 +25,7 @@ import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.android.gms.games.leaderboard.Leaderboards;
 import com.google.example.games.basegameutils.GameHelper;
 import com.quickbite.spaceslingshot.guis.GameScreenGUI;
+import com.quickbite.spaceslingshot.guis.MainMenuGUI;
 import com.quickbite.spaceslingshot.interfaces.ActionResolver;
 import com.quickbite.spaceslingshot.interfaces.AdInterface;
 import com.quickbite.spaceslingshot.interfaces.Transactions;
@@ -34,6 +41,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 	private boolean showingBannerAd = false, showAds = false, bannerAdLoaded = false;
 
 	private boolean dailyGood = false, weeklyGood = false, allTimeGood = false;
+	private IabHelper mHelper;
 
 
 	@Override
@@ -42,17 +50,18 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 
 		Game game = new MyGame(this, this, this);
 
+
 //		GameAnalytics.configureBuild("1.0.2");
 //		GameAnalytics.initializeWithGameKey(this, "06fb38014af7b80c56da048dc58621f1", "33294fa657a1b0ccca1fecac2c80ae1b2e7e1ff8");
 
-//		initBilling();
+		initBilling();
 
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		initialize(game, config);
 
-		super.onCreate(savedInstanceState);
+        setupAds(game);
 
-//		setupAds(game);
+        super.onCreate(savedInstanceState);
 	}
 
 	/**
@@ -69,6 +78,12 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 	}
 
 	private void setupAds(Game game){
+		String appKey = "ecc3499bf389398ad32f0cbe07263654765899535432107b";
+		GdxAppodeal.disableLocationPermissionCheck();
+        GdxAppodeal.disableNetwork("cheetah");
+        GdxAppodeal.setAutoCache(GdxAppodeal.INTERSTITIAL, true);
+        GdxAppodeal.initialize(appKey, GdxAppodeal.INTERSTITIAL | GdxAppodeal.BANNER);
+
 //		AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
 //		cfg.useAccelerometer = false;
 //		cfg.useCompass = false;
@@ -121,7 +136,10 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 //	}
 
 	@Override
-	public void showAdmobBannerAd() {
+	public void showBannerAd() {
+        if(showAds)
+		    GdxAppodeal.show(GdxAppodeal.BANNER_BOTTOM);
+
 //		if(showAds) {
 //			showingBannerAd = true;
 //			runOnUiThread(new Runnable() {
@@ -134,7 +152,9 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 	}
 
 	@Override
-	public void hideAdmobBannerAd() {
+	public void hideBannerAd() {
+		GdxAppodeal.hide(GdxAppodeal.BANNER_BOTTOM);
+
 //		showingBannerAd = false;
 //		runOnUiThread(new Runnable() {
 //			@Override
@@ -150,7 +170,8 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 	}
 
 	@Override
-	public void showAdmobInterAd() {
+	public void showInterAd() {
+        GdxAppodeal.show(GdxAppodeal.INTERSTITIAL);
 //		if(showAds) {
 //			try {
 //				runOnUiThread(new Runnable() {
@@ -167,7 +188,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 	}
 
 	@Override
-	public void hideAdmobInterAd() {
+	public void hideInterAd() {
 
 	}
 
@@ -476,78 +497,84 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 	}
 
 	private void initBilling(){
-//		mHelper = new IabHelper(this, getString(R.string.d2) + getString(R.string.d1) + getString(R.string.d3));
-//
-//		mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
-//			@Override
-//			public void onIabSetupFinished(IabResult result) {
-//				if (!result.isSuccess()) {
-//					// Oh noes, there was a problem.
-//				}else {
-//					//Let's then query the inventory...
-//					try {
-//						mHelper.queryInventoryAsync(mGotInventoryListener);
-//					} catch (IabHelper.IabAsyncInProgressException e) {
-//						e.printStackTrace();
-//					}
-//				}
-//			}
-//		});
+		mHelper = new IabHelper(this, getString(R.string.d2) + getString(R.string.d1) + getString(R.string.d3));
+
+		mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+			@Override
+			public void onIabSetupFinished(IabResult result) {
+				if (!result.isSuccess()) {
+					// Oh noes, there was a problem.
+				}else {
+					//Let's then query the inventory...
+					try {
+						mHelper.queryInventoryAsync(mGotInventoryListener);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
 	}
 
 	@Override
 	public void purchaseNoAds() {
-//		try {
-//			//Launch the purchase flow with a test SKU for now.
-//			mHelper.launchPurchaseFlow(this, SKU_NOADS, RC_REQUEST, new IabHelper.OnIabPurchaseFinishedListener() {
-//				@Override
-//				public void onIabPurchaseFinished(IabResult result, Purchase info) {
-//
-//					if(result.isSuccess()){
-//						showAds = false;
-//						hideAdmobBannerAd();
-//						MainMenuGUI.removeNoAdsButton();
+		try {
+			//Launch the purchase flow with a test SKU for now.
+			mHelper.launchPurchaseFlow(this, SKU_NOADS, RC_REQUEST, new IabHelper.OnIabPurchaseFinishedListener() {
+				@Override
+				public void onIabPurchaseFinished(IabResult result, Purchase info) {
+
+					//If it is successful, hide the banner ad and remove the ad button
+					if(result.isSuccess()){
+						showAds = false; //Toggle off the ads
+						hideBannerAd();
+						MainMenuGUI.Companion.removeAdsButton();
 //						GameAnalytics.addBusinessEventWithCurrency("USD", 99, info.getItemType(), "no_ads", "menu", "", "Google Play", info.getSignature());
-//					}else{
-//						Log.e(TAG, "Purchase was not successful");
-//					}
-//				}
-//			}, "hmm");
-//		} catch (IabHelper.IabAsyncInProgressException e) {
-//			e.printStackTrace();
-//		}
+					}else{
+						Log.e(TAG, "Purchase was not successful");
+					}
+				}
+			}, "hmm");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-//	private IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
-//		@Override
-//		public void onQueryInventoryFinished(IabResult result, Inventory inv) {
-//			if(result.isFailure() || mHelper == null || inv == null) {
-//				return;
-//			}
-//
-//			if (inv.hasPurchase(SKU_NOADS)) {
-//				showAds = false;
-//				hideAdmobBannerAd();
-//
-//				//If it matches my test device, consume it for now.
-//				if(Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID).equals("93c5883d462d97e9")){
-//					try {
-//						mHelper.consumeAsync(inv.getPurchase(SKU_NOADS), new IabHelper.OnConsumeFinishedListener() {
-//							@Override
-//							public void onConsumeFinished(Purchase purchase, IabResult result) {
-//
-//							}
-//						});
-//					} catch (IabHelper.IabAsyncInProgressException e) {
-//						Log.e(TAG, "Error", e);
-//						e.printStackTrace();
-//					}
-//				}
-//			} else {
-//				showAds = true;
-//			}
-//		}
-//	};
+    /**
+     * This queries the inventory for items. We can use this to check for purchases.
+     */
+	private IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
+		@Override
+		public void onQueryInventoryFinished(IabResult result, Inventory inv) {
+			if(result.isFailure() || mHelper == null || inv == null) {
+				return;
+			}
+
+            //Check if we have the NO_ADS purchase
+			if (inv.hasPurchase(SKU_NOADS)) {
+				showAds = false;
+				hideBannerAd();
+
+				//If it matches my test device, consume it for now. (the equals('number') is my device id)
+				if(Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID).equals("93c5883d462d97e9")){
+					try {
+                        //Try to consume it
+						mHelper.consumeAsync(inv.getPurchase(SKU_NOADS), new IabHelper.OnConsumeFinishedListener() {
+							@Override
+							public void onConsumeFinished(Purchase purchase, IabResult result) {
+
+							}
+						});
+					} catch (Exception e) {
+						Log.e(TAG, "Error", e);
+						e.printStackTrace();
+					}
+				}
+			} else {
+				showAds = true;
+			}
+		}
+	};
 
 	@Override
 	public void onSignInFailed() {

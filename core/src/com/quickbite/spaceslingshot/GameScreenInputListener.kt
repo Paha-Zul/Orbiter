@@ -110,7 +110,7 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
             screen.runPredictor()
         }else if(draggingScreen){
             offset.set(screenX - startDragPos.x, screenY - startDragPos.y) //The difference between where the screen was and is now.
-            val x = if(screen.endlessGame == null) originalCameraPos.x - offset.x else MyGame.camera.viewportWidth/2f //If it's an endless game mode, don't allow X scrolling.
+            val x = originalCameraPos.x - offset.x //If it's an endless game mode, don't allow X scrolling.
             val y = originalCameraPos.y + offset.y //We have to add here because the Y is flipped
             screen.scrollScreen(x, y)
         }

@@ -89,7 +89,7 @@ class EndlessGame(val screen:GameScreen) : IUpdateable, Disposable{
         val randX = MathUtils.random(-MyGame.camera.viewportWidth/2f + (randSize), MyGame.camera.viewportWidth/2f - (randSize))
         val randY = MathUtils.random(randDist.first, randDist.second) + randSize/2f
 
-        nextPlanetPosition.set(MyGame.camera.position.x + randX, nextPlanetPosition.y + randY)
+        nextPlanetPosition.set(MyGame.camera.viewportWidth/2f + randX, nextPlanetPosition.y + randY)
 
         val planet = Planet(Vector2(nextPlanetPosition.x, nextPlanetPosition.y), randSize, randGravity, randDensity, 0f,
                 ProceduralPlanetTextureGenerator.getNextTexture(), false)

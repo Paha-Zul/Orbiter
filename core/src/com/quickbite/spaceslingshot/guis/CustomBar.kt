@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable
  * Created by Paha on 3/29/2016.
  * A specialized health bar for my game!
  */
-class CustomBar(private var normalAmount:Float, private var takenAmount:Float, private var maxAmount:Float, private val background: Drawable, private val whitePixel: Drawable) : Widget(), Disableable {
+class CustomBar(private var normalAmount:Float, private var takenAmount:Float, private var maxAmount:Float, private val background: Drawable?, private val whitePixel: Drawable) : Widget(), Disableable {
     var takenColor = Color.RED
     var normalColor = Color.GREEN
 
@@ -32,7 +32,7 @@ class CustomBar(private var normalAmount:Float, private var takenAmount:Float, p
         //Restore the batch color
         batch.color = color
 
-        background.draw(batch, x, y, width, height) //Draw the bar background last.
+        background?.draw(batch, x, y, width, height) //Draw the bar background last.
     }
 
     fun setAmounts(normalAmount:Float, takenAmount:Float, maxAmount:Float = this.maxAmount){

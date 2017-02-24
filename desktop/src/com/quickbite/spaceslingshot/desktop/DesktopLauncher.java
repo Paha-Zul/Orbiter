@@ -4,6 +4,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.quickbite.spaceslingshot.MyGame;
 import com.quickbite.spaceslingshot.guis.GameScreenGUI;
+import com.quickbite.spaceslingshot.guis.MainMenuGUI;
 import com.quickbite.spaceslingshot.interfaces.ActionResolver;
 import com.quickbite.spaceslingshot.interfaces.AdInterface;
 import com.quickbite.spaceslingshot.interfaces.Transactions;
@@ -90,12 +91,12 @@ public class DesktopLauncher implements ActionResolver, AdInterface, Transaction
 	}
 
 	@Override
-	public void showAdmobBannerAd() {
+	public void showBannerAd() {
 
 	}
 
 	@Override
-	public void hideAdmobBannerAd() {
+	public void hideBannerAd() {
 
 	}
 
@@ -105,12 +106,12 @@ public class DesktopLauncher implements ActionResolver, AdInterface, Transaction
 	}
 
 	@Override
-	public void showAdmobInterAd() {
+	public void showInterAd() {
 
 	}
 
 	@Override
-	public void hideAdmobInterAd() {
+	public void hideInterAd() {
 
 	}
 
@@ -121,6 +122,6 @@ public class DesktopLauncher implements ActionResolver, AdInterface, Transaction
 
 	@Override
 	public void purchaseNoAds() {
-
+		MainMenuGUI.Companion.removeAdsButton();
 	}
 }

@@ -18,6 +18,17 @@ android {
         applicationId "com.quickbite.spaceslingshot"
         minSdkVersion 15
         targetSdkVersion 24
+        multiDexEnabled true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+// use minifyEnabled instead of runProguard if your gradle plugin version is 0.14+
+            proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
+            proguardFile 'proguard-project.txt'
+        }
     }
 }
 // called every time gradle gets executed, takes the native dependencies of
@@ -120,4 +131,5 @@ idea {
     }
 }
 dependencies {
+    compile 'com.android.support:multidex:1.0.1'
 }

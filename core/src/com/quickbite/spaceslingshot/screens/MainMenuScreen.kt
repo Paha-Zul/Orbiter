@@ -31,6 +31,8 @@ class MainMenuScreen(val game:MyGame) :Screen{
         ProceduralPlanetTextureGenerator.generatePlanetTexturesFromData()
 
         MyGame.camera.position.set(MyGame.camera.viewportWidth/2f, MyGame.camera.viewportHeight/2f, 0f)
+
+        MyGame.ads.showBannerAd()
     }
 
     override fun pause() {
@@ -42,7 +44,7 @@ class MainMenuScreen(val game:MyGame) :Screen{
     }
 
     override fun hide() {
-
+        MyGame.ads.hideBannerAd()
     }
 
     override fun render(delta: Float) {

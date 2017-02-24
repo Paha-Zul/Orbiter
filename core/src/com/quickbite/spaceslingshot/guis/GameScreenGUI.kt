@@ -56,8 +56,11 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
     val buttonUp = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("button"), 40, 40, 25, 25))
     val buttonDown = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("button_down"), 40, 40, 25, 25))
 
-    val boxUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("levelButton"))
-    val boxDown = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("levelButton_down"))
+    val buttonNewUp = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("buttonNew"), 25, 25, 20, 25))
+    val buttonNewDown = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("buttonNew_down"), 25, 25, 20, 25))
+
+    val boxUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("buttonNewSmallSolid"))
+    val boxDown = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("buttonNewSmallSolid_down"))
 
     val checks = arrayOf(
             Image(MyGame.GUIAtlas.findRegion("checkmark")),
@@ -105,19 +108,19 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         val backTable = Table()
         val frontTable = Table()
 
-        val background = NinePatchDrawable(NinePatch(MyGame.manager["box", Texture::class.java], 10, 10, 10, 10))
-        fuelBar = CustomBar(gameScreen.data.ship.fuel, 0f, gameScreen.data.ship.fuel, background, TextureRegionDrawable(TextureRegion(GH.createPixel(Color.WHITE))))
+//        val background = NinePatchDrawable(NinePatch(MyGame.manager["box", Texture::class.java], 10, 10, 10, 10))
+        fuelBar = CustomBar(gameScreen.data.ship.fuel, 0f, gameScreen.data.ship.fuel, null, TextureRegionDrawable(TextureRegion(GH.createPixel(Color.WHITE))))
 
         val fuelLabel = Label("Fuel", Label.LabelStyle(MyGame.font, Color.WHITE))
         fuelLabel.setFontScale(0.2f)
 
-        backTable.background = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("fuelBarBackground"))
+        backTable.background = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("fuelBarBackground"), 20, 20, 20, 20))
         backTable.setSize(128f, 64f)
-        backTable.add(fuelBar).size(110f, 32f).bottom().padTop(25f)
+        backTable.add(fuelBar).size(110f, 32f).bottom().padTop(20f)
 
-        frontTable.background = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("fuelBarOverlay"))
+        frontTable.background = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("fuelBarOverlay"), 15, 15, 18, 30))
         frontTable.setSize(128f, 64f)
-        frontTable.add(fuelLabel).top().padBottom(45f)
+        frontTable.add(fuelLabel).top().padBottom(25f)
 
         val stack = Stack(backTable, frontTable)
         stack.setSize(128f, 64f)
@@ -136,7 +139,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         frontTable.touchable = Touchable.enabled
 
         val imageButtonStyle = Button.ButtonStyle()
-        imageButtonStyle.up = TextureRegionDrawable(TextureRegion(MyGame.manager["relocateButton", Texture::class.java]))
+        imageButtonStyle.up = TextureRegionDrawable(TextureRegion(MyGame.GUIAtlas.findRegion("locateButton")))
 
         val progressBarStyle = ProgressBar.ProgressBarStyle()
         progressBarStyle.knobBefore = TextureRegionDrawable(TextureRegion(GH.createPixel(Color.GREEN, 1, 20)))
@@ -159,7 +162,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         backTable.add(bottomPauseProgressBar).size(MyGame.viewport.worldWidth - 120f, 32f).bottom().padTop(25f)
 
         //The table overlaying on top of the progress bar
-        frontTable.background = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("pauseBarOverlay"), 40, 40, 20, 30))
+        frontTable.background = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("fuelBarOverlay"), 15, 15, 18, 30))
         frontTable.setSize(MyGame.viewport.worldWidth - 80f, 64f)
         frontTable.add(bottomPauseText).top().padBottom(20f).fillX().expandX()
 
@@ -180,7 +183,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
 
         mainTable.add(stack).size(MyGame.viewport.worldWidth - 100f, 64f)
         mainTable.add().fillX().expandX()
-        mainTable.add(relocateShipButton).size(64f, 64f)
+        mainTable.add(relocateShipButton).size(64f, 64f).pad(0f, 0f, 5f, 5f)
         mainTable.setPosition(0f, 0f)
         mainTable.setSize(MyGame.viewport.worldWidth, 64f)
 
@@ -245,9 +248,9 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
     private fun makeGameOverStuff(){
         val textButtonStyle = TextButton.TextButtonStyle()
         textButtonStyle.font = MyGame.font
-        textButtonStyle.up = buttonUp
-        textButtonStyle.over = buttonDown
-        textButtonStyle.down = buttonDown
+        textButtonStyle.up = buttonNewUp
+        textButtonStyle.over = buttonNewDown
+        textButtonStyle.down = buttonNewDown
 
         val labelStyle = Label.LabelStyle(MyGame.font, Color.WHITE)
 
@@ -294,6 +297,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
     private fun goToMainMenu(){
         gameScreen.dispose()
         gameScreen.game.screen = MainMenuScreen(gameScreen.game)
+        MyGame.ads.showInterAd()
     }
 
     fun showGameOver(failed:Boolean){
@@ -322,9 +326,9 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         label3.setWrap(true)
 
         //The boxes
-        val image1 = Image(MyGame.GUIAtlas.findRegion("checkmark_background"))
-        val image2 = Image(MyGame.GUIAtlas.findRegion("checkmark_background"))
-        val image3 = Image(MyGame.GUIAtlas.findRegion("checkmark_background"))
+        val image1 = Image(MyGame.GUIAtlas.findRegion("checkBoxSquare"))
+        val image2 = Image(MyGame.GUIAtlas.findRegion("checkBoxSquare"))
+        val image3 = Image(MyGame.GUIAtlas.findRegion("checkBoxSquare"))
 
         val stack1 = Stack(image1)
         val stack2 = Stack(image2)
@@ -338,7 +342,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         completedTable.add(stack2).size(50f)
         completedTable.add(stack3).size(50f)
 
-        gameOverTable.background = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("UIButtonSquare"), 50, 50, 50, 50))
+        gameOverTable.background = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("gameOverDialog"), 50, 50, 50, 50))
 
         if(failed) gameOverStatusLabel.setText("Failed")
         else gameOverStatusLabel.setText("Success!")

@@ -26,6 +26,15 @@ import com.quickbite.spaceslingshot.util.Padding
  * Created by Paha on 8/8/2016.
  */
 class MainMenuGUI(val mainMenu:MainMenuScreen) {
+
+    companion object{
+        lateinit var removeAdButton:ImageButton
+
+        fun removeAdsButton(){
+            removeAdButton.remove()
+        }
+    }
+
     val mainTable:Table = Table()
     val levelsTable:Table = Table()
     val gameTypeSelectionTable:Table = Table()
@@ -88,14 +97,30 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         quitButtonStyle.down = buttonDown
         quitButtonStyle.imageUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("quitButtonIcon"))
 
+        val loginButtonStyle = ImageButton.ImageButtonStyle()
+        loginButtonStyle.up = buttonUp
+        loginButtonStyle.over = buttonDown
+        loginButtonStyle.down = buttonDown
+        loginButtonStyle.imageUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("gpgLogoutIcon")) //Start with the logout icon
+
+        val removeAdButtonStyle = ImageButton.ImageButtonStyle()
+        removeAdButtonStyle.up = buttonUp
+        removeAdButtonStyle.over = buttonDown
+        removeAdButtonStyle.down = buttonDown
+        removeAdButtonStyle.imageUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("removeAdsIcon")) //Start with the logout icon
+
         val titleLabel = Label("Orbiter", labelStyle)
         titleLabel.setFontScale(0.8f)
         titleLabel.setAlignment(Align.center)
 
-        val loginButton = TextButton("Log-Out", buttonStyle2)
-        loginButton.label.setFontScale(0.15f)
+
+        val loginButton = ImageButton(loginButtonStyle)
+        loginButton.imageCell.size(55f)
         if(!MyGame.actionResolver.signedInGPGS)
-            loginButton.setText("Log-In")
+            loginButton.style.imageUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("gpgLoginIcon")) //Put the log in icon
+
+        removeAdButton = ImageButton(removeAdButtonStyle)
+        removeAdButton.imageCell.size(55f)
 
         val playButton = ImageButton(playButtonStyle)
         playButton.imageCell.size(55f, 55f)
@@ -108,7 +133,14 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         val quitButton = ImageButton(quitButtonStyle)
         quitButton.imageCell.size(55f, 55f)
 
-        mainMenuTable.add(loginButton).top().left().size(64f, 64f).pad(5f, 5f, 0f, 0f)
+        //The top button table is for the login and remove ads buttons
+        val topButtonTable = Table()
+
+        topButtonTable.add(loginButton).top().left().size(100f, 64f).pad(5f, 5f, 0f, 0f)
+        topButtonTable.add().expandX().fillX()
+        topButtonTable.add(removeAdButton).top().right().size(100f, 64f).pad(5f, 5f, 0f, 0f)
+
+        mainMenuTable.add(topButtonTable).expandX().fillX()
         mainMenuTable.row().expandX().fillX()
         mainMenuTable.add(titleLabel).spaceBottom(100f).expandX().fillX()
         mainMenuTable.row().expandX().fillX()
@@ -146,7 +178,7 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
                         override fun run() {
                             if(MyGame.actionResolver.signedInGPGS){
                                 enableButton(leaderboardButton)
-                                loginButton.setText("Log-Out")
+                                loginButton.style.imageUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("gpgLogoutIcon")) //Put the log out icon
                                 this.cancel()
                             }
                         }
@@ -159,7 +191,7 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
                         override fun run() {
                             if(!MyGame.actionResolver.signedInGPGS){
                                 disableButton(leaderboardButton)
-                                loginButton.setText("Log-In")
+                                loginButton.style.imageUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("gpgLoginIcon")) //Put the log in icon
                                 this.cancel()
                             }
                         }
@@ -171,6 +203,12 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         leaderboardButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 MyGame.actionResolver.getLeaderboardGPGS(Constants.LEADERBOARD)
+            }
+        })
+
+        removeAdButton.addListener(object:ChangeListener(){
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                MyGame.transactions.purchaseNoAds()
             }
         })
 
@@ -230,14 +268,32 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         textButtonStyle.over = buttonDown
         textButtonStyle.down = buttonDown
 
-        val levelsButton = TextButton("Levels", textButtonStyle)
-        levelsButton.label.setFontScale(0.2f)
+        val levelsButtonStyle = ImageButton.ImageButtonStyle()
+        levelsButtonStyle.up = buttonUp
+        levelsButtonStyle.over = buttonDown
+        levelsButtonStyle.down = buttonDown
+        levelsButtonStyle.imageUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("levelsIcon"))
 
-        val endless = TextButton("Endless", textButtonStyle)
-        endless.label.setFontScale(0.2f)
+        val endlessButtonStyle = ImageButton.ImageButtonStyle()
+        endlessButtonStyle.up = buttonUp
+        endlessButtonStyle.over = buttonDown
+        endlessButtonStyle.down = buttonDown
+        endlessButtonStyle.imageUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("endlessIcon"))
 
-        val backButton = TextButton("Back", textButtonStyle)
-        backButton.label.setFontScale(0.2f)
+        val backButtonStyle = ImageButton.ImageButtonStyle()
+        backButtonStyle.up = buttonUp
+        backButtonStyle.over = buttonDown
+        backButtonStyle.down = buttonDown
+        backButtonStyle.imageUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("backIcon"))
+
+        val levelsButton = ImageButton(levelsButtonStyle)
+        levelsButton.imageCell.size(55f, 55f)
+
+        val endless = ImageButton(endlessButtonStyle)
+        endless.imageCell.size(55f, 55f)
+
+        val backButton = ImageButton(backButtonStyle)
+        backButton.imageCell.size(55f, 55f)
 
         gameTypeSelectionTable.add(levelsButton).size(128f, 64f).spaceBottom(40f) //.padTop(270f)
         gameTypeSelectionTable.row()
