@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.QueryCallback
 import com.badlogic.gdx.utils.Disposable
 import com.quickbite.spaceslingshot.MyGame
-import com.quickbite.spaceslingshot.data.ProceduralPlanetTextureGenerator
+import com.quickbite.spaceslingshot.util.ProceduralPlanetTextureGenerator
 import com.quickbite.spaceslingshot.interfaces.IUpdateable
 import com.quickbite.spaceslingshot.objects.FuelContainer
 import com.quickbite.spaceslingshot.objects.Planet

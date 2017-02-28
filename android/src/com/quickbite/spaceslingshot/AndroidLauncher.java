@@ -50,7 +50,6 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 
 		Game game = new MyGame(this, this, this);
 
-
 //		GameAnalytics.configureBuild("1.0.2");
 //		GameAnalytics.initializeWithGameKey(this, "06fb38014af7b80c56da048dc58621f1", "33294fa657a1b0ccca1fecac2c80ae1b2e7e1ff8");
 
@@ -81,6 +80,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 		String appKey = "ecc3499bf389398ad32f0cbe07263654765899535432107b";
 		GdxAppodeal.disableLocationPermissionCheck();
         GdxAppodeal.disableNetwork("cheetah");
+        GdxAppodeal.disableNetwork("mopub");
         GdxAppodeal.setAutoCache(GdxAppodeal.INTERSTITIAL, true);
         GdxAppodeal.initialize(appKey, GdxAppodeal.INTERSTITIAL | GdxAppodeal.BANNER);
 
@@ -172,6 +172,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 	@Override
 	public void showInterAd() {
         GdxAppodeal.show(GdxAppodeal.INTERSTITIAL);
+
 //		if(showAds) {
 //			try {
 //				runOnUiThread(new Runnable() {

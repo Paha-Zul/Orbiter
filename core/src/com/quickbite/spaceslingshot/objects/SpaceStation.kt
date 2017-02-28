@@ -12,7 +12,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape
 import com.badlogic.gdx.physics.box2d.FixtureDef
 import com.badlogic.gdx.utils.Disposable
 import com.badlogic.gdx.utils.Timer
-import com.quickbite.rx2020.util.CustomTimer
+import com.quickbite.spaceslingshot.util.CustomTimer
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.interfaces.IPhysicsBody
 import com.quickbite.spaceslingshot.interfaces.IUniqueID

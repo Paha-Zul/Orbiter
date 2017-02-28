@@ -78,11 +78,13 @@ project(":android") {
 
         //Appodeal
 //        compile "com.google.android.gms:play-services-games:$googleServicesVersion"
+
         compile "com.google.android.gms:play-services-location:$googleServicesVersion"
         compile ("com.google.android.gms:play-services-ads:$adMobVersion")
+        compile fileTree(dir: 'libs', include: '*.jar')
+
 //        compile 'com.google.android.gms:play-services-location:10.0.1'
 //        compile 'com.android.support:support-v4:23+'
-        compile fileTree(dir: 'libs', include: '*.jar')
 
 //        compile "com.google.android.gms:play-services-ads:$adMobVersion"
 //        compile "com.google.android.gms:play-services-games:$googleServicesVersion"

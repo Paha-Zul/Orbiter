@@ -1,4 +1,4 @@
-package com.quickbite.spaceslingshot.data
+package com.quickbite.spaceslingshot.util
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -7,8 +7,7 @@ import com.badlogic.gdx.graphics.PixmapIO
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.MathUtils
 import com.quickbite.spaceslingshot.MyGame
-import com.quickbite.spaceslingshot.util.EasyColor
-import com.quickbite.spaceslingshot.util.OpenSimplexNoise
+import com.quickbite.spaceslingshot.data.PlanetData
 import net.dermetfan.utils.math.Noise
 
 /**
@@ -17,19 +16,19 @@ import net.dermetfan.utils.math.Noise
 object ProceduralPlanetTextureGenerator {
     val range = 1f
 
-    private val _tmpCol1:Color = Color()
-    private val _tmpCol2:Color = Color()
-    private val _tmpColor3:Color = Color()
+    private val _tmpCol1: Color = Color()
+    private val _tmpCol2: Color = Color()
+    private val _tmpColor3: Color = Color()
 
     var textureCounter = 0
     var writeToFile = false
 
     private val tag = "PPTG"
 
-    private lateinit var earthData:PlanetTypeData
-    private lateinit var iceData:PlanetTypeData
-    private lateinit var lavaData:PlanetTypeData
-    private lateinit var desertData:PlanetTypeData
+    private lateinit var earthData: PlanetTypeData
+    private lateinit var iceData: PlanetTypeData
+    private lateinit var lavaData: PlanetTypeData
+    private lateinit var desertData: PlanetTypeData
 
     val textureArray:Array<Texture?> = Array(10, {null})
 
@@ -95,7 +94,7 @@ object ProceduralPlanetTextureGenerator {
         shadowPixmap.dispose()
     }
 
-    private fun generatePixMap(seeds:Array<Long>, cloudSeeds:Array<Long>, shadowPixels:Array<Array<Float>>, index:Int):Pixmap{
+    private fun generatePixMap(seeds:Array<Long>, cloudSeeds:Array<Long>, shadowPixels:Array<Array<Float>>, index:Int): Pixmap {
         val seed = if(seeds.size > index) seeds[index] else MathUtils.random(Long.MAX_VALUE)
         Noise.setSeedEnabled(true)
         Noise.setSeed(seed)
@@ -142,11 +141,11 @@ object ProceduralPlanetTextureGenerator {
         return pixmap
     }
 
-    private fun createTextureFromPixmap(pixmap:Pixmap):Texture{
+    private fun createTextureFromPixmap(pixmap: Pixmap): Texture {
         val texture = Texture(pixmap)
 
         if (writeToFile) {
-            PixmapIO.writePNG(Gdx.files.local("planet_$textureCounter.png"), pixmap)
+            PixmapIO.writePNG(Gdx.files.local("planet_${textureCounter}.png"), pixmap)
             textureCounter++
         }
 
@@ -205,7 +204,7 @@ object ProceduralPlanetTextureGenerator {
         shadowPixmap.dispose()
     }
 
-    fun storeTexture(texture:Texture, number:Int){
+    fun storeTexture(texture: Texture, number:Int){
         textureArray[number] = texture
         Gdx.app.log(tag, "Loaded texture #$number")
     }
@@ -254,7 +253,7 @@ object ProceduralPlanetTextureGenerator {
 
         val map = Noise.diamondSquare(8, 1.5f, range, false, false, true, 1f, 10, 10)
 
-        val pixmap:Pixmap = Pixmap(256, 256, Pixmap.Format.RGBA8888)
+        val pixmap: Pixmap = Pixmap(256, 256, Pixmap.Format.RGBA8888)
         pixmap.setColor(Color.RED)
         pixmap.fillCircle(128, 128, 128)
 
@@ -263,7 +262,7 @@ object ProceduralPlanetTextureGenerator {
                 if(pixmap.getPixel(x, y) != Color.rgba8888(1f, 0f, 0f, 1f))
                     continue
 
-                val adjustedValue = MathUtils.clamp((map[x][y] + range/2f), 0f, 1f) //Adjust by 1 and clamp at 0 to 2
+                val adjustedValue = MathUtils.clamp((map[x][y] + range /2f), 0f, 1f) //Adjust by 1 and clamp at 0 to 2
                 _tmpCol1.set(1f,1f,1f,1f)
                 _tmpCol2.set(0f,0f,0f,1f)
                 pixmap.drawPixel(x, y, Color.rgba8888(_tmpCol1.lerp(_tmpCol2, adjustedValue/1f)))
@@ -274,12 +273,12 @@ object ProceduralPlanetTextureGenerator {
         pixmap.dispose()
     }
 
-    private fun blackAndWhiteColor(value:Float):Color{
+    private fun blackAndWhiteColor(value:Float): Color {
         val scaledValue = value*0.5f
         return Color(scaledValue, scaledValue, scaledValue, 1f)
     }
 
-    private fun getColor(planetType: PlanetData.PlanetType, value: Float, secondaryValue: Float, shadowValue:Float):Color{
+    private fun getColor(planetType: PlanetData.PlanetType, value: Float, secondaryValue: Float, shadowValue:Float): Color {
         if(planetType == PlanetData.PlanetType.Earth)
             return getColor(earthData, value, secondaryValue, shadowValue)
         else if(planetType == PlanetData.PlanetType.Desert)
@@ -292,7 +291,7 @@ object ProceduralPlanetTextureGenerator {
             return getColor(lavaData, value, secondaryValue, shadowValue)
     }
 
-    private fun getColor(data:PlanetTypeData, value: Float, secondaryValue: Float, shadowValue:Float):Color{
+    private fun getColor(data: PlanetTypeData, value: Float, secondaryValue: Float, shadowValue:Float): Color {
         _tmpColor3.set(0f, 0f, 0f, 1f)
 
         if(value < data.min){
@@ -315,7 +314,7 @@ object ProceduralPlanetTextureGenerator {
         return _tmpCol2.lerp(_tmpColor3, shadowValue)
     }
 
-    fun getNextTexture(homePlanet:Boolean = false):Texture{
+    fun getNextTexture(homePlanet:Boolean = false): Texture {
         if(!homePlanet) {
             val texture = textureArray[textureCounter]!!
             textureCounter = (textureCounter + 1) % textureArray.size

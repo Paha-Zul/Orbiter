@@ -5,7 +5,7 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.graphics.Texture
 import com.quickbite.spaceslingshot.MyGame
-import com.quickbite.spaceslingshot.data.ProceduralPlanetTextureGenerator
+import com.quickbite.spaceslingshot.util.ProceduralPlanetTextureGenerator
 import com.quickbite.spaceslingshot.guis.MainMenuGUI
 
 /**

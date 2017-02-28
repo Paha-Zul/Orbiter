@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.data.GameScreenData
 import com.quickbite.spaceslingshot.data.PlanetData
-import com.quickbite.spaceslingshot.data.ProceduralPlanetTextureGenerator
+import com.quickbite.spaceslingshot.util.ProceduralPlanetTextureGenerator
 import com.quickbite.spaceslingshot.data.json.JsonLevelData
 import com.quickbite.spaceslingshot.objects.AsteroidSpawner
 import com.quickbite.spaceslingshot.objects.Obstacle

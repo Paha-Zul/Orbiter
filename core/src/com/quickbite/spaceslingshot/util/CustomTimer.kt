@@ -1,4 +1,4 @@
-package com.quickbite.rx2020.util
+package com.quickbite.spaceslingshot.util
 
 /**
  * Created by Paha on 2/7/2016.
