@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -25,8 +24,9 @@ import com.quickbite.spaceslingshot.util.EasyAssetManager;
 import com.quickbite.spaceslingshot.util.JsonLevelLoader;
 import com.quickbite.spaceslingshot.util.Loader;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class MyGame extends Game {
 	public static SpriteBatch batch;
@@ -35,14 +35,14 @@ public class MyGame extends Game {
     public static Viewport viewport, UIViewport;
     public static Stage stage, worldStage;
 	public static BitmapFont font;
-	public static ShaderProgram shaderProgram;
 	public static EasyAssetManager manager;
 	public static World world;
 
 	public static TextureAtlas GUIAtlas;
+	public static TextureAtlas gameScreenAtlas;
 	public static Box2DDebugRenderer debugRenderer;
 
-	private static ExecutorService threadPool;
+	private static ThreadPoolExecutor threadPool;
 
 	public static AdInterface ads;
 	public static Transactions transactions;
@@ -83,21 +83,17 @@ public class MyGame extends Game {
 		shapeRenderer = new ShapeRenderer();
 		shapeRenderer.setProjectionMatrix(camera.combined);
 
-        String FRAG = Gdx.files.internal("shaders/blackhole.frag").readString();
-        String VERT = Gdx.files.internal("shaders/blackhole.vert").readString();
-
-		shaderProgram = new ShaderProgram(VERT,FRAG);
-
 		Loader.INSTANCE.loadAllImgs(manager, Gdx.files.internal("img"), false);
 		Loader.INSTANCE.loadMusic(manager, Gdx.files.internal("music"));
 		Loader.INSTANCE.loadAtlas(manager, Gdx.files.internal("atlas"), false);
         manager.finishLoading();
 
 		MyGame.GUIAtlas = manager.get("GUI", TextureAtlas.class);
+		MyGame.gameScreenAtlas = manager.get("gameScreenAtlas", TextureAtlas.class);
 
 		int cores = Runtime.getRuntime().availableProcessors();
 		if(cores > 1){
-			threadPool = Executors.newFixedThreadPool(10);
+			threadPool = new ThreadPoolExecutor(4, 8, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(20));
 		}
 
 		JsonLevelLoader.INSTANCE.loadLevels();

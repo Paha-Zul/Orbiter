@@ -5,7 +5,6 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.QueryCallback
 import com.badlogic.gdx.utils.Disposable
 import com.quickbite.spaceslingshot.MyGame
-import com.quickbite.spaceslingshot.util.ProceduralPlanetTextureGenerator
 import com.quickbite.spaceslingshot.interfaces.IUpdateable
 import com.quickbite.spaceslingshot.objects.FuelContainer
 import com.quickbite.spaceslingshot.objects.Planet
@@ -59,7 +58,6 @@ class EndlessGame(val screen:GameScreen) : IUpdateable, Disposable{
     override fun update(delta: Float) {
         //TODO Add in some asteroid spawners
         //TODO Add in some obstacles?
-        //TODO Add in stations?
 
         if(nextPlanetPosition.y <= MyGame.camera.position.y + (randSize.second + randGravity.second)*2f)
             addPlanet()
@@ -73,9 +71,11 @@ class EndlessGame(val screen:GameScreen) : IUpdateable, Disposable{
             System.out.println("Planet score: ${data.currPlanetScore}")
         }
 
+        //TODO Probably want to adjust this. Game over on leaving camera bounds? Bad idea...
         if(data.ship.position.x <= MyGame.camera.position.x - MyGame.camera.viewportWidth/2f || data.ship.position.x >= MyGame.camera.position.x + MyGame.camera.viewportWidth/2f){
             GameScreen.setGameOver(true)
         }
+
     }
 
     override fun fixedUpdate(delta: Float) {

@@ -6,8 +6,10 @@ import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.PixmapIO
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.utils.TimeUtils
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.data.PlanetData
+import com.quickbite.spaceslingshot.data.json.PlanetDataManager
 import net.dermetfan.utils.math.Noise
 
 /**
@@ -101,7 +103,8 @@ object ProceduralPlanetTextureGenerator {
 
         val noise = OpenSimplexNoise(seed)
 
-        val planetType = PlanetData.PlanetType.values()[MathUtils.random(3)]
+        val values = PlanetData.PlanetType.values()
+        val planetType = values[MathUtils.random(values.size-1)]
         System.out.println("planetType : $planetType")
 
         val smooth:Float
@@ -133,7 +136,7 @@ object ProceduralPlanetTextureGenerator {
 //                        Gdx.app.log(tag, "Value: $value")
                 val adjustedValue = MathUtils.clamp(value.toFloat(), 0f, 1f) //Adjust by 1 and clamp at 0 to 2
                 val adjustedSecondaryValue = MathUtils.clamp((cloudMap[x][y] + range / 2f), 0f, 1f) //Adjust by 1 and clamp at 0 to 2
-                val color = getColor(planetType, adjustedValue, adjustedSecondaryValue, shadowPixels[x][y])
+                val color = colorTest(planetType.toString(), adjustedValue, adjustedSecondaryValue, shadowPixels[x][y])
                 pixmap.drawPixel(x, y, Color.rgba8888(color))
             }
         }
@@ -141,13 +144,109 @@ object ProceduralPlanetTextureGenerator {
         return pixmap
     }
 
+    fun generatePlanetTexturesFromDataThreaded(amount:Int){
+        var counter:Int = 0
+
+        val shadowTexture = MyGame.manager["shadow", Texture::class.java]
+
+        shadowTexture.textureData.prepare()
+        val shadowPixmap = shadowTexture.textureData.consumePixmap()
+        val shadowPixels = Array(256, {Array(256, {0f})})
+
+        //Record the shadow pixels
+        for (x in 0..shadowPixels.size - 1) {
+            for (y in 0..shadowPixels.size - 1) {
+                shadowPixels[x][y] = Color(shadowPixmap.getPixel(x, y)).a //We gotta use the alpha from here since we're basing it on transparency
+            }
+        }
+
+        for(i in 1..amount) {
+            //TODO Whoa magic number, fix this
+            val dataTexture = MyGame.manager["height_${1 + MathUtils.random(10)}", Texture::class.java]
+
+            MyGame.postRunnable({
+                val pixmap = generatePixMapFromData(dataTexture, shadowPixels) //Execute the main function
+
+                //Call this on the main thread. This will create the texture.
+                MyGame.postRunnable({
+                    val startTime = TimeUtils.millis()
+
+                    val texture = createTextureFromPixmap(pixmap)
+                    storeTexture(texture, counter++)
+
+                    val timeTaken = TimeUtils.millis() - startTime
+                    System.out.println("[$tag] Time to generate texture from data and store (counter): ${timeTaken}ms")
+
+                }, true)
+
+            }, false)
+        }
+
+        shadowPixmap.dispose()
+    }
+
+    private fun generatePixMapFromData(dataTexture: Texture, shadowPixels: Array<Array<Float>>): Pixmap {
+//        var startTime = TimeUtils.millis()
+
+        val tmpColor1 = Color()
+        val tmpColor2 = Color()
+        val tmpColor3 = Color()
+
+        //First we set the entire pixmap to red. This will be our circle to fill in (to make a planet shape)
+        val pixmap: Pixmap = Pixmap(128, 128, Pixmap.Format.RGBA8888)
+        pixmap.setColor(Color.RED)
+        pixmap.fillCircle(pixmap.width/2, pixmap.width/2, pixmap.width/2)
+
+        val scale = 2
+
+        //Grab the pixmap data from the incoming texture
+        dataTexture.textureData.prepare()
+        val texturePixmap = dataTexture.textureData.consumePixmap()
+
+        //Grab a random planet type
+        val planetType = PlanetData.PlanetType.values()[MathUtils.random(PlanetData.PlanetType.values().size-1)]
+
+//        System.out.println("[$tag] Time to fill initial texture: ${TimeUtils.millis() - startTime}ms")
+//        startTime = TimeUtils.millis()
+
+        for (x in 0..pixmap.width - 1) {
+            for (y in 0..pixmap.height - 1) {
+                val scaledX = x*scale
+                val scaledY = y*scale
+
+                if (pixmap.getPixel(x, y) != Color.rgba8888(1f, 0f, 0f, 1f))
+                    continue
+
+                val rgba = texturePixmap.getPixel(scaledX, scaledY)
+                val colorFromTexture = _tmpCol1.set(rgba)
+                val value = colorFromTexture.r
+
+//                        Gdx.app.log(tag, "Value: $value")
+                val adjustedValue = MathUtils.clamp(value.toFloat(), 0f, 1f) //Adjust by 1 and clamp at 0 to 1
+                val adjustedSecondaryValue = 0f
+                val color = colorTest(planetType.toString(), adjustedValue, adjustedSecondaryValue, shadowPixels[scaledX][scaledY], tmpColor1, tmpColor2, tmpColor3)
+                pixmap.drawPixel(x, y, Color.rgba8888(color))
+            }
+        }
+
+//        System.out.println("[$tag] Time to color pixels: ${TimeUtils.millis() - startTime}ms")
+//        startTime = TimeUtils.millis()
+
+        texturePixmap.dispose()
+
+//        val timeTaken = TimeUtils.millis() - startTime
+//        System.out.println("[$tag] Time to generate pixmaps from data: ${timeTaken}ms")
+
+        return pixmap
+    }
+
     private fun createTextureFromPixmap(pixmap: Pixmap): Texture {
         val texture = Texture(pixmap)
 
-        if (writeToFile) {
+//        if (writeToFile) {
             PixmapIO.writePNG(Gdx.files.local("planet_${textureCounter}.png"), pixmap)
             textureCounter++
-        }
+//        }
 
         pixmap.dispose()
 
@@ -155,7 +254,15 @@ object ProceduralPlanetTextureGenerator {
         return texture
     }
 
+    /**
+     * Loads all noise maps procedurally colors them. Stores the results
+     * in the texture array.
+     */
     fun generatePlanetTexturesFromData(){
+        val startTime = TimeUtils.millis()
+
+        val numHeightMaps = 10
+
         //Shadow overlay
         val shadowTexture = MyGame.manager["shadow", Texture::class.java]
         shadowTexture.textureData.prepare()
@@ -173,7 +280,7 @@ object ProceduralPlanetTextureGenerator {
             pixmap.setColor(Color.RED)
             pixmap.fillCircle(128, 128, 128)
 
-            val noiseTexture = MyGame.manager["height_${i+1}", Texture::class.java]
+            val noiseTexture = MyGame.manager["height_${1 + MathUtils.random(numHeightMaps)}", Texture::class.java]
             noiseTexture.textureData.prepare()
             val noisePixmap = noiseTexture.textureData.consumePixmap()
 
@@ -184,11 +291,14 @@ object ProceduralPlanetTextureGenerator {
                     if (pixmap.getPixel(x, y) != Color.rgba8888(1f, 0f, 0f, 1f))
                         continue
 
-                    val value = noisePixmap.getPixel(x, y)
+                    val rgba = noisePixmap.getPixel(x, y)
+                    val colorFromTexture = _tmpCol1.set(rgba)
+                    val value = colorFromTexture.r
+
 //                        Gdx.app.log(tag, "Value: $value")
                     val adjustedValue = MathUtils.clamp(value.toFloat(), 0f, 1f) //Adjust by 1 and clamp at 0 to 1
                     val adjustedSecondaryValue = 0f
-                    val color = getColor(planetType, adjustedValue, adjustedSecondaryValue, shadowPixels[x][y])
+                    val color = colorTest(planetType.toString(), adjustedValue, adjustedSecondaryValue, shadowPixels[x][y])
                     pixmap.drawPixel(x, y, Color.rgba8888(color))
                 }
             }
@@ -201,6 +311,9 @@ object ProceduralPlanetTextureGenerator {
             this.textureArray[i] = texture
         }
 
+        val result = TimeUtils.millis() - startTime
+        System.out.println("[$tag] Time to generate textures from data: ${result}ms")
+
         shadowPixmap.dispose()
     }
 
@@ -208,44 +321,6 @@ object ProceduralPlanetTextureGenerator {
         textureArray[number] = texture
         Gdx.app.log(tag, "Loaded texture #$number")
     }
-
-//    fun generatePlanetTextures(planetType:PlanetData.PlanetType):Texture{
-//        var num = 5
-//        var name = "height_"
-//
-//        if(planetType == PlanetData.PlanetType.Lava){
-//            num = 1
-//            name = "height_special_"
-//        }
-//
-//        val referenceTexture = MyGame.manager["$name${MathUtils.random(1, num)}", Texture::class.java]
-//        referenceTexture.textureData.prepare()
-//        val heightMap = referenceTexture.textureData.consumePixmap()
-//
-//        val pixmap:Pixmap = Pixmap(256, 256, Pixmap.Format.RGBA8888)
-//        pixmap.setColor(Color.RED)
-//        pixmap.fillCircle(128, 128, 128)
-//
-//        for (x in 0..pixmap.width-1){
-//            for(y in 0..pixmap.height-1){
-//                if(pixmap.getPixel(x, y) != Color.rgba8888(1f, 0f, 0f, 1f))
-//                    continue
-//
-//                val pixel = _tmpCol1.set(heightMap.getPixel(x, y))
-//
-//                val adjustedValue = pixel.r
-//                val adjustedSecondaryValue = 0f
-//                val color = getColor(planetType, adjustedValue, adjustedSecondaryValue)
-//                pixmap.drawPixel(x, y, Color.rgba8888(color))
-//            }
-//        }
-//
-//        val texture = Texture(pixmap)
-//        pixmap.dispose()
-//        heightMap.dispose()
-//
-//        return texture
-//    }
 
     fun test(){
         Noise.setSeedEnabled(true)
@@ -278,40 +353,90 @@ object ProceduralPlanetTextureGenerator {
         return Color(scaledValue, scaledValue, scaledValue, 1f)
     }
 
-    private fun getColor(planetType: PlanetData.PlanetType, value: Float, secondaryValue: Float, shadowValue:Float): Color {
-        if(planetType == PlanetData.PlanetType.Earth)
-            return getColor(earthData, value, secondaryValue, shadowValue)
-        else if(planetType == PlanetData.PlanetType.Desert)
-            return getColor(desertData, value, secondaryValue, shadowValue)
-        else if(planetType == PlanetData.PlanetType.Ice)
-            return getColor(iceData, value, secondaryValue, shadowValue)
-        else if(planetType == PlanetData.PlanetType.Lava)
-            return getColor(lavaData, value, secondaryValue, shadowValue)
-        else
-            return getColor(lavaData, value, secondaryValue, shadowValue)
-    }
+    private fun colorTest(planetType:String, value: Float, secondaryValue: Float, shadowValue:Float):Color{
+        val planetType = planetType.toLowerCase()
+        val planetDataList = PlanetDataManager.definitionMap[planetType]!!
+        val planetData = planetDataList[MathUtils.random(planetDataList.size - 1)]
+        val colors = planetData.colors
+        val transitions = planetData.transitions
 
-    private fun getColor(data: PlanetTypeData, value: Float, secondaryValue: Float, shadowValue:Float): Color {
-        _tmpColor3.set(0f, 0f, 0f, 1f)
+        var index = 0
 
-        if(value < data.min){
-            _tmpCol1.set(data.col1.first) //Set the tmp color to the first color. This is so when we call lerp() it doesn't mess up our class data
-            _tmpCol2.set(_tmpCol1.lerp(data.col1.second, value/data.min))
-//            System.out.println("data.col1.second, value/data.min: ${data.col1.second}, ${value/data.min}")
-        }else if (value < data.mid){
-            _tmpCol1.set(data.col2.first) //Set the tmp color to the first color. This is so when we call lerp() it doesn't mess up our class data
-            _tmpCol2.set(_tmpCol1.lerp(data.col2.second, (value - data.min)/data.mid))
-//            System.out.println("data.col2.second, (value - data.min)/data.mid: ${data.col2.second}, ${(value - data.min)/data.mid}")
+        //Runs through the transition ranges checking if we are in between... 0 < 0.3 < 0.5 ?
+        for(i in 1..transitions.size-1){
+            if(i == 1){
+                //If i is 1 it's a special case.
+                if(value < transitions[i]){
+                    index = 0
+                    break
+                }
 
-        }else if(value <= data.max){
-            _tmpCol1.set(data.col3.first) //Set the tmp color to the first color. This is so when we call lerp() it doesn't mess up our class data
-            _tmpCol2.set(_tmpCol1.lerp(data.col3.second, (value - data.mid)/data.max))
-//            System.out.println("data.col2.second, (value - data.mid)/data.max: ${data.col3.second}, ${(value - data.mid)/data.max}")
-
+            }else{
+                if(value >= transitions[i-1] && value < transitions[i]){
+                    index = i
+                    break
+                }
+            }
         }
 
-        //System.out.println("Shadowvalue : $shadowValue")
+        if(value > 0.9){
+//            System.out.println("Test")
+        }
+
+        val lowerValue = if(index == 0) 0f else transitions[index-1]
+        val higherValue = transitions[index] - lowerValue
+        val value = value - lowerValue
+        val result = value/higherValue
+
+        _tmpColor3.set(0f, 0f, 0f, 1f)
+
+        _tmpCol1.set(colors[index][0]) //Set the tmp color to the first color. This is so when we call lerp() it doesn't mess up our class data
+        _tmpCol2.set(_tmpCol1.lerp(colors[index][1], result))
+
         return _tmpCol2.lerp(_tmpColor3, shadowValue)
+    }
+
+    private fun colorTest(planetType:String, value: Float, secondaryValue: Float, shadowValue:Float, tmpColor1:Color, tmpColor2:Color, tmpColor3:Color):Color{
+        val planetType = planetType.toLowerCase()
+        val planetDataList = PlanetDataManager.definitionMap[planetType]!!
+        val planetData = planetDataList[MathUtils.random(planetDataList.size - 1)]
+        val colors = planetData.colors
+        val transitions = planetData.transitions
+
+        var index = 0
+
+        //Runs through the transition ranges checking if we are in between... 0 < 0.3 < 0.5 ?
+        for(i in 1..transitions.size-1){
+            if(i == 1){
+                //If i is 1 it's a special case.
+                if(value < transitions[i]){
+                    index = 0
+                    break
+                }
+
+            }else{
+                if(value >= transitions[i-1] && value < transitions[i]){
+                    index = i
+                    break
+                }
+            }
+        }
+
+        if(value > 0.9){
+//            System.out.println("Test")
+        }
+
+        val lowerValue = if(index == 0) 0f else transitions[index-1]
+        val higherValue = transitions[index] - lowerValue
+        val value = value - lowerValue
+        val result = value/higherValue
+
+        tmpColor3.set(0f, 0f, 0f, 1f)
+
+        tmpColor1.set(colors[index][0]) //Set the tmp color to the first color. This is so when we call lerp() it doesn't mess up our class data
+        tmpColor2.set(tmpColor1.lerp(colors[index][1], result))
+
+        return tmpColor2.lerp(tmpColor3, shadowValue)
     }
 
     fun getNextTexture(homePlanet:Boolean = false): Texture {

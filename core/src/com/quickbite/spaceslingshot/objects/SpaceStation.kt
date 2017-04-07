@@ -1,7 +1,6 @@
 package com.quickbite.spaceslingshot.objects
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils
@@ -12,13 +11,13 @@ import com.badlogic.gdx.physics.box2d.CircleShape
 import com.badlogic.gdx.physics.box2d.FixtureDef
 import com.badlogic.gdx.utils.Disposable
 import com.badlogic.gdx.utils.Timer
-import com.quickbite.spaceslingshot.util.CustomTimer
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.interfaces.IPhysicsBody
 import com.quickbite.spaceslingshot.interfaces.IUniqueID
 import com.quickbite.spaceslingshot.screens.GameScreen
 import com.quickbite.spaceslingshot.util.BodyData
 import com.quickbite.spaceslingshot.util.Constants
+import com.quickbite.spaceslingshot.util.CustomTimer
 import com.quickbite.spaceslingshot.util.EventSystem
 
 /**
@@ -45,7 +44,7 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotat
     val fuelRechargeAmountPerTick = fuelStorage/(60f*secondsToRefuel) //Assuming 60 ticks per second
 
     var sprite: Sprite
-    val arrow:Sprite = Sprite(MyGame.manager["arrow", Texture::class.java])
+    val arrow:Sprite = Sprite(MyGame.gameScreenAtlas.findRegion("arrow"))
 
     var currArrowSpot:Vector2 = Vector2(arrowOffsets[0])
     var currArrowCounter = 0
@@ -57,7 +56,8 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotat
     val dstToDock = 20f
 
     init{
-        sprite = Sprite(MyGame.manager["station", Texture::class.java])
+//        sprite = Sprite(MyGame.manager["station", Texture::class.java])
+        sprite = Sprite(MyGame.gameScreenAtlas.findRegion("station"))
         sprite.setSize(radius*2f, radius*2f)
         sprite.setPosition(position.x - radius, position.y - radius)
         sprite.setOrigin(radius.toFloat(), radius.toFloat())

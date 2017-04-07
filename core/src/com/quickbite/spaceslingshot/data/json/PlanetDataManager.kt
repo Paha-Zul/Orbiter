@@ -39,6 +39,7 @@ object PlanetDataManager {
         definitionMap.put("desert", list.desert)
         definitionMap.put("ice", list.ice)
         definitionMap.put("lava", list.lava)
+        definitionMap.put("gas", list.gas)
     }
 
     class PlanetData{
@@ -46,6 +47,7 @@ object PlanetDataManager {
         lateinit var desert:Array<PlanetTextureData>
         lateinit var ice:Array<PlanetTextureData>
         lateinit var lava:Array<PlanetTextureData>
+        lateinit var gas:Array<PlanetTextureData>
     }
 
     class PlanetTextureData(){

@@ -28,11 +28,11 @@ android {
             proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
             proguardFile 'proguard-project.txt'
         }
-        debug {
-            minifyEnabled true
-            proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
-            proguardFile 'proguard-project.txt'
-        }
+//        debug {
+//            minifyEnabled true
+//            proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
+//            proguardFile 'proguard-project.txt'
+//        }
     }
 }
 // called every time gradle gets executed, takes the native dependencies of

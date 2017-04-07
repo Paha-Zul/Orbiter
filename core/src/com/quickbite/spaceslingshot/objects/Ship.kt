@@ -1,9 +1,11 @@
 package com.quickbite.spaceslingshot.objects
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
@@ -43,11 +45,19 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
     //Docking stuff.
     private lateinit var dockingData:DockingData
-    var docking = false
-    val dockingTime = 2f
-    var dockingElapsed = 0f
+    private var docking = false
+    private val dockingTime = 2f
+    private var dockingElapsed = 0f
 
-    private val planetList:LinkedList<Planet> = LinkedList()
+    private var exploding = false
+    private val explodingTime = 2f
+    private var explodingElapsed = 0f
+    private var explodingEffect = ParticleEffect()
+
+    private var hideShipSprite = false
+
+    val planetList:LinkedList<Planet> = LinkedList()
+        get
 
     private val velocityHolder = Vector2()
 
@@ -56,9 +66,9 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     private set
 
     val thrusters:Array<Thruster> = arrayOf(
-            Thruster(0.005f, 0.1f, Vector2(1f, 0f), ShipLocation.Rear, 0f),
-            Thruster(0.005f, 0.1f, Vector2(0f, -1f), ShipLocation.Left, -90f),
-            Thruster(0.005f, 0.1f, Vector2(0f, 1f), ShipLocation.Right, 90f)
+            Thruster(0.005f, 0.1f, Vector2(1f, 0f), ShipLocation.Rear, 0f), //Rear
+            Thruster(0.005f, 0.1f, Vector2(0f, -1f), ShipLocation.Left, -90f), //Left
+            Thruster(0.005f, 0.1f, Vector2(0f, 1f), ShipLocation.Right, 90f) //Right
     )
 
     val burnHandles:Array<BurnHandle> = arrayOf(
@@ -88,24 +98,29 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         this.createBody()
 
         if(!testShip) {
-            sprite = Sprite(MyGame.manager["spaceship", Texture::class.java])
+            //The ship sprite
+            sprite = Sprite(MyGame.gameScreenAtlas.findRegion("spaceship"))
             sprite.setSize(shipHeight, shipWidth)
             sprite.setPosition(position.x - shipWidth / 2, position.y - shipHeight / 2)
             sprite.setOrigin(shipHeight/2f, shipWidth/2f)
 
-            val ringTexture = MyGame.manager["arrowCircle", Texture::class.java]
-            ringTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
 
-            ring = Sprite(ringTexture)
+            //The ring around the ship with handles and stuff, indicates it can be rotated
+            ring = Sprite(MyGame.gameScreenAtlas.findRegion("arrowCircle"))
             ring.setPosition(position.x - ringRadius, position.y - ringRadius)
             ring.setSize(ringRadius * 2f, ringRadius * 2f)
             ring.color = Color.WHITE
             ring.setOrigin(ringRadius, ringRadius)
 
-            thrustFireSprite = Sprite(MyGame.manager["thrustFire", Texture::class.java])
+            //The fire for thrust
+            thrustFireSprite = Sprite(MyGame.gameScreenAtlas.findRegion("thrustFire"))
             thrustFireSprite.setSize(24f, 24f)
             thrustFireSprite.setOrigin(thrustFireSprite.width/2f, thrustFireSprite.height/2f)
 
+            explodingEffect.load(Gdx.files.internal("particles/Explosion.p"), MyGame.gameScreenAtlas)
+            explodingEffect.allowCompletion()
+
+            //Initially set the rotation
             setRotationTowardsMouse(0f, 0f)
 
             //When we collide with something
@@ -118,7 +133,10 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
                     //If it wasn't a sensor, game over man!
                     if (!other.isSensor) {
                         val planet = otherData.bodyOwner as Planet
-                        GameScreen.setGameOver(!planet.homePlanet)
+                        exploding = true
+                        explodingEffect.setPosition(position.x, position.y)
+                        explodingEffect.start()
+                        hideShipSprite = true
                     }
 
                     //If the other fixture is a sensor and it's body belongs to a planet, we are in the gravity well
@@ -126,10 +144,14 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
                         val planet = otherData.bodyOwner as Planet
                         planetList.add(planet)
                     }
+
+                //If we collided with a station...
                 }else if(otherData.type == BodyData.ObjectType.Station){
                     //Call this event but delay it. Since this event will be called during a physics step, we can not
                     //change anything physics related, so instead, delay it!
                     EventSystem.callEvent("hit_station", listOf(this), otherData.id, true)
+
+                //If we collided with a fuel container...
                 }else if(otherData.type == BodyData.ObjectType.FuelContainer){
                     val container = otherData.dataObject as FuelContainer
                     this.fuel = Math.min(this.fuel + container.fuel, this.maxFuel)
@@ -186,6 +208,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     }
 
     override fun fixedUpdate(delta: Float) {
+        //If the physics are not paused, burn the fuel and let gravity pull us
         if(!physicsArePaused) {
             burnFuel()
             planetList.forEach { planet ->
@@ -196,6 +219,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
             position.set(body.position.x*Constants.BOX2D_INVERSESCALE, body.position.y*Constants.BOX2D_INVERSESCALE)
         }
 
+        //If we are docking....
         if(docking){
             dockingElapsed += delta
             val progress = Math.min(1f, dockingElapsed/dockingTime)
@@ -212,19 +236,39 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
                 dockingData.callback()
             }
         }
+
+        if(exploding){
+            explodingElapsed += delta
+
+            if(explodingElapsed >= explodingTime || explodingEffect.isComplete){
+                exploding = false
+                explodingElapsed = 0f
+                GameScreen.setGameOver(true)
+            }
+        }
+
     }
 
     override fun draw(batch: SpriteBatch) {
 
         //Adjust all sprites
         if(!testShip) {
-            sprite.setPosition(position.x - shipWidth / 2f, position.y - shipHeight / 2f)
-            ring.setPosition(position.x - ringRadius, position.y - ringRadius)
-            burnHandles.forEach(BurnHandle::setPosition)
+                sprite.setPosition(position.x - shipWidth / 2f, position.y - shipHeight / 2f)
+                ring.setPosition(position.x - ringRadius, position.y - ringRadius)
+                burnHandles.forEach(BurnHandle::setPosition)
         }
 
-        sprite.draw(batch)
-        drawThrusters(batch)
+        if(!hideShipSprite) {
+            sprite.draw(batch)
+            drawThrusters(batch)
+            if(GameScreen.paused)
+                drawHandles(batch)
+        }
+
+        if(exploding)
+            explodingEffect.draw(batch, Gdx.graphics.deltaTime)
+
+
     }
 
     fun setAllFuel(fuel:Float, maxFuel:Float = fuel){
@@ -408,7 +452,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
             //If we are double burning, set the texture and apply the bonus burn.
             true -> {
                 if(!testShip) {
-                    handle.burnHandle.texture = BurnHandle.doubleBurnTexture
+                    handle.burnHandle.setRegion(BurnHandle.doubleBurnTexture)
                     handle.burnHandle.color = Color.RED
                 }
             }
@@ -416,7 +460,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
             //If we are not double burning, set the texture and reduce our burn.
             false ->{
                 if(!testShip) {
-                    handle.burnHandle.texture = BurnHandle.normalBurnTexture
+                    handle.burnHandle.setRegion(BurnHandle.normalBurnTexture)
                     handle.burnHandle.color = Color.WHITE
                 }
             }
@@ -454,6 +498,8 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     }
 
     fun reset(position:Vector2, fuel:Float, initialVelocity:Vector2){
+        this.hideShipSprite = false
+
         this.position.set(position.x, position.y)
         this.fuel = fuel
         this.maxFuel = fuel
@@ -594,15 +640,13 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
     class BurnHandle(val ship: Ship, val burnHandleLocation:ShipLocation, val rotationOffset:Float){
         companion object{
-            lateinit var normalBurnTexture:Texture
-            lateinit var doubleBurnTexture:Texture
+            lateinit var normalBurnTexture:TextureRegion
+            lateinit var doubleBurnTexture:TextureRegion
             val burnHandleSize = 30f
 
             init{
-                normalBurnTexture = MyGame.manager["arrow", Texture::class.java]
-                normalBurnTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
-                doubleBurnTexture = MyGame.manager["doubleArrow", Texture::class.java]
-                doubleBurnTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
+                normalBurnTexture = MyGame.gameScreenAtlas.findRegion("arrow")
+                doubleBurnTexture = MyGame.gameScreenAtlas.findRegion("doubleArrow")
             }
         }
 

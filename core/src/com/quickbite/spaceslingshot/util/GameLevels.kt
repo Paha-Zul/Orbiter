@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Vector2
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.data.GameScreenData
 import com.quickbite.spaceslingshot.data.PlanetData
-import com.quickbite.spaceslingshot.util.ProceduralPlanetTextureGenerator
 import com.quickbite.spaceslingshot.data.json.JsonLevelData
 import com.quickbite.spaceslingshot.objects.AsteroidSpawner
 import com.quickbite.spaceslingshot.objects.Obstacle
@@ -59,7 +58,7 @@ object GameLevels {
         val sd = levelData.ship
         data.ship.reset(Vector2(sd.pos[0].toFloat(), sd.pos[1].toFloat()), sd.fuel, Vector2(sd.velocity[0].toFloat(), sd.velocity[1].toFloat()))
 
-        ProceduralPlanetTextureGenerator.generatePlanetTexturesFromData() //Generate the next set of textures
+        ProceduralPlanetTextureGenerator.generatePlanetTexturesFromDataThreaded(10) //Generate the next set of textures
 
         MyGame.camera.position.set(data.ship.position.x, data.ship.position.y, 0f)
 

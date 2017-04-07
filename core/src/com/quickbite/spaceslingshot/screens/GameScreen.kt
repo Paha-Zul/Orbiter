@@ -34,11 +34,8 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     lateinit var points:List<Vector2>
 
     lateinit var starryBackground: TextureRegion
-    lateinit var starryBackgroundStretched: TextureRegion
 
     var physicsAccumulator = 0f
-    var physicsCounter = 0f
-    var tickCounter = 0
 
     var achievementFlags = arrayOf(false, false, false)
 
@@ -47,7 +44,15 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     companion object{
         var finished = false
         var lost = false
+
         var paused = true
+            set(value){
+                field = value
+                if(value == false){
+                    Tests.clearShipList()
+                }
+            }
+
         var pauseTimer = false
 
         fun setGameOver(lost:Boolean){
@@ -163,6 +168,11 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
             gui.fuelBar.setAmounts(data.ship.fuel, data.ship.fuelTaken)
 
+            Tests.addToShipList(Tests.MovementData(Vector2(data.ship.position), Vector2(data.ship.velocity), data.ship.rotation,
+                    data.ship.planetList.size, data.ship.fuel, delta))
+
+            Tests.update()
+
             //If the game is over, pause!
             if(GameScreen.finished){
                 gui.showGameOver(lost)
@@ -235,12 +245,12 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         //draw fuel containers
         data.fuelContainerList.forEach { station -> station.draw(batch) }
 
+        //Draw the ship
         data.ship.draw(batch)
 
-        if(paused)
-            data.ship.drawHandles(batch)
-
-        predictorLineDrawer.draw(batch)
+        //Draw the predictor line
+        if(!GameScreen.finished)
+            predictorLineDrawer.draw(batch)
 
         batch.end()
 
@@ -309,6 +319,9 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         gui.fuelBar.setAmounts(data.ship.fuel, data.ship.fuelTaken)
     }
 
+    /**
+     * Called when the game is over
+     */
     fun gameOver(){
         if(!lost) {
             val level = GameLevels.levels[data.currLevel]

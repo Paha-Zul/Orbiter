@@ -1,6 +1,5 @@
 package com.quickbite.spaceslingshot.objects
 
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils
@@ -36,7 +35,8 @@ class Asteroid(val position: Vector2, val radius:Float, val velocity:Vector2, va
 
     init{
         this.createBody()
-        sprite = Sprite(MyGame.manager["asteroid", Texture::class.java])
+//        sprite = Sprite(MyGame.manager["asteroid", Texture::class.java])
+        sprite = Sprite(MyGame.gameScreenAtlas.findRegion("asteroid"))
         sprite.setSize(radius*2f, radius*2f)
         sprite.setPosition(position.x - sprite.width/2f, position.y - sprite.height/2f)
         sprite.setOrigin(sprite.width/2f, sprite.height/2f)

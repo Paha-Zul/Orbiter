@@ -1,7 +1,6 @@
 package com.quickbite.spaceslingshot.guis
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Interpolation
@@ -77,7 +76,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         buttonStyle.up = TextureRegionDrawable(TextureRegion(GH.createPixel(Color.WHITE), MyGame.viewport.worldWidth.toInt(), 100))
 
         val mainMenuButtonStyle = ImageButton.ImageButtonStyle()
-        mainMenuButtonStyle.imageUp = TextureRegionDrawable(TextureRegion(MyGame.manager["backButton", Texture::class.java]))
+        mainMenuButtonStyle.imageUp = TextureRegionDrawable(TextureRegion(MyGame.GUIAtlas.findRegion("backButton")))
         mainMenuButtonStyle.up = boxUp
         mainMenuButtonStyle.over = boxDown
         mainMenuButtonStyle.down = boxDown

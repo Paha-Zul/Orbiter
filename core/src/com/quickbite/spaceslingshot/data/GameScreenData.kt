@@ -20,6 +20,9 @@ class GameScreenData{
     val stationList: Array<SpaceStation> = Array()
     val fuelContainerList: Array<FuelContainer> = Array()
 
+    init {
+    }
+
     fun reset(){
         planetList.forEach { it.dispose() }
         obstacleList.forEach { it.dispose() }

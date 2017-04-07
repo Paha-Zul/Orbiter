@@ -41,8 +41,7 @@ class Planet(position: Vector2, radius: Int, _gravityRangeRadius: Float, _densit
         sprite.setOrigin(sprite.width/2f, sprite.height/2f)
         sprite.rotation = rotation
 
-        val ringTexture = MyGame.manager["ring", Texture::class.java]
-        ringTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
+        val ringTexture = MyGame.gameScreenAtlas.findRegion("ring")
         ring = Sprite(TextureRegion(ringTexture))
         ring.setPosition(position.x - ringSize/2f, position.y - ringSize/2f)
         ring.setSize(ringSize, ringSize)
