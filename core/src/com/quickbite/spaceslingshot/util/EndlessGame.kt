@@ -12,9 +12,10 @@ import com.quickbite.spaceslingshot.screens.GameScreen
 
 /**
  * Created by Paha on 9/13/2016.
+ *
  * Handles the Endless Game type. Generates the planets/asteroids/obstacles/stations for the players to try and beat.
  */
-class EndlessGame(val screen:GameScreen) : IUpdateable, Disposable{
+class EndlessGame(screen:GameScreen) : IUpdateable, Disposable{
     override var dead: Boolean = false
 
     var randDist = Pair(200f, 400f)
@@ -47,9 +48,6 @@ class EndlessGame(val screen:GameScreen) : IUpdateable, Disposable{
         nextPlanetPosition.set(MyGame.camera.position.x, -100f)
         nextFuelContainerPosition.set(0f, MyGame.camera.viewportHeight/2f  +  MathUtils.random(randFuel.first, randFuel.second))
 
-//        data.ship.setPosition(MyGame.camera.position.x, MyGame.camera.position.y - MyGame.camera.viewportHeight/2f)
-//        data.ship.setAllFuel(50f)
-//        data.ship.setVelocity(0f, 0.1f)
         data.ship.reset(Vector2(MyGame.camera.position.x, MyGame.camera.position.y - MyGame.camera.viewportHeight/2f), 50f, Vector2(0f, 0.1f))
         data.ship.setShipRotation(90f)
     }

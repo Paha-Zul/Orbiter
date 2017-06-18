@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
 import com.badlogic.gdx.utils.Timer
+import com.quickbite.spaceslingshot.LevelManager
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.interfaces.IUpdateable
 import com.quickbite.spaceslingshot.screens.GameScreen
@@ -278,14 +279,14 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
 
         retryButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                gameScreen.reloadLevel()
+                LevelManager.reloadLevel(gameScreen)
                 hideGameOver()
             }
         })
 
         nextLevelButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                if(!gameScreen.loadNextLevel()){
+                if(!LevelManager.loadNextLevel(gameScreen)){
                     goToMainMenu()
                 }else
                     hideGameOver()
@@ -356,7 +357,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
 
         gameOverTable.add(innerTable).fill().expand()
 
-        if(gameScreen.endlessGame == null)
+        if(gameScreen.data.endlessGame == null)
             timeLabel.setText("Completed in ${gameScreen.data.levelTimer.format(2)}s")
         else
             timeLabel.setText("Passed ${gameScreen.data.currPlanetScore} planets!")
@@ -382,11 +383,13 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         if(prefAchievements[1]) stack2.add(checks[1])
         if(prefAchievements[2]) stack3.add(checks[2])
 
+        //Open the table quickly and display the checks fo the achievements
         gameOverTable.addAction(Actions.sequence(Actions.scaleTo(1f, 1f, 0.1f), Actions.delay(1f), object: Action() {
             override fun act(delta: Float): Boolean {
-                val ach1 = gameScreen.achievementFlags[0]
-                val ach2 = gameScreen.achievementFlags[1]
-                val ach3 = gameScreen.achievementFlags[2]
+                //For each flag, fade in a check if we met the requirements
+                val ach1 = gameScreen.data.achievementFlags[0]
+                val ach2 = gameScreen.data.achievementFlags[1]
+                val ach3 = gameScreen.data.achievementFlags[2]
 
                 if(ach1) fadeInCheckmark(image1, checks[0], 0f)
                 if(ach2) fadeInCheckmark(image2, checks[1], 0.2f)

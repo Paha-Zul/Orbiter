@@ -1,25 +1,59 @@
-package com.quickbite.spaceslingshot.util
+package com.quickbite.spaceslingshot
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
-import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.data.GameScreenData
-import com.quickbite.spaceslingshot.data.PlanetData
 import com.quickbite.spaceslingshot.data.json.JsonLevelData
 import com.quickbite.spaceslingshot.objects.AsteroidSpawner
 import com.quickbite.spaceslingshot.objects.Obstacle
 import com.quickbite.spaceslingshot.objects.Planet
 import com.quickbite.spaceslingshot.objects.SpaceStation
+import com.quickbite.spaceslingshot.screens.GameScreen
+import com.quickbite.spaceslingshot.util.ProceduralPlanetTextureGenerator
 
 /**
- * Created by Paha on 8/8/2016.
+ * Created by Paha on 6/18/2017.
+ *
+ * Managers level switching and reloading
  */
-object GameLevels {
+object LevelManager {
     lateinit var levels:Array<JsonLevelData>
 
-    fun loadLevel(level:Int, data: GameScreenData):Boolean{
+
+    fun reloadLevel(screen:GameScreen):Boolean{
+        val success = loadLevel(screen.data.currLevel, screen)
+        return success
+    }
+
+    fun loadLevel(level:Int, screen:GameScreen):Boolean{
+        screen.reset()
+
+        //TODO Need to load these achievements from playerprefs (if they have already beat it before)
+        for(i in 0..screen.data.achievementFlags.size - 1)
+            screen.data.achievementFlags[i] = false
+
+        val success:Boolean
+        if(screen.data.endlessGame == null) {
+            success = loadLevel(level, screen.data)
+            screen.data.currLevel = level
+            screen.runPredictor()
+            screen.gui.fuelBar.setAmounts(screen.data.ship.fuel, 0f, screen.data.ship.fuel)
+        }else{
+            screen.data.endlessGame?.reset()
+            success = true
+        }
+
+        return success
+    }
+
+    fun loadNextLevel(screen:GameScreen):Boolean{
+        val success = loadLevel(++screen.data.currLevel, screen)
+        return success
+    }
+
+    private fun loadLevel(level:Int, data: GameScreenData):Boolean{
         if(level >= levels.size) return false
 
         val levelData = levels[level]
@@ -30,14 +64,12 @@ object GameLevels {
 
         levelData.planets.forEach { pd ->
             planetTexture = ProceduralPlanetTextureGenerator.getNextTexture()
-//            data.planetList.add(Planet(Vector2(pd.pos[0].toFloat(), pd.pos[1].toFloat()), pd.radius, pd.gravityRange, pd.density, planetRotation(), planetTexture!!))
-            data.planetList.add(Planet(Vector2(pd.pos[0].toFloat(), pd.pos[1].toFloat()), pd.radius, pd.gravityRange, pd.density, 0f, planetTexture!!))
+            data.planetList.add(Planet(Vector2(pd.pos[0].toFloat(), pd.pos[1].toFloat()), pd.radius, pd.gravityRange, pd.density, 0f, planetTexture))
         }
 
         levelData.obstacles.forEach { od ->
             data.obstacleList.add(Obstacle(Rectangle(od.rect[0].toFloat(), od.rect[1].toFloat(), od.rect[2].toFloat(), od.rect[3].toFloat())))
         }
-
 
         levelData.stations.forEach { sd ->
             planetTexture = ProceduralPlanetTextureGenerator.getNextTexture()
@@ -50,7 +82,6 @@ object GameLevels {
         }
 
         //TODO Add rotation to station here too
-
         val hs = levelData.homeStation
         planetTexture = ProceduralPlanetTextureGenerator.getNextTexture(true)
         data.stationList.add(SpaceStation(Vector2(hs.pos[0].toFloat(), hs.pos[1].toFloat()), hs.size, hs.fuelStorage, hs.rotation, true))
@@ -63,15 +94,5 @@ object GameLevels {
         MyGame.camera.position.set(data.ship.position.x, data.ship.position.y, 0f)
 
         return true
-    }
-
-    private fun getPlanetType(name:String): PlanetData.PlanetType {
-        when(name){
-            "Earth" -> return PlanetData.PlanetType.Earth
-            "Ice" -> return PlanetData.PlanetType.Ice
-            "Desert" -> return PlanetData.PlanetType.Desert
-            "Lava" -> return PlanetData.PlanetType.Lava
-            else -> return PlanetData.PlanetType.Earth
-        }
     }
 }

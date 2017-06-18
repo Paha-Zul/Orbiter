@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
+import com.quickbite.spaceslingshot.LevelManager;
 import com.quickbite.spaceslingshot.objects.Ship;
 import com.quickbite.spaceslingshot.screens.GameScreen;
 
@@ -74,17 +75,17 @@ public class GH {
     }
 
     public static String getAchievementMessage(int index, GameScreen gameScreen){
-        String achType = GameLevels.INSTANCE.getLevels()[gameScreen.getData().getCurrLevel()].achievements[index][0];
+        String achType = LevelManager.INSTANCE.getLevels()[gameScreen.getData().getCurrLevel()].achievements[index][0];
         String message = "";
         switch(achType){
             case "win":
                 message = "Win the Map";
                 break;
             case "time":
-                message = "Within time: "+ GameLevels.INSTANCE.getLevels()[gameScreen.getData().getCurrLevel()].achievements[index][1];
+                message = "Within time: "+ LevelManager.INSTANCE.getLevels()[gameScreen.getData().getCurrLevel()].achievements[index][1];
                 break;
             case "fuel":
-                message = "Remaining fuel: "+GameLevels.INSTANCE.getLevels()[gameScreen.getData().getCurrLevel()].achievements[index][1];
+                message = "Remaining fuel: "+LevelManager.INSTANCE.getLevels()[gameScreen.getData().getCurrLevel()].achievements[index][1];
                 break;
 
         }
@@ -93,7 +94,7 @@ public class GH {
     }
 
     public static boolean getAchievementSuccessful(int index, GameScreen gameScreen){
-        return gameScreen.getAchievementFlags()[index];
+        return gameScreen.getData().getAchievementFlags()[index];
     }
 
 

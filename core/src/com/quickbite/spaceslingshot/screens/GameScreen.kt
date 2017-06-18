@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.quickbite.spaceslingshot.GameScreenInputListener
+import com.quickbite.spaceslingshot.LevelManager
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.data.GameScreenData
 import com.quickbite.spaceslingshot.data.json.JsonLevelData
@@ -25,8 +26,8 @@ import com.quickbite.spaceslingshot.util.*
  * Created by Paha on 8/7/2016.
  * Handles the Game Screen functionality.
  */
-class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = false) : Screen {
-    val data = GameScreenData()
+class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean = false) : Screen {
+    val data = GameScreenData(this, isEndlessGame)
     lateinit var gui:GameScreenGUI
     val predictorLineDrawer = LineDraw(Vector2(), Vector2(), GH.createPixel(Color.WHITE))
     lateinit var thrusterLineDrawers:List<LineDraw>
@@ -37,10 +38,6 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
     var physicsAccumulator = 0f
 
-    var achievementFlags = arrayOf(false, false, false)
-
-    val endlessGame:EndlessGame? = if(endlessGame) EndlessGame(this) else null
-
     companion object{
         var finished = false
         var lost = false
@@ -48,7 +45,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         var paused = true
             set(value){
                 field = value
-                if(value == false){
+                if(!value){
                     Tests.clearShipList()
                 }
             }
@@ -70,9 +67,13 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
                 ship.addVelocity(x, y)
             }
         }
+
     }
 
     override fun show() {
+        //This has to be loaded here because the endless game needs the game screen data to work
+        data.endlessGame = if(isEndlessGame) EndlessGame(this) else null
+
         finished = false
         lost = false
         paused = true
@@ -91,10 +92,10 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         starryBackground.setRegion(0, 0, 480, 800)
 
         //If we aren't doing endless (which is -1), load the level.
-        if(levelToLoad != -1)
-            loadLevel(levelToLoad)
-        else
-            endlessGame?.start()
+        if(levelToLoad != -1) {
+            LevelManager.loadLevel(levelToLoad, this)
+        }else
+            data.endlessGame?.start()
 
         this.gui.fuelBar.setAmounts(data.ship.fuel, 0f, data.ship.fuel)
 
@@ -126,7 +127,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         if(!paused) doPhysicsStep(delta)
         draw(MyGame.batch)
 
-        MyGame.debugRenderer.render(MyGame.world, MyGame.Box2dCamera.combined)
+//        MyGame.debugRenderer.render(MyGame.world, MyGame.Box2dCamera.combined)
 
         MyGame.stage.act()
         MyGame.stage.draw()
@@ -134,7 +135,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
 
     private fun update(delta:Float){
         EventSystem.executeEventQueue()
-        endlessGame?.update(delta)
+        data.endlessGame?.update(delta)
 
         //Not pausePhysics update...
         if(!paused) {
@@ -324,93 +325,47 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
      */
     fun gameOver(){
         if(!lost) {
-            val level = GameLevels.levels[data.currLevel]
+            val level = LevelManager.levels[data.currLevel]
             checkAchievementCompletion(level)
         }
-        endlessGame?.finish()
+        data.endlessGame?.finish()
     }
 
     private fun checkAchievementCompletion(level:JsonLevelData){
+        //Loop over each achievement for the level and set our local achievement
         level.achievements.forEachIndexed { i, achievement ->
             when(achievement[0]){
                 "win" -> {
                     //if we didn't lose, we're good!
                     if(!GameScreen.lost)
-                        achievementFlags[i] = true
+                        data.achievementFlags[i] = true
                 }
                 "time" -> {
                     //If our total time is less than the achievement time, we're good!
                     val time = achievement[1].toFloat()
                     if(data.levelTimer <= time)
-                        achievementFlags[i] = true
+                        data.achievementFlags[i] = true
                 }
                 "fuel" -> {
                     //If the ship's fuel percentage is greater than the achievement goal, we're good!
                     val fuel = achievement[1].toFloat()
                     if(data.ship.fuel/data.ship.maxFuel >= fuel/100f)
-                        achievementFlags[i] = true
+                        data.achievementFlags[i] = true
                 }
             }
         }
 
         //Save the achievements
-        AchievementManager.saveAchievementsToPref(achievementFlags, level.level.toString())
+        AchievementManager.saveAchievementsToPref(data.achievementFlags, level.level.toString())
     }
 
-    fun reloadLevel():Boolean{
-        reset()
-
-        //TODO Need to load these achievements from playerprefs (if they have already beat it before)
-        for(i in 0..achievementFlags.size - 1)
-            achievementFlags[i] = false
-
-        val success = loadLevel(data.currLevel)
-        runPredictor()
-        gui.fuelBar.setAmounts(data.ship.fuel, 0f, data.ship.fuel)
-        return success
-    }
-
-    fun loadLevel(level:Int):Boolean{
-        reset()
-
-        //TODO Need to load these achievements from playerprefs (if they have already beat it before)
-        for(i in 0..achievementFlags.size - 1)
-            achievementFlags[i] = false
-
-        val success:Boolean
-        if(endlessGame == null) {
-            success = GameLevels.loadLevel(level, data)
-            data.currLevel = level
-            runPredictor()
-            gui.fuelBar.setAmounts(data.ship.fuel, 0f, data.ship.fuel)
-        }else{
-            endlessGame.reset()
-            success = true
-        }
-
-        return success
-    }
-
-    fun loadNextLevel():Boolean{
-        reset()
-
-        //TODO Need to load these achievements from playerprefs (if they have already beat it before)
-        for(i in 0..achievementFlags.size - 1)
-            achievementFlags[i] = false
-
-        val success = GameLevels.loadLevel(++data.currLevel, data)
-        runPredictor()
-        gui.fuelBar.setAmounts(data.ship.fuel, 0f, data.ship.fuel)
-        return success
-    }
-
-    private fun reset(){
+    fun reset(){
         GameScreen.lost = false
         GameScreen.finished = false
+        GameScreen.pauseTimer = false
         data.levelTimer = 0f
         data.pauseLimit = 100f
-        endlessGame?.reset()
-        GameScreen.pauseTimer = false
+        data.endlessGame?.reset()
     }
 
     fun runPredictor(){

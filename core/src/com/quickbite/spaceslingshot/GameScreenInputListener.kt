@@ -114,7 +114,7 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
             var x = originalCameraPos.x - offset.x //If it's an endless game mode, don't allow X scrolling.
             val y = originalCameraPos.y + offset.y //We have to add here because the Y is flipped
 
-            if(screen.endlessGame != null)
+            if(screen.isEndlessGame != null)
                 x = MathUtils.clamp(x, -100f, MyGame.camera.viewportWidth + 100)
 
             screen.scrollScreen(x, y)
