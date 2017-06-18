@@ -5,23 +5,21 @@ package com.quickbite.spaceslingshot.util
  */
 object Constants {
 
-    val BOX2D_SCALE = 0.1f
-    val BOX2D_INVERSESCALE: Float
-        get() = 1/ BOX2D_SCALE
+    const val BOX2D_SCALE = 0.1f
+    const val BOX2D_INVERSESCALE = 1f / BOX2D_SCALE
 
-    val GRAVITYRING_BONUS = 20
+    const val GRAVITYRING_BONUS = 20
 
-    val VELOCITY_SCALE = 10f
-    val VELOCITY_INVERSESCALE:Float
-        get() = 1/VELOCITY_SCALE
+    const val VELOCITY_SCALE = 10f
+    const val VELOCITY_INVERSESCALE = 1f/VELOCITY_SCALE
 
-    val UPDATE_TIME_STEP = 1/60f
+    const val UPDATE_TIME_STEP = 1/60f
 
-    val PHYSICS_TIME_STEP = 1/45f
-    val VELOCITY_ITERATIONS = 6
-    val POSITION_ITERATIONS = 2
+    const val PHYSICS_TIME_STEP = 1/45f
+    const val VELOCITY_ITERATIONS = 6
+    const val POSITION_ITERATIONS = 2
 
-    val PAUSE_AMTPERTICK = 0.0f
+    const val PAUSE_AMTPERTICK = 0.0f
 
-    val LEADERBOARD = "CgkI9L3rnvoREAIQAQ"
+    const val LEADERBOARD = "CgkI9L3rnvoREAIQAQ"
 }

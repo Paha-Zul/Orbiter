@@ -39,6 +39,8 @@ object Predictor : Disposable{
                 points[i/stepSize].set(predictorShip.position.x, predictorShip.position.y)
         }
 
+        predictorShip.setVelocity(0f, 0f)
+
         //Resume physics now that we are done
         resumePhysics()
     }

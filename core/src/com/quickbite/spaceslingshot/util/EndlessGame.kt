@@ -26,8 +26,8 @@ class EndlessGame(val screen:GameScreen) : IUpdateable, Disposable{
     lateinit var nextPlanetToPass:Planet
     var planetCounter = 0
 
-    val randStationDist = Pair(400f, 1000f)
-    val nextStationPosition = Vector2()
+    val randFuel = Pair(400f, 1000f)
+    val nextFuelContainerPosition = Vector2()
 
     var hitObject = false
 
@@ -45,25 +45,24 @@ class EndlessGame(val screen:GameScreen) : IUpdateable, Disposable{
 
         data.planetList.add(startingPlanet)
         nextPlanetPosition.set(MyGame.camera.position.x, -100f)
-        nextStationPosition.set(0f, MyGame.camera.viewportHeight/2f  +  MathUtils.random(randStationDist.first, randStationDist.second))
+        nextFuelContainerPosition.set(0f, MyGame.camera.viewportHeight/2f  +  MathUtils.random(randFuel.first, randFuel.second))
 
-        data.ship.setPosition(MyGame.camera.position.x, MyGame.camera.position.y - MyGame.camera.viewportHeight/2f)
-        data.ship.setAllFuel(50f)
-        data.ship.setVelocity(0f, 0.1f)
-
-//        data.stationList.add(SpaceStation(Vector2(240f, 300f), 50, 100f))
-
+//        data.ship.setPosition(MyGame.camera.position.x, MyGame.camera.position.y - MyGame.camera.viewportHeight/2f)
+//        data.ship.setAllFuel(50f)
+//        data.ship.setVelocity(0f, 0.1f)
+        data.ship.reset(Vector2(MyGame.camera.position.x, MyGame.camera.position.y - MyGame.camera.viewportHeight/2f), 50f, Vector2(0f, 0.1f))
+        data.ship.setShipRotation(90f)
     }
 
     override fun update(delta: Float) {
         //TODO Add in some asteroid spawners
         //TODO Add in some obstacles?
 
-        if(nextPlanetPosition.y <= MyGame.camera.position.y + (randSize.second + randGravity.second)*2f)
+        if(nextPlanetPosition.y <= MyGame.camera.position.y + MyGame.camera.viewportHeight*2f)
             addPlanet()
 
-        if(nextStationPosition.y <= MyGame.camera.position.y + MyGame.camera.viewportHeight/2f + 75)
-            addStation()
+        if(nextFuelContainerPosition.y <= MyGame.camera.position.y + MyGame.camera.viewportHeight/2f + 75)
+            addFuel()
 
         if(data.ship.position.y >= nextPlanetToPass.position.y) {
             nextPlanetToPass = data.planetList[++planetCounter]
@@ -107,7 +106,7 @@ class EndlessGame(val screen:GameScreen) : IUpdateable, Disposable{
         result
     }
 
-    private fun addStation(){
+    private fun addFuel(){
         hitObject = false
 
         GH.shuffleArray(xSpots) //Shuffle the x spots.
@@ -116,9 +115,9 @@ class EndlessGame(val screen:GameScreen) : IUpdateable, Disposable{
         val physSize = 75*Constants.BOX2D_SCALE
 
         xSpots.forEach { x ->
-            position.set(x, nextStationPosition.y)
+            position.set(x, nextFuelContainerPosition.y)
             val physPos = Vector2(position.x*Constants.BOX2D_SCALE, position.y*Constants.BOX2D_SCALE)
-            MyGame.world.QueryAABB(callback, physPos.x - physSize/2f, physPos.y - physSize/2f, physPos.x + physSize/2f, physPos.y + physSize/2)
+            MyGame.world.QueryAABB(callback, physPos.x - physSize, physPos.y - physSize, physPos.x + physSize, physPos.y + physSize)
 
             //If we hit something, we need to try again
             if(hitObject){
@@ -132,7 +131,7 @@ class EndlessGame(val screen:GameScreen) : IUpdateable, Disposable{
         val container = FuelContainer(position, 100)
         data.fuelContainerList.add(container)
 
-        nextStationPosition.set(0f, nextStationPosition.y + MathUtils.random(randStationDist.first, randStationDist.second))
+        nextFuelContainerPosition.set(0f, nextFuelContainerPosition.y + MathUtils.random(randFuel.first, randFuel.second))
     }
 
     fun finish(){

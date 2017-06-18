@@ -56,7 +56,7 @@ object GameLevels {
         data.stationList.add(SpaceStation(Vector2(hs.pos[0].toFloat(), hs.pos[1].toFloat()), hs.size, hs.fuelStorage, hs.rotation, true))
 
         val sd = levelData.ship
-        data.ship.reset(Vector2(sd.pos[0].toFloat(), sd.pos[1].toFloat()), sd.fuel, Vector2(sd.velocity[0].toFloat(), sd.velocity[1].toFloat()))
+        data.ship.reset(Vector2(sd.pos[0].toFloat(), sd.pos[1].toFloat()), sd.fuel, Vector2(sd.velocity[0], sd.velocity[1]))
 
         ProceduralPlanetTextureGenerator.generatePlanetTexturesFromDataThreaded(10) //Generate the next set of textures
 

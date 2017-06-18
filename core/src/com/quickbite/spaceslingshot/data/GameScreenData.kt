@@ -52,5 +52,6 @@ class GameScreenData{
         asteroidSpawnerList.clear()
         asteroidList.clear()
         stationList.clear()
+        fuelContainerList.clear()
     }
 }

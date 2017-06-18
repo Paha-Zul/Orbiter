@@ -19,6 +19,7 @@ import com.quickbite.spaceslingshot.interfaces.ActionResolver;
 import com.quickbite.spaceslingshot.interfaces.AdInterface;
 import com.quickbite.spaceslingshot.interfaces.Transactions;
 import com.quickbite.spaceslingshot.screens.MainMenuScreen;
+import com.quickbite.spaceslingshot.util.Constants;
 import com.quickbite.spaceslingshot.util.ContactListenerClass;
 import com.quickbite.spaceslingshot.util.EasyAssetManager;
 import com.quickbite.spaceslingshot.util.JsonLevelLoader;
@@ -31,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 public class MyGame extends Game {
 	public static SpriteBatch batch;
 	public static ShapeRenderer shapeRenderer;
-    public static OrthographicCamera camera, UICamera;
+    public static OrthographicCamera camera, UICamera, Box2dCamera;
     public static Viewport viewport, UIViewport;
     public static Stage stage, worldStage;
 	public static BitmapFont font;
@@ -69,6 +70,7 @@ public class MyGame extends Game {
 
         camera = new OrthographicCamera(480, 800);
         UICamera = new OrthographicCamera(480, 800);
+		Box2dCamera = new OrthographicCamera(480 * Constants.BOX2D_SCALE, 800 * Constants.BOX2D_SCALE);
 
         viewport = new FillViewport(480, 800, camera);
         UIViewport = new FillViewport(480, 800, UICamera);
@@ -107,6 +109,7 @@ public class MyGame extends Game {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		camera.update();
+		Box2dCamera.update();
 		UICamera.update();
 
 		super.render();

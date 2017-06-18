@@ -126,7 +126,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
         if(!paused) doPhysicsStep(delta)
         draw(MyGame.batch)
 
-        MyGame.debugRenderer.render(MyGame.world, MyGame.camera.combined)
+        MyGame.debugRenderer.render(MyGame.world, MyGame.Box2dCamera.combined)
 
         MyGame.stage.act()
         MyGame.stage.draw()
@@ -461,6 +461,8 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, endlessGame:Boolean = fal
     fun scrollScreen(x:Float, y:Float){
         val diff = Vector2(x - MyGame.camera.position.x, MyGame.camera.position.y - y)
         MyGame.camera.position.set(x, y, 0f)
+        val camPos = MyGame.camera.position
+        MyGame.Box2dCamera.position.set(camPos.x*Constants.BOX2D_SCALE, camPos.y*Constants.BOX2D_SCALE, 0f)
         starryBackground.scroll(diff.x/MyGame.camera.viewportWidth, diff.y/MyGame.camera.viewportHeight)
     }
 
