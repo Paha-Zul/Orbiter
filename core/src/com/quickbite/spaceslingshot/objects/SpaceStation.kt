@@ -75,16 +75,14 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotat
             if(ship.testShip) return@onEvent
 
             //If the ship is not docking in the right spot, lose!
-            //TODO Make this an explosion!
             if(!checkCloseToDocking(ship.position, dstToDock)){
-                GameScreen.setGameOver(true)
+                ship.setExploding()
                 return@onEvent
             }
 
             //If the ship's velocity is too great, lose!
-            //TODO Make this an explosion!
             if(ship.velocity.x > 0.5f || ship.velocity.y > 0.5f){
-                GameScreen.setGameOver(true)
+                ship.setExploding()
                 return@onEvent
             }
 

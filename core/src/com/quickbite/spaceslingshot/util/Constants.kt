@@ -2,6 +2,8 @@ package com.quickbite.spaceslingshot.util
 
 /**
  * Created by Paha on 9/10/2016.
+ *
+ * An Object to hold constants
  */
 object Constants {
 
@@ -22,4 +24,6 @@ object Constants {
     const val PAUSE_AMTPERTICK = 0.0f
 
     const val LEADERBOARD = "CgkI9L3rnvoREAIQAQ"
+
+    const val ENDLESS_GAME_SCREEN_BOUND = 300f
 }

@@ -38,12 +38,13 @@ object LevelManager {
         if(screen.data.endlessGame == null) {
             success = loadLevel(level, screen.data)
             screen.data.currLevel = level
-            screen.runPredictor()
             screen.gui.fuelBar.setAmounts(screen.data.ship.fuel, 0f, screen.data.ship.fuel)
         }else{
             screen.data.endlessGame?.reset()
             success = true
         }
+
+        screen.runPredictor()
 
         return success
     }

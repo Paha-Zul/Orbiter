@@ -34,7 +34,7 @@ object EventSystem {
 
         //For each pair in the list, check the unique ID match and call the event if matching.
         evtList!!.forEach {evt ->
-            if(evt.first === uniqueID)
+            if(evt.first == uniqueID)
                 if(!delayed) {
                     evt.second(args)
                 }else{

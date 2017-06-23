@@ -132,10 +132,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
                     //If it wasn't a sensor, game over man!
                     if (!other.isSensor) {
                         val planet = otherData.bodyOwner as Planet
-                        exploding = true
-                        explodingEffect.setPosition(position.x, position.y)
-                        explodingEffect.start()
-                        hideShipSprite = true
+                        setExploding()
                     }
 
                     //If the other fixture is a sensor and it's body belongs to a planet, we are in the gravity well
@@ -268,6 +265,13 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
             explodingEffect.draw(batch, Gdx.graphics.deltaTime)
 
 
+    }
+
+    fun setExploding(){
+        exploding = true
+        explodingEffect.setPosition(position.x, position.y)
+        explodingEffect.start()
+        hideShipSprite = true
     }
 
     fun setAllFuel(fuel:Float, maxFuel:Float = fuel){

@@ -34,10 +34,12 @@ class EndlessGame(screen:GameScreen) : IUpdateable, Disposable{
 
     val data = screen.data
 
-    val xSpots = arrayOf(68f, 136f, 204f, 272f, 340f, 408f)
+    lateinit var xSpots:Array<Float>
 
     fun start(){
-        MyGame.camera.position.set(MyGame.camera.viewportWidth/2f, 0f, 0f)
+        buildXSpots()
+
+        MyGame.camera.position.set(0f, 0f, 0f)
 
         val startingPlanet = Planet(Vector2(MyGame.camera.position.x, MyGame.camera.position.y - 100f), 50, 75f, 0.1f, 0f,
                 ProceduralPlanetTextureGenerator.getNextTexture(), false)
@@ -46,10 +48,25 @@ class EndlessGame(screen:GameScreen) : IUpdateable, Disposable{
 
         data.planetList.add(startingPlanet)
         nextPlanetPosition.set(MyGame.camera.position.x, -100f)
-        nextFuelContainerPosition.set(0f, MyGame.camera.viewportHeight/2f  +  MathUtils.random(randFuel.first, randFuel.second))
+        nextFuelContainerPosition.set(0f, MathUtils.random(randFuel.first, randFuel.second))
 
         data.ship.reset(Vector2(MyGame.camera.position.x, MyGame.camera.position.y - MyGame.camera.viewportHeight/2f), 50f, Vector2(0f, 0.1f))
         data.ship.setShipRotation(90f)
+    }
+
+    private fun buildXSpots(){
+        val totalWidth = 800f
+        var currCounter = -totalWidth/2f
+        val amt = 5
+        val stepSize = totalWidth/amt
+
+        xSpots = Array(amt+1, {0f})
+        for (i in 0..xSpots.size-1) {
+            xSpots[i] = totalWidth + currCounter
+            currCounter += -stepSize
+        }
+
+        println("done")
     }
 
     override fun update(delta: Float) {
@@ -69,7 +86,9 @@ class EndlessGame(screen:GameScreen) : IUpdateable, Disposable{
         }
 
         //TODO Probably want to adjust this. Game over on leaving camera bounds? Bad idea...
-        if(data.ship.position.x <= MyGame.camera.position.x - MyGame.camera.viewportWidth/2f || data.ship.position.x >= MyGame.camera.position.x + MyGame.camera.viewportWidth/2f){
+        //If the ship leaves the bounds we have defined in Constants... plus half of the viewport (camera), game over
+        if(data.ship.position.x <= - (Constants.ENDLESS_GAME_SCREEN_BOUND + MyGame.camera.viewportWidth/2f)
+                || data.ship.position.x >= MyGame.camera.viewportWidth/2f + Constants.ENDLESS_GAME_SCREEN_BOUND){
             GameScreen.setGameOver(true)
         }
 
