@@ -55,7 +55,7 @@ class EndlessGame(screen:GameScreen) : IUpdateable, Disposable{
     }
 
     private fun buildXSpots(){
-        val totalWidth = 800f
+        val totalWidth = 400f
         var currCounter = -totalWidth/2f
         val amt = 5
         val stepSize = totalWidth/amt
@@ -99,14 +99,15 @@ class EndlessGame(screen:GameScreen) : IUpdateable, Disposable{
     }
 
     private fun addPlanet(){
-        val randSize = MathUtils.random(randSize.first, randSize.second)
-        val randGravity = MathUtils.random(randGravity.first, randGravity.second)
-        val randDensity = MathUtils.random(randDensity.first, randDensity.second)
-        val randX = MathUtils.random(-MyGame.camera.viewportWidth/2f + (randSize), MyGame.camera.viewportWidth/2f - (randSize))
-        val randY = MathUtils.random(randDist.first, randDist.second) + randSize/2f
+        val randSize = MathUtils.random(randSize.first, randSize.second) //Random the planet size
+        val randGravity = MathUtils.random(randGravity.first, randGravity.second) //Random planet gravity (well size)
+        val randDensity = MathUtils.random(randDensity.first, randDensity.second) //Random planet density
+        val randX = MathUtils.random(-MyGame.camera.viewportWidth/2f + (randSize), MyGame.camera.viewportWidth/2f - (randSize)) //Random the X position
+        val randY = MathUtils.random(randDist.first, randDist.second) + randSize/2f //Random the Y position
 
-        nextPlanetPosition.set(MyGame.camera.viewportWidth/2f + randX, nextPlanetPosition.y + randY)
+        nextPlanetPosition.set(randX, nextPlanetPosition.y + randY) //Set the next planet position
 
+        //Create the planet
         val planet = Planet(Vector2(nextPlanetPosition.x, nextPlanetPosition.y), randSize, randGravity, randDensity, 0f,
                 ProceduralPlanetTextureGenerator.getNextTexture(), false)
 
