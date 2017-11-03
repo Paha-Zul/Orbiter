@@ -243,6 +243,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
                 GameScreen.setGameOver(true)
             }
         }
+
     }
 
     override fun draw(batch: SpriteBatch) {
