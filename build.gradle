@@ -1,5 +1,6 @@
 buildscript {
-    ext.kotlin_version = '1.0.4'
+    ext.kotlin_version = '1.1.51'
+    ext.gradle_tools_version = '2.3.0'
     repositories {
         mavenLocal()
         mavenCentral()
@@ -8,8 +9,8 @@ buildscript {
     }
     dependencies {
         classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
-        classpath 'com.android.tools.build:gradle:2.2.0'
-        classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.2.0'
+        classpath "com.android.tools.build:gradle:$gradle_tools_version"
+        classpath "com.mobidevelop.robovm:robovm-gradle-plugin:$gradle_tools_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -18,7 +19,6 @@ apply plugin: 'kotlin'
 allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
-
 
     version = '1.0'
     ext {
@@ -78,11 +78,13 @@ project(":android") {
 
         //Appodeal
 //        compile "com.google.android.gms:play-services-games:$googleServicesVersion"
+
         compile "com.google.android.gms:play-services-location:$googleServicesVersion"
         compile ("com.google.android.gms:play-services-ads:$adMobVersion")
+        compile fileTree(dir: 'libs', include: '*.jar')
+
 //        compile 'com.google.android.gms:play-services-location:10.0.1'
 //        compile 'com.android.support:support-v4:23+'
-        compile fileTree(dir: 'libs', include: '*.jar')
 
 //        compile "com.google.android.gms:play-services-ads:$adMobVersion"
 //        compile "com.google.android.gms:play-services-games:$googleServicesVersion"
@@ -95,7 +97,6 @@ project(":ios") {
     apply plugin: "java"
     apply plugin: "robovm"
 
-
     dependencies {
         compile project(":core")
         compile "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
@@ -107,25 +108,26 @@ project(":ios") {
     }
 }
 
-project(":html") {
-    apply plugin: "gwt"
-    apply plugin: "war"
-
-
-    dependencies {
-        compile project(":core")
-        compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
-        compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"
-        compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.3:sources"
-
-        compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion:sources"
-        compile "com.badlogicgames.gdx:gdx-box2d-gwt:$gdxVersion:sources"
-    }
-}
+//project(":html") {
+//    apply plugin: "gwt"
+//    apply plugin: "war"
+//
+//
+//    dependencies {
+//        compile project(":core")
+//        compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
+//        compile "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
+//        compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"
+//        compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.3:sources"
+//
+//        compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion:sources"
+//        compile "com.badlogicgames.gdx:gdx-box2d-gwt:$gdxVersion:sources"
+//    }
+//}
 
 project(":core") {
     apply plugin: "java"
+//    apply plugin: "kotlin"
 
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"

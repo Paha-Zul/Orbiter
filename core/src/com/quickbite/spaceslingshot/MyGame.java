@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -15,33 +14,36 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.quickbite.spaceslingshot.data.json.PlanetDataManager;
 import com.quickbite.spaceslingshot.interfaces.ActionResolver;
 import com.quickbite.spaceslingshot.interfaces.AdInterface;
 import com.quickbite.spaceslingshot.interfaces.Transactions;
 import com.quickbite.spaceslingshot.screens.MainMenuScreen;
+import com.quickbite.spaceslingshot.util.Constants;
 import com.quickbite.spaceslingshot.util.ContactListenerClass;
 import com.quickbite.spaceslingshot.util.EasyAssetManager;
 import com.quickbite.spaceslingshot.util.JsonLevelLoader;
 import com.quickbite.spaceslingshot.util.Loader;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class MyGame extends Game {
 	public static SpriteBatch batch;
 	public static ShapeRenderer shapeRenderer;
-    public static OrthographicCamera camera, UICamera;
+    public static OrthographicCamera camera, UICamera, Box2dCamera;
     public static Viewport viewport, UIViewport;
     public static Stage stage, worldStage;
 	public static BitmapFont font;
-	public static ShaderProgram shaderProgram;
 	public static EasyAssetManager manager;
 	public static World world;
 
 	public static TextureAtlas GUIAtlas;
+	public static TextureAtlas gameScreenAtlas;
 	public static Box2DDebugRenderer debugRenderer;
 
-	private static ExecutorService threadPool;
+	private static ThreadPoolExecutor threadPool;
 
 	public static AdInterface ads;
 	public static Transactions transactions;
@@ -68,6 +70,7 @@ public class MyGame extends Game {
 
         camera = new OrthographicCamera(480, 800);
         UICamera = new OrthographicCamera(480, 800);
+		Box2dCamera = new OrthographicCamera(480 * Constants.BOX2D_SCALE, 800 * Constants.BOX2D_SCALE);
 
         viewport = new FillViewport(480, 800, camera);
         UIViewport = new FillViewport(480, 800, UICamera);
@@ -82,24 +85,21 @@ public class MyGame extends Game {
 		shapeRenderer = new ShapeRenderer();
 		shapeRenderer.setProjectionMatrix(camera.combined);
 
-        String FRAG = Gdx.files.internal("shaders/blackhole.frag").readString();
-        String VERT = Gdx.files.internal("shaders/blackhole.vert").readString();
-
-		shaderProgram = new ShaderProgram(VERT,FRAG);
-
 		Loader.INSTANCE.loadAllImgs(manager, Gdx.files.internal("img"), false);
 		Loader.INSTANCE.loadMusic(manager, Gdx.files.internal("music"));
 		Loader.INSTANCE.loadAtlas(manager, Gdx.files.internal("atlas"), false);
         manager.finishLoading();
 
 		MyGame.GUIAtlas = manager.get("GUI", TextureAtlas.class);
+		MyGame.gameScreenAtlas = manager.get("gameScreenAtlas", TextureAtlas.class);
 
 		int cores = Runtime.getRuntime().availableProcessors();
 		if(cores > 1){
-			threadPool = Executors.newFixedThreadPool(10);
+			threadPool = new ThreadPoolExecutor(4, 8, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(20));
 		}
 
 		JsonLevelLoader.INSTANCE.loadLevels();
+		PlanetDataManager.INSTANCE.readDefinitionsJson();
 
 		this.setScreen(new MainMenuScreen(this));
 	}
@@ -109,6 +109,7 @@ public class MyGame extends Game {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		camera.update();
+		Box2dCamera.update();
 		UICamera.update();
 
 		super.render();

@@ -25,14 +25,21 @@ object Predictor : Disposable{
 
         pausePhysics()
 
+        Tests.clearPredictorList()
+
         for(i in 0..steps-1){
             predictorShip.update(0.016f)
             predictorShip.fixedUpdate(0.016f)
             physicsStep()
 
+            Tests.addToPredictorList(Tests.MovementData(Vector2(predictorShip.position), Vector2(predictorShip.velocity), predictorShip.rotation,
+                    predictorShip.planetList.size, predictorShip.fuel, 0.016f))
+
             if(i%stepSize == 0)
                 points[i/stepSize].set(predictorShip.position.x, predictorShip.position.y)
         }
+
+        predictorShip.setVelocity(0f, 0f)
 
         //Resume physics now that we are done
         resumePhysics()

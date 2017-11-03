@@ -1,6 +1,5 @@
 package com.quickbite.spaceslingshot.objects
 
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils
@@ -34,7 +33,8 @@ class FuelContainer(val position: Vector2, val fuel:Int) : IDrawable, IUpdateabl
     val height = 16f
 
     init {
-        sprite = Sprite(MyGame.manager["fuelContainer", Texture::class.java])
+//        sprite = Sprite(MyGame.manager["fuelContainer", Texture::class.java])
+        sprite = Sprite(MyGame.gameScreenAtlas.findRegion("fuelContainer"))
         sprite.setSize(width, height)
 
         sprite.setCenter(sprite.width*0.5f, sprite.height*0.5f)

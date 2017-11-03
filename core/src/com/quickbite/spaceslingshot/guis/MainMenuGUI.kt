@@ -15,11 +15,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
+import com.quickbite.spaceslingshot.LevelManager
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.screens.GameScreen
 import com.quickbite.spaceslingshot.screens.MainMenuScreen
 import com.quickbite.spaceslingshot.util.Constants
-import com.quickbite.spaceslingshot.util.GameLevels
 import com.quickbite.spaceslingshot.util.Padding
 
 /**
@@ -369,7 +369,7 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         val numX = (maxWidth - offsets.left - offsets.right)/(buttonSize+spaceX)
         val numY = (maxHeight - offsets.top - offsets.bottom)/(buttonSize+spaceX)
 
-        val numButtons = GameLevels.levels.size
+        val numButtons = LevelManager.levels.size
 
         for(i in 1..numButtons){
             val level = i-1

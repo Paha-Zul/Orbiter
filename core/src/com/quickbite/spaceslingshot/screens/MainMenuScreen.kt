@@ -5,8 +5,8 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.graphics.Texture
 import com.quickbite.spaceslingshot.MyGame
-import com.quickbite.spaceslingshot.data.ProceduralPlanetTextureGenerator
 import com.quickbite.spaceslingshot.guis.MainMenuGUI
+import com.quickbite.spaceslingshot.util.ProceduralPlanetTextureGenerator
 
 /**
  * Created by Paha on 8/7/2016.
@@ -28,7 +28,8 @@ class MainMenuScreen(val game:MyGame) :Screen{
             music!!.play()
         }
 
-        ProceduralPlanetTextureGenerator.generatePlanetTexturesFromData()
+//        ProceduralPlanetTextureGenerator.generatePlanetTexturesFromData()
+        ProceduralPlanetTextureGenerator.generatePlanetTexturesFromDataThreaded(10)
 
         MyGame.camera.position.set(MyGame.camera.viewportWidth/2f, MyGame.camera.viewportHeight/2f, 0f)
 

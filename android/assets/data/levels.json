@@ -305,5 +305,98 @@
       }
     ],
     "achievements": [["win", ""], ["time", "10.0"], ["fuel", "50"]]
+  },
+  {
+    "level": 8,
+    "name": "Test",
+    "ship": {
+      "pos": [240, 50],
+      "fuel": 50,
+      "velocity": [0, 1]
+    },
+    "planets":[
+      {
+        "name": "GenericPlanet",
+        "pos": [-100, 300],
+        "radius": 40,
+        "gravityRange": 120,
+        "density": 0.1,
+        "planetType": "Lava"
+      },
+      {
+        "name": "GenericPlanet",
+        "pos": [100, 300],
+        "radius": 60,
+        "gravityRange": 120,
+        "density": 0.01,
+        "planetType": "Desert"
+      },
+      {
+        "name": "GenericPlanet",
+        "pos": [-100, 500],
+        "radius": 80,
+        "gravityRange": 150,
+        "density": 0.05,
+        "planetType": "Desert"
+      },
+      {
+        "name": "GenericPlanet",
+        "pos": [100, 500],
+        "radius": 80,
+        "gravityRange": 150,
+        "density": 0.05,
+        "planetType": "Desert"
+      },
+      {
+        "name": "GenericPlanet",
+        "pos": [300, 500],
+        "radius": 80,
+        "gravityRange": 150,
+        "density": 0.05,
+        "planetType": "Desert"
+      }
+
+    ],
+    "homeStation":{
+      "pos": [240, 1500],
+      "size": 75,
+      "fuelStorage": 100,
+      "homeStation": true,
+      "rotation": 270
+    },
+    "obstacles":[
+
+    ],
+    "asteroidSpawners":[
+      {
+        "immediate": true,
+        "pos": [-50, 300],
+        "spawnDir": [1, 0],
+        "spawnFreq": [4, 8],
+        "speedRange": [0.5, 1.5]
+      },
+      {
+        "immediate": true,
+        "pos": [-100, 550],
+        "spawnDir": [1, 0],
+        "spawnFreq": [4, 8],
+        "speedRange": [0.5, 1.5]
+      },
+      {
+        "immediate": true,
+        "pos": [-100, 800],
+        "spawnDir": [1, 0],
+        "spawnFreq": [4, 8],
+        "speedRange": [0.5, 1.5]
+      },
+      {
+        "immediate": true,
+        "pos": [-100, 1100],
+        "spawnDir": [1, 0],
+        "spawnFreq": [4, 8],
+        "speedRange": [0.5, 1.5]
+      }
+    ],
+    "achievements": [["win", ""], ["time", "10.0"], ["fuel", "50"]]
   }
 ]

@@ -2,11 +2,13 @@ package com.quickbite.spaceslingshot
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.TimeUtils
 import com.quickbite.spaceslingshot.objects.Ship
 import com.quickbite.spaceslingshot.screens.GameScreen
+import com.quickbite.spaceslingshot.util.Constants
 import com.quickbite.spaceslingshot.util.GH
 
 /**
@@ -110,8 +112,12 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
             screen.runPredictor()
         }else if(draggingScreen){
             offset.set(screenX - startDragPos.x, screenY - startDragPos.y) //The difference between where the screen was and is now.
-            val x = originalCameraPos.x - offset.x //If it's an endless game mode, don't allow X scrolling.
+            var x = originalCameraPos.x - offset.x //If it's an endless game mode, don't allow X scrolling.
             val y = originalCameraPos.y + offset.y //We have to add here because the Y is flipped
+
+            if(screen.data.endlessGame != null)
+                x = MathUtils.clamp(x, -Constants.ENDLESS_GAME_SCREEN_BOUND, Constants.ENDLESS_GAME_SCREEN_BOUND)
+
             screen.scrollScreen(x, y)
         }
 

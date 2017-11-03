@@ -2,6 +2,7 @@ package com.quickbite.spaceslingshot.util
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Json
+import com.quickbite.spaceslingshot.LevelManager
 import com.quickbite.spaceslingshot.data.json.JsonLevelData
 
 /**
@@ -12,6 +13,6 @@ object JsonLevelLoader{
     val json:Json = Json()
 
     fun loadLevels(){
-        GameLevels.levels = json.fromJson(Array<JsonLevelData>::class.java, Gdx.files.internal("data/levels.json"))
+        LevelManager.levels = json.fromJson(Array<JsonLevelData>::class.java, Gdx.files.internal("data/levels.json"))
     }
 }
