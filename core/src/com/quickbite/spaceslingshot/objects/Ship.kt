@@ -57,7 +57,6 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     private var hideShipSprite = false
 
     val planetList:LinkedList<Planet> = LinkedList()
-        get
 
     private val velocityHolder = Vector2()
 

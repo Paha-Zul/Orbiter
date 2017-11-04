@@ -10,10 +10,11 @@ import com.quickbite.spaceslingshot.objects.Ship
  */
 object Predictor : Disposable{
     private val predictorShip = Ship(Vector2(0f,0f), 0f, Vector2(0f, 0f), true)
-    val steps = 300
-    val stepSize = 10
+    private val steps = 300
+    private val stepSizeToRecord = 1
 
-    private val points: Array<Vector2> = Array(steps/stepSize, { Vector2() })
+    val points: Array<Vector2> = Array(steps / stepSizeToRecord, { Vector2() })
+    var currPointIndex = 0
 
     val pointsList:List<Vector2>
         get() = points.toList()
@@ -27,7 +28,10 @@ object Predictor : Disposable{
 
         Tests.clearPredictorList()
 
-        for(i in 0..steps-1){
+        currPointIndex = 0
+
+        //Run the predictor ship simulation
+        for(i in 0 until steps){
             predictorShip.update(0.016f)
             predictorShip.fixedUpdate(0.016f)
             physicsStep()
@@ -35,8 +39,8 @@ object Predictor : Disposable{
             Tests.addToPredictorList(Tests.MovementData(Vector2(predictorShip.position), Vector2(predictorShip.velocity), predictorShip.rotation,
                     predictorShip.planetList.size, predictorShip.fuel, 0.016f))
 
-            if(i%stepSize == 0)
-                points[i/stepSize].set(predictorShip.position.x, predictorShip.position.y)
+            if(i% stepSizeToRecord == 0)
+                points[i/ stepSizeToRecord].set(predictorShip.position.x, predictorShip.position.y)
         }
 
         predictorShip.setVelocity(0f, 0f)
