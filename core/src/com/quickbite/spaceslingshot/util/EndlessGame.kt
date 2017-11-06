@@ -32,7 +32,7 @@ class EndlessGame(screen:GameScreen) : IUpdateable, Disposable{
 
     var hitObject = false
 
-    val data = screen.data
+    val data = GameScreen.gameScreenData
 
     lateinit var xSpots:Array<Float>
 

@@ -10,6 +10,7 @@ import com.quickbite.spaceslingshot.objects.Ship
 import com.quickbite.spaceslingshot.screens.GameScreen
 import com.quickbite.spaceslingshot.util.Constants
 import com.quickbite.spaceslingshot.util.GH
+import com.quickbite.spaceslingshot.util.Util
 
 /**
  * Created by Paha on 8/7/2016.
@@ -49,7 +50,7 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
         draggingScreen = false
 
         if(runPredictor)
-            screen.runPredictor()
+            Util.runPredictor()
 
         return false
     }
@@ -71,7 +72,7 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
 
         if(GameScreen.paused) {
             rotationOffset = 0f
-            val clicked = screen.data.ship.clickOnShip(worldPos.x, worldPos.y)
+            val clicked = GameScreen.gameScreenData.ship.clickOnShip(worldPos.x, worldPos.y)
             when (clicked.first) {
                 1 -> draggingRotateShip = true
                 2 -> draggingShipBurnTime = true
@@ -101,24 +102,28 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
         val world = MyGame.camera.unproject(Vector3(screenX.toFloat(), screenY.toFloat(), 0f))
         val worldPos = Vector2(world.x, world.y) //Temp for now
-        val ship = screen.data.ship
+        val ship = GameScreen.gameScreenData.ship
 
-        if(draggingRotateShip) {
-            ship.setRotationTowardsMouse(worldPos.x, worldPos.y)
-            screen.runPredictor()
-        }else if(draggingShipBurnTime){
-            ship.dragBurn(worldPos.x, worldPos.y, shipLocation)
-            screen.gui.fuelBar.setAmounts(ship.fuel, ship.fuelTaken)
-            screen.runPredictor()
-        }else if(draggingScreen){
-            offset.set(screenX - startDragPos.x, screenY - startDragPos.y) //The difference between where the screen was and is now.
-            var x = originalCameraPos.x - offset.x //If it's an endless game mode, don't allow X scrolling.
-            val y = originalCameraPos.y + offset.y //We have to add here because the Y is flipped
+        when {
+            draggingRotateShip -> {
+                ship.setRotationTowardsMouse(worldPos.x, worldPos.y)
+                Util.runPredictor()
+            }
+            draggingShipBurnTime -> {
+                ship.dragBurn(worldPos.x, worldPos.y, shipLocation)
+                GameScreen.gui.fuelBar.setAmounts(ship.fuel, ship.fuelTaken)
+                Util.runPredictor()
+            }
+            draggingScreen -> {
+                offset.set(screenX - startDragPos.x, screenY - startDragPos.y) //The difference between where the screen was and is now.
+                var x = originalCameraPos.x - offset.x //If it's an endless game mode, don't allow X scrolling.
+                val y = originalCameraPos.y + offset.y //We have to add here because the Y is flipped
 
-            if(screen.data.endlessGame != null)
-                x = MathUtils.clamp(x, -Constants.ENDLESS_GAME_SCREEN_BOUND, Constants.ENDLESS_GAME_SCREEN_BOUND)
+                if(GameScreen.gameScreenData.endlessGame != null)
+                    x = MathUtils.clamp(x, -Constants.ENDLESS_GAME_SCREEN_BOUND, Constants.ENDLESS_GAME_SCREEN_BOUND)
 
-            screen.scrollScreen(x, y)
+                screen.scrollScreen(x, y)
+            }
         }
 
         return false

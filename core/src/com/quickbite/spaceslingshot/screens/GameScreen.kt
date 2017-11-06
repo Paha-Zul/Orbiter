@@ -27,18 +27,17 @@ import com.quickbite.spaceslingshot.util.*
  * Handles the Game Screen functionality.
  */
 class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean = false) : Screen {
-    val data = GameScreenData(this, isEndlessGame)
-    lateinit var gui:GameScreenGUI
-    val predictorLineDrawer = LineDraw(Vector2(), Vector2(), GH.createPixel(Color.WHITE))
     lateinit var thrusterLineDrawers:List<LineDraw>
-
-    lateinit var points:List<Vector2>
 
     lateinit var starryBackground: TextureRegion
 
     var physicsAccumulator = 0f
 
     companion object{
+        lateinit var gameScreenData:GameScreenData
+        val predictorLineDrawer = LineDraw(Vector2(), Vector2(), GH.createPixel(Color.WHITE))
+        lateinit var gui:GameScreenGUI
+
         var finished = false
         var lost = false
 
@@ -68,19 +67,42 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
             }
         }
 
+        /**
+         * Pauses all physics except for the test ship predictor which is enabled
+         */
+        fun pauseAllPhysicsExceptPredictorShip(data:GameScreenData){
+            data.planetList.forEach { p -> p.setPhysicsPaused(true) }
+            data.asteroidList.forEach { a -> a.setPhysicsPaused(true) }
+            data.fuelContainerList.forEach { a -> a.setPhysicsPaused(true) }
+            data.ship.setPhysicsPaused(true)
+        }
+
+        /**
+         * Resumes all physics except for the test ship predictor which is disabled
+         */
+        fun resumeAllPhysicsExceptPredictorShip(data:GameScreenData){
+            data.planetList.forEach { p -> p.setPhysicsPaused(false) }
+            data.asteroidList.forEach { a -> a.setPhysicsPaused(false) }
+            data.fuelContainerList.forEach { a -> a.setPhysicsPaused(false) }
+            data.ship.setPhysicsPaused(false)
+        }
+    }
+
+    init{
+        gameScreenData = GameScreenData(this, isEndlessGame)
     }
 
     override fun show() {
-        //This has to be loaded here because the endless game needs the game screen data to work
-        data.endlessGame = if(isEndlessGame) EndlessGame(this) else null
+        //This has to be loaded here because the endless game needs the game screen gameScreenData to work
+        gameScreenData.endlessGame = if(isEndlessGame) EndlessGame(this) else null
 
         finished = false
         lost = false
         paused = true
         pauseTimer = false
 
-        data.ship = Ship()
-        runPredictor()
+        gameScreenData.ship = Ship()
+        Util.runPredictor()
         gui = GameScreenGUI(this)
 
         Gdx.input.inputProcessor = InputMultiplexer(MyGame.stage, GameScreenInputListener(this))
@@ -95,14 +117,14 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
         if(levelToLoad != -1) {
             LevelManager.loadLevel(levelToLoad, this)
         }else
-            data.endlessGame?.start()
+            gameScreenData.endlessGame?.start()
 
-        this.gui.fuelBar.setAmounts(data.ship.fuel, 0f, data.ship.fuel)
+        GameScreen.gui.fuelBar.setAmounts(gameScreenData.ship.fuel, 0f, gameScreenData.ship.fuel)
 
-        runPredictor()
+        Util.runPredictor()
 
         val list:MutableList<LineDraw> = mutableListOf()
-        data.ship.burnHandles.forEach { handle ->
+        gameScreenData.ship.burnHandles.forEach { handle ->
             list += LineDraw(Vector2(), Vector2(), MyGame.manager["dash", Texture::class.java])
         }
 
@@ -135,42 +157,42 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
 
     private fun update(delta:Float){
         EventSystem.executeEventQueue()
-        data.endlessGame?.update(delta)
+        gameScreenData.endlessGame?.update(delta)
 
         //Not pausePhysics update...
         if(!paused) {
             if(!pauseTimer)
-                data.levelTimer += delta
+                gameScreenData.levelTimer += delta
 
-            data.pauseLimit = Math.min(data.pauseLimit + Constants.PAUSE_AMTPERTICK, 100f)
+            gameScreenData.pauseLimit = Math.min(gameScreenData.pauseLimit + Constants.PAUSE_AMTPERTICK, 100f)
 
 //            runPredictor()
-            data.ship.update(delta)
-            data.planetList.forEach { obj -> obj.update(delta)}
-            data.asteroidSpawnerList.forEach { spawner -> spawner.update(delta) }
-            data.stationList.forEach { station -> station.update(delta) }
-            data.fuelContainerList.forEach { station -> station.update(delta) }
+            gameScreenData.ship.update(delta)
+            gameScreenData.planetList.forEach { obj -> obj.update(delta)}
+            gameScreenData.asteroidSpawnerList.forEach { spawner -> spawner.update(delta) }
+            gameScreenData.stationList.forEach { station -> station.update(delta) }
+            gameScreenData.fuelContainerList.forEach { station -> station.update(delta) }
 
-            for(i in (data.asteroidList.size-1).downTo(0)){
-                data.asteroidList[i].update(delta)
-                if(data.asteroidList[i].dead) {
-                    data.asteroidList[i].dispose()
-                    data.asteroidList.removeIndex(i)
+            for(i in (gameScreenData.asteroidList.size-1).downTo(0)){
+                gameScreenData.asteroidList[i].update(delta)
+                if(gameScreenData.asteroidList[i].dead) {
+                    gameScreenData.asteroidList[i].dispose()
+                    gameScreenData.asteroidList.removeIndex(i)
                 }
             }
 
-            for(i in (data.fuelContainerList.size-1).downTo(0)){
-                data.fuelContainerList[i].update(delta)
-                if(data.fuelContainerList[i].dead) {
-                    data.fuelContainerList[i].dispose()
-                    data.fuelContainerList.removeIndex(i)
+            for(i in (gameScreenData.fuelContainerList.size-1).downTo(0)){
+                gameScreenData.fuelContainerList[i].update(delta)
+                if(gameScreenData.fuelContainerList[i].dead) {
+                    gameScreenData.fuelContainerList[i].dispose()
+                    gameScreenData.fuelContainerList.removeIndex(i)
                 }
             }
 
-            gui.fuelBar.setAmounts(data.ship.fuel, data.ship.fuelTaken)
+            gui.fuelBar.setAmounts(gameScreenData.ship.fuel, gameScreenData.ship.fuelTaken)
 
-            Tests.addToShipList(Tests.MovementData(Vector2(data.ship.position), Vector2(data.ship.velocity), data.ship.rotation,
-                    data.ship.planetList.size, data.ship.fuel, delta))
+            Tests.addToShipList(Tests.MovementData(Vector2(gameScreenData.ship.position), Vector2(gameScreenData.ship.velocity), gameScreenData.ship.rotation,
+                    gameScreenData.ship.planetList.size, gameScreenData.ship.fuel, delta))
 
             Tests.update()
 
@@ -187,19 +209,19 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
         }else{
             //Don't allow the pause counter to go down if we are on the game over screen
             if(!GameScreen.finished) {
-                data.pauseLimit -= Constants.PAUSE_AMTPERTICK
-                if (data.pauseLimit <= 0)
+                gameScreenData.pauseLimit -= Constants.PAUSE_AMTPERTICK
+                if (gameScreenData.pauseLimit <= 0)
                     setGamePaused(false)
             }
 
             thrusterLineDrawers.forEachIndexed { i, drawer ->
-                val handle = data.ship.burnHandles[i]
+                val handle = gameScreenData.ship.burnHandles[i]
                 drawer.setStartAndEnd(handle.burnHandleBasePosition, handle.burnHandlePosition)
             }
-//            predictorLineDrawer.setStartAndEnd(data.ship.burnBallBasePosition, data.ship.burnHandleLocation)
+//            predictorLineDrawer.setStartAndEnd(gameScreenData.ship.burnBallBasePosition, gameScreenData.ship.burnHandleLocation)
         }
 
-        gui.bottomPauseProgressBar.value = data.pauseLimit
+        gui.bottomPauseProgressBar.value = gameScreenData.pauseLimit
         gui.update(delta)
     }
 
@@ -212,9 +234,9 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
         while (physicsAccumulator >= Constants.PHYSICS_TIME_STEP) {
             physicsAccumulator -= Constants.PHYSICS_TIME_STEP //Decrement the accumulator
 
-            data.ship.fixedUpdate(Constants.PHYSICS_TIME_STEP) //Update the ship
-            data.planetList.forEach { p -> p.fixedUpdate(Constants.PHYSICS_TIME_STEP) } //Update the planets
-            data.fuelContainerList.forEach { p -> p.fixedUpdate(Constants.PHYSICS_TIME_STEP) } //Update the planets
+            gameScreenData.ship.fixedUpdate(Constants.PHYSICS_TIME_STEP) //Update the ship
+            gameScreenData.planetList.forEach { p -> p.fixedUpdate(Constants.PHYSICS_TIME_STEP) } //Update the planets
+            gameScreenData.fuelContainerList.forEach { p -> p.fixedUpdate(Constants.PHYSICS_TIME_STEP) } //Update the planets
             MyGame.world.step(Constants.PHYSICS_TIME_STEP, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS) //Update the physics world
         }
     }
@@ -232,22 +254,22 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
         }
 
         //Draw planets
-        data.planetList.forEach { obj -> obj.draw(batch)}
+        gameScreenData.planetList.forEach { obj -> obj.draw(batch)}
 
         //Draw obstacles
-        data.obstacleList.forEach { obj -> obj.draw(batch)}
+        gameScreenData.obstacleList.forEach { obj -> obj.draw(batch)}
 
         //Draw asteroids
-        data.asteroidList.forEach { asteroid -> asteroid.draw(batch) }
+        gameScreenData.asteroidList.forEach { asteroid -> asteroid.draw(batch) }
 
         //draw stations
-        data.stationList.forEach { station -> station.draw(batch) }
+        gameScreenData.stationList.forEach { station -> station.draw(batch) }
 
         //draw fuel containers
-        data.fuelContainerList.forEach { station -> station.draw(batch) }
+        gameScreenData.fuelContainerList.forEach { station -> station.draw(batch) }
 
         //Draw the ship
-        data.ship.draw(batch)
+        gameScreenData.ship.draw(batch)
 
         //Draw the predictor line
         if(!GameScreen.finished)
@@ -269,21 +291,10 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
     private fun drawCenters(renderer:ShapeRenderer){
         val size = 5f
         renderer.color = Color.BLUE
-        data.planetList.forEach { planet ->
+        gameScreenData.planetList.forEach { planet ->
             renderer.circle(planet.position.x, planet.position.y, size)
         }
-        renderer.circle(data.ship.position.x, data.ship.position.y, size)
-    }
-
-    private fun drawPrediction(renderer:ShapeRenderer){
-        val listSize = points.size*10
-        val color: Color = Color(Color.BLUE)
-        points.forEachIndexed {i, point ->
-            val t:Float = i/listSize.toFloat()
-            color.lerp(Color.GREEN, t)
-            renderer.color = color
-            renderer.circle(point.x, point.y, 3f)
-        }
+        renderer.circle(gameScreenData.ship.position.x, gameScreenData.ship.position.y, size)
     }
 
     /**
@@ -316,8 +327,8 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
     }
 
     fun toggleShipBurn(shipLocation: Ship.ShipLocation){
-        data.ship.toggleDoubleBurn(shipLocation)
-        gui.fuelBar.setAmounts(data.ship.fuel, data.ship.fuelTaken)
+        gameScreenData.ship.toggleDoubleBurn(shipLocation)
+        gui.fuelBar.setAmounts(gameScreenData.ship.fuel, gameScreenData.ship.fuelTaken)
     }
 
     /**
@@ -325,10 +336,10 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
      */
     fun gameOver(){
         if(!lost) {
-            val level = LevelManager.levels[data.currLevel]
+            val level = LevelManager.levels[gameScreenData.currLevel]
             checkAchievementCompletion(level)
         }
-        data.endlessGame?.finish()
+        gameScreenData.endlessGame?.finish()
     }
 
     private fun checkAchievementCompletion(level:JsonLevelData){
@@ -338,42 +349,34 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
                 "win" -> {
                     //if we didn't lose, we're good!
                     if(!GameScreen.lost)
-                        data.achievementFlags[i] = true
+                        gameScreenData.achievementFlags[i] = true
                 }
                 "time" -> {
                     //If our total time is less than the achievement time, we're good!
                     val time = achievement[1].toFloat()
-                    if(data.levelTimer <= time)
-                        data.achievementFlags[i] = true
+                    if(gameScreenData.levelTimer <= time)
+                        gameScreenData.achievementFlags[i] = true
                 }
                 "fuel" -> {
                     //If the ship's fuel percentage is greater than the achievement goal, we're good!
                     val fuel = achievement[1].toFloat()
-                    if(data.ship.fuel/data.ship.maxFuel >= fuel/100f)
-                        data.achievementFlags[i] = true
+                    if(gameScreenData.ship.fuel/ gameScreenData.ship.maxFuel >= fuel/100f)
+                        gameScreenData.achievementFlags[i] = true
                 }
             }
         }
 
         //Save the achievements
-        AchievementManager.saveAchievementsToPref(data.achievementFlags, level.level.toString())
+        AchievementManager.saveAchievementsToPref(gameScreenData.achievementFlags, level.level.toString())
     }
 
     fun reset(){
         GameScreen.lost = false
         GameScreen.finished = false
         GameScreen.pauseTimer = false
-        data.levelTimer = 0f
-        data.pauseLimit = 100f
-        data.endlessGame?.reset()
-    }
-
-    fun runPredictor(){
-        Predictor.runPrediction(data.ship, {pauseAllPhysicsExceptPredictorShip()}, {resumeAllPhysicsExceptPredictorShip()},
-                {MyGame.world.step(Constants.PHYSICS_TIME_STEP, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS)})
-
-        points = Predictor.pointsList
-        predictorLineDrawer.setPoints(points)
+        gameScreenData.levelTimer = 0f
+        gameScreenData.pauseLimit = 100f
+        gameScreenData.endlessGame?.reset()
     }
 
     fun toggleGamePause(){
@@ -384,33 +387,12 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
         GameScreen.paused = paused
 
         if(paused) {
-            runPredictor()
+            Util.setShipVelocityAsCurrentPredictorVelocity(GameScreen.gameScreenData.ship)
+            Util.runPredictor()
             gui.bottomPauseText.setText("Resume")
-//            pauseAllPhysicsExceptPredictorShip()
-//            data.obstacleList.forEach { o ->  }
         }else{
-//            resumeAllPhysicsExceptPredictorShip()
+
         }
-    }
-
-    /**
-     * Pauses all physics except for the test ship predictor
-     */
-    fun pauseAllPhysicsExceptPredictorShip(){
-        data.planetList.forEach { p -> p.setPhysicsPaused(true) }
-        data.asteroidList.forEach { a -> a.setPhysicsPaused(true) }
-        data.fuelContainerList.forEach { a -> a.setPhysicsPaused(true) }
-        data.ship.setPhysicsPaused(true)
-    }
-
-    /**
-     * Resumes all physics except for the test ship predictor
-     */
-    fun resumeAllPhysicsExceptPredictorShip(){
-        data.planetList.forEach { p -> p.setPhysicsPaused(false) }
-        data.asteroidList.forEach { a -> a.setPhysicsPaused(false) }
-        data.fuelContainerList.forEach { a -> a.setPhysicsPaused(false) }
-        data.ship.setPhysicsPaused(false)
     }
 
     fun scrollScreen(x:Float, y:Float){
@@ -427,8 +409,8 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
 
     override fun dispose() {
         gui.dispose()
-        data.reset()
-        data.ship.dispose()
+        gameScreenData.reset()
+        gameScreenData.ship.dispose()
 //        Predictor.dispose()
     }
 }

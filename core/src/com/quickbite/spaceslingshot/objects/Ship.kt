@@ -61,8 +61,9 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     private val velocityHolder = Vector2()
 
     var rotation = 0f
-    get
-    private set
+        private set
+
+    private var timeCounter = 0f
 
     val thrusters:Array<Thruster> = arrayOf(
             Thruster(0.005f, 0.1f, Vector2(1f, 0f), ShipLocation.Rear, 0f), //Rear
@@ -76,8 +77,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
             BurnHandle(this, ShipLocation.Right, -90f)
     )
 
-    val velocity:Vector2
-        get() = Vector2(body.linearVelocity.x*Constants.VELOCITY_INVERSESCALE, body.linearVelocity.y*Constants.VELOCITY_INVERSESCALE)
+    val velocity:Vector2 = Vector2()
 
     override var physicsArePaused = false
 
@@ -206,16 +206,16 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     override fun fixedUpdate(delta: Float) {
         //If the physics are not paused, burn the fuel and let gravity pull us
         if(!physicsArePaused) {
-            burnFuel()
-            planetList.forEach { planet ->
-                val dst = planet.position.dst(this.position)
-                if(dst <= planet.gravityRange)
-                    GameScreen.applyGravity(planet, this)
-            }
-            position.set(body.position.x*Constants.BOX2D_INVERSESCALE, body.position.y*Constants.BOX2D_INVERSESCALE)
+            //This simulation is for the test ship only
+            if(testShip)
+                testShipSimulation()
+
+            //Here we run the simulation for the real ship
+            else
+                realShipSimulation(delta)
         }
 
-        //If we are docking....
+        //If we are docking, perform the docking options
         if(docking){
             dockingElapsed += delta
             val progress = Math.min(1f, dockingElapsed/dockingTime)
@@ -233,6 +233,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
             }
         }
 
+        //If we are exploding, do exploding stuff
         if(exploding){
             explodingElapsed += delta
 
@@ -242,7 +243,34 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
                 GameScreen.setGameOver(true)
             }
         }
+    }
 
+    private fun testShipSimulation(){
+        burnFuel()
+        planetList.forEach { planet ->
+            val dst = planet.position.dst(this.position)
+            if (dst <= planet.gravityRange)
+                GameScreen.applyGravity(planet, this)
+        }
+        position.set(body.position.x * Constants.BOX2D_INVERSESCALE, body.position.y * Constants.BOX2D_INVERSESCALE)
+        velocity.set(body.linearVelocity.x*Constants.BOX2D_SCALE, body.linearVelocity.y*Constants.BOX2D_SCALE)
+    }
+
+    private fun realShipSimulation(delta:Float){
+        body.setLinearVelocity(0f, 0f)
+        timeCounter += delta //Increment out counter
+        if(delta >= Constants.PHYSICS_TIME_STEP){ //If we pass over the time step amount
+            timeCounter -= Constants.PHYSICS_TIME_STEP //Subtract that amount from our counter
+            Predictor.currPointIndex++ //increase the point index
+            if(Predictor.currPointIndex >= Predictor.points.size - 1){
+                Util.setShipVelocityAsCurrentPredictorVelocity(this)
+                Util.runPredictor()
+            }
+            val newPosition = Vector2(Predictor.points[Predictor.currPointIndex].position) //Make a copy so we don't change the predictor ship
+            position.set(newPosition.x, newPosition.y)
+            newPosition.set(newPosition.x*Constants.BOX2D_SCALE, newPosition.y*Constants.BOX2D_SCALE)
+            body.setTransform(newPosition, rotation)
+        }
     }
 
     override fun draw(batch: SpriteBatch) {
@@ -263,8 +291,6 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
         if(exploding)
             explodingEffect.draw(batch, Gdx.graphics.deltaTime)
-
-
     }
 
     fun setExploding(){
@@ -525,6 +551,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         this.setShipRotation(0f)
         this.body.setTransform(Vector2(position.x*Constants.BOX2D_SCALE, position.y*Constants.BOX2D_SCALE), 0f)
         this.body.setLinearVelocity(initialVelocity.x*Constants.VELOCITY_SCALE, initialVelocity.y*Constants.VELOCITY_SCALE)
+        this.velocity.set(initialVelocity)
 
         //If we are the test ship, don't do this!
         if(!testShip){

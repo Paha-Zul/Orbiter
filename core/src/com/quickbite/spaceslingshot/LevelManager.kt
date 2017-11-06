@@ -11,7 +11,9 @@ import com.quickbite.spaceslingshot.objects.Obstacle
 import com.quickbite.spaceslingshot.objects.Planet
 import com.quickbite.spaceslingshot.objects.SpaceStation
 import com.quickbite.spaceslingshot.screens.GameScreen
+import com.quickbite.spaceslingshot.util.Predictor
 import com.quickbite.spaceslingshot.util.ProceduralPlanetTextureGenerator
+import com.quickbite.spaceslingshot.util.Util
 
 /**
  * Created by Paha on 6/18/2017.
@@ -23,35 +25,33 @@ object LevelManager {
 
 
     fun reloadLevel(screen:GameScreen):Boolean{
-        val success = loadLevel(screen.data.currLevel, screen)
-        return success
+        return loadLevel(GameScreen.gameScreenData.currLevel, screen)
     }
 
     fun loadLevel(level:Int, screen:GameScreen):Boolean{
         screen.reset()
 
         //TODO Need to load these achievements from playerprefs (if they have already beat it before)
-        for(i in 0..screen.data.achievementFlags.size - 1)
-            screen.data.achievementFlags[i] = false
+        for(i in 0 until GameScreen.gameScreenData.achievementFlags.size)
+            GameScreen.gameScreenData.achievementFlags[i] = false
 
         val success:Boolean
-        if(screen.data.endlessGame == null) {
-            success = loadLevel(level, screen.data)
-            screen.data.currLevel = level
-            screen.gui.fuelBar.setAmounts(screen.data.ship.fuel, 0f, screen.data.ship.fuel)
+        if(GameScreen.gameScreenData.endlessGame == null) {
+            success = loadLevel(level, GameScreen.gameScreenData)
+            GameScreen.gameScreenData.currLevel = level
+            GameScreen.gui.fuelBar.setAmounts(GameScreen.gameScreenData.ship.fuel, 0f, GameScreen.gameScreenData.ship.fuel)
         }else{
-            screen.data.endlessGame?.reset()
+            GameScreen.gameScreenData.endlessGame?.reset()
             success = true
         }
 
-        screen.runPredictor()
+        Util.runPredictor()
 
         return success
     }
 
     fun loadNextLevel(screen:GameScreen):Boolean{
-        val success = loadLevel(++screen.data.currLevel, screen)
-        return success
+        return loadLevel(++GameScreen.gameScreenData.currLevel, screen)
     }
 
     private fun loadLevel(level:Int, data: GameScreenData):Boolean{
@@ -89,6 +89,11 @@ object LevelManager {
 
         val sd = levelData.ship
         data.ship.reset(Vector2(sd.pos[0].toFloat(), sd.pos[1].toFloat()), sd.fuel, Vector2(sd.velocity[0], sd.velocity[1]))
+        Predictor.points[0].apply {
+            position.set(sd.pos[0].toFloat(), sd.pos[1].toFloat())
+            fuel = sd.fuel
+            velocity = Vector2(sd.velocity[0], sd.velocity[1])
+        }
 
         ProceduralPlanetTextureGenerator.generatePlanetTexturesFromDataThreaded(10) //Generate the next set of textures
 

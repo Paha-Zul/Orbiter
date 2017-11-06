@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.quickbite.spaceslingshot.interfaces.IDrawable
 import com.quickbite.spaceslingshot.interfaces.IUpdateable
+import com.quickbite.spaceslingshot.objects.ShipDataHolder
 
 /**
  * Created by Paha on 8/19/2016.
@@ -16,16 +17,13 @@ class LineDraw(start:Vector2, end:Vector2, texture:Texture) : IDrawable, IUpdate
 
     private val startPoint:Vector2 = Vector2(start.x, start.y)
     private val endPoint:Vector2 = Vector2(end.x, end.x)
-    private var pointList:List<Vector2> = listOf()
+    var points:List<ShipDataHolder> = listOf()
+        set(value) { field = value.toList()}
     private var distance = 0f
 
     var size = 10
     private var rotation = 0f
     private val textureRegion:TextureRegion
-
-    constructor(points:List<Vector2>, texture:Texture):this(Vector2(), Vector2(), texture){
-        pointList = points.toList()
-    }
 
     init{
         texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat)
@@ -34,12 +32,12 @@ class LineDraw(start:Vector2, end:Vector2, texture:Texture) : IDrawable, IUpdate
     }
 
     override fun draw(batch: SpriteBatch) {
-        if(this.pointList.size == 0)
+        if(this.points.size == 0)
             batch.draw(textureRegion, startPoint.x, startPoint.y, 0f, 0f, distance, size.toFloat(), 1f, 1f, rotation)
         else{
-            for(i in 0..pointList.size-2){
-                val nextPoint = pointList[i+1]
-                val currPoint = pointList[i]
+            for(i in 0..points.size-2){
+                val nextPoint = points[i+1].position
+                val currPoint = points[i].position
 
                 rotation = MathUtils.atan2(nextPoint.y - currPoint.y, nextPoint.x - currPoint.x)*MathUtils.radiansToDegrees
                 distance = currPoint.dst(nextPoint)
@@ -69,12 +67,8 @@ class LineDraw(start:Vector2, end:Vector2, texture:Texture) : IDrawable, IUpdate
         this.textureRegion.setRegion(0f, 0f, distance/ size, 1f)
 
         //Clear the point list if it has anything in it.
-        if(this.pointList.size > 0)
-            this.pointList = listOf()
-    }
-
-    fun setPoints(points:List<Vector2>){
-        this.pointList = points.toList()
+        if(this.points.size > 0)
+            this.points = listOf()
     }
 
     override fun dispose() {

@@ -216,7 +216,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 	public void onActivityResult(int request, int response, Intent data) {
 		super.onActivityResult(request, response, data);
 		gameHelper.onActivityResult(request, response, data);
-//		mHelper.handleActivityResult(request, response, data);
+//		mHelper.handleActivityResult(request, response, gameScreenData);
 
 		/** Don't uncomment below? */
 
@@ -225,7 +225,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 //			// update your logic here (show login btn, hide logout btn).
 //		} else {
 //			try {
-//				gameHelper.onActivityResult(request, response, data);
+//				gameHelper.onActivityResult(request, response, gameScreenData);
 //			}catch(Exception e){
 //				e.printStackTrace();
 //			}

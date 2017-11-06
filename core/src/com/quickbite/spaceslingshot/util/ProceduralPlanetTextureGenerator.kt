@@ -175,7 +175,7 @@ object ProceduralPlanetTextureGenerator {
                     storeTexture(texture, counter++)
 
                     val timeTaken = TimeUtils.millis() - startTime
-                    System.out.println("[$tag] Time to generate texture from data and store (counter): ${timeTaken}ms")
+                    System.out.println("[$tag] Time to generate texture from gameScreenData and store (counter): ${timeTaken}ms")
 
                 }, true)
 
@@ -199,7 +199,7 @@ object ProceduralPlanetTextureGenerator {
 
         val scale = 2
 
-        //Grab the pixmap data from the incoming texture
+        //Grab the pixmap gameScreenData from the incoming texture
         dataTexture.textureData.prepare()
         val texturePixmap = dataTexture.textureData.consumePixmap()
 
@@ -235,7 +235,7 @@ object ProceduralPlanetTextureGenerator {
         texturePixmap.dispose()
 
 //        val timeTaken = TimeUtils.millis() - startTime
-//        System.out.println("[$tag] Time to generate pixmaps from data: ${timeTaken}ms")
+//        System.out.println("[$tag] Time to generate pixmaps from gameScreenData: ${timeTaken}ms")
 
         return pixmap
     }
@@ -312,7 +312,7 @@ object ProceduralPlanetTextureGenerator {
         }
 
         val result = TimeUtils.millis() - startTime
-        System.out.println("[$tag] Time to generate textures from data: ${result}ms")
+        System.out.println("[$tag] Time to generate textures from gameScreenData: ${result}ms")
 
         shadowPixmap.dispose()
     }
@@ -390,7 +390,7 @@ object ProceduralPlanetTextureGenerator {
 
         _tmpColor3.set(0f, 0f, 0f, 1f)
 
-        _tmpCol1.set(colors[index][0]) //Set the tmp color to the first color. This is so when we call lerp() it doesn't mess up our class data
+        _tmpCol1.set(colors[index][0]) //Set the tmp color to the first color. This is so when we call lerp() it doesn't mess up our class gameScreenData
         _tmpCol2.set(_tmpCol1.lerp(colors[index][1], result))
 
         return _tmpCol2.lerp(_tmpColor3, shadowValue)
@@ -433,7 +433,7 @@ object ProceduralPlanetTextureGenerator {
 
         tmpColor3.set(0f, 0f, 0f, 1f)
 
-        tmpColor1.set(colors[index][0]) //Set the tmp color to the first color. This is so when we call lerp() it doesn't mess up our class data
+        tmpColor1.set(colors[index][0]) //Set the tmp color to the first color. This is so when we call lerp() it doesn't mess up our class gameScreenData
         tmpColor2.set(tmpColor1.lerp(colors[index][1], result))
 
         return tmpColor2.lerp(tmpColor3, shadowValue)

@@ -109,7 +109,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         val frontTable = Table()
 
 //        val background = NinePatchDrawable(NinePatch(MyGame.manager["box", Texture::class.java], 10, 10, 10, 10))
-        fuelBar = CustomBar(gameScreen.data.ship.fuel, 0f, gameScreen.data.ship.fuel, null, TextureRegionDrawable(TextureRegion(GH.createPixel(Color.WHITE))))
+        fuelBar = CustomBar(GameScreen.gameScreenData.ship.fuel, 0f, GameScreen.gameScreenData.ship.fuel, null, TextureRegionDrawable(TextureRegion(GH.createPixel(Color.WHITE))))
 
         val fuelLabel = Label("Fuel", Label.LabelStyle(MyGame.font, Color.WHITE))
         fuelLabel.setFontScale(0.2f)
@@ -201,7 +201,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
 
         relocateShipButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                val ship = gameScreen.data.ship
+                val ship = GameScreen.gameScreenData.ship
 //                gameScreen.scrollScreen(ship.position.x, ship.position.y)
 
                 val ease = Interpolation.circleOut
@@ -357,10 +357,10 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
 
         gameOverTable.add(innerTable).fill().expand()
 
-        if(gameScreen.data.endlessGame == null)
-            timeLabel.setText("Completed in ${gameScreen.data.levelTimer.format(2)}s")
+        if(GameScreen.gameScreenData.endlessGame == null)
+            timeLabel.setText("Completed in ${GameScreen.gameScreenData.levelTimer.format(2)}s")
         else
-            timeLabel.setText("Passed ${gameScreen.data.currPlanetScore} planets!")
+            timeLabel.setText("Passed ${GameScreen.gameScreenData.currPlanetScore} planets!")
 
         if(failed){
             buttonTable.add(mainMenuButton).spaceRight(20f).width(100f).height(50f)
@@ -378,7 +378,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
 
         MyGame.stage.addActor(gameOverTable)
 
-        val prefAchievements = AchievementManager.loadAchievementsFromPref((gameScreen.data.currLevel+1).toString())
+        val prefAchievements = AchievementManager.loadAchievementsFromPref((GameScreen.gameScreenData.currLevel+1).toString())
         if(prefAchievements[0]) stack1.add(checks[0])
         if(prefAchievements[1]) stack2.add(checks[1])
         if(prefAchievements[2]) stack3.add(checks[2])
@@ -387,9 +387,9 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         gameOverTable.addAction(Actions.sequence(Actions.scaleTo(1f, 1f, 0.1f), Actions.delay(1f), object: Action() {
             override fun act(delta: Float): Boolean {
                 //For each flag, fade in a check if we met the requirements
-                val ach1 = gameScreen.data.achievementFlags[0]
-                val ach2 = gameScreen.data.achievementFlags[1]
-                val ach3 = gameScreen.data.achievementFlags[2]
+                val ach1 = GameScreen.gameScreenData.achievementFlags[0]
+                val ach2 = GameScreen.gameScreenData.achievementFlags[1]
+                val ach3 = GameScreen.gameScreenData.achievementFlags[2]
 
                 if(ach1) fadeInCheckmark(image1, checks[0], 0f)
                 if(ach2) fadeInCheckmark(image2, checks[1], 0.2f)
@@ -435,7 +435,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
     }
 
     override fun update(delta: Float) {
-        this.levelTimerText.setText("Time: ${gameScreen.data.levelTimer.format(2)}")
+        this.levelTimerText.setText("Time: ${GameScreen.gameScreenData.levelTimer.format(2)}")
     }
 
     override fun fixedUpdate(delta: Float) {

@@ -75,17 +75,17 @@ public class GH {
     }
 
     public static String getAchievementMessage(int index, GameScreen gameScreen){
-        String achType = LevelManager.INSTANCE.getLevels()[gameScreen.getData().getCurrLevel()].achievements[index][0];
+        String achType = LevelManager.INSTANCE.getLevels()[GameScreen.Companion.getGameScreenData().getCurrLevel()].achievements[index][0];
         String message = "";
         switch(achType){
             case "win":
                 message = "Win the Map";
                 break;
             case "time":
-                message = "Within time: "+ LevelManager.INSTANCE.getLevels()[gameScreen.getData().getCurrLevel()].achievements[index][1];
+                message = "Within time: "+ LevelManager.INSTANCE.getLevels()[GameScreen.Companion.getGameScreenData().getCurrLevel()].achievements[index][1];
                 break;
             case "fuel":
-                message = "Remaining fuel: "+LevelManager.INSTANCE.getLevels()[gameScreen.getData().getCurrLevel()].achievements[index][1];
+                message = "Remaining fuel: "+LevelManager.INSTANCE.getLevels()[GameScreen.Companion.getGameScreenData().getCurrLevel()].achievements[index][1];
                 break;
 
         }
@@ -94,7 +94,7 @@ public class GH {
     }
 
     public static boolean getAchievementSuccessful(int index, GameScreen gameScreen){
-        return gameScreen.getData().getAchievementFlags()[index];
+        return GameScreen.Companion.getGameScreenData().getAchievementFlags()[index];
     }
 
 
