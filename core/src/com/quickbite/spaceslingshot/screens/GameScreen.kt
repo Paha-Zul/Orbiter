@@ -27,7 +27,6 @@ import com.quickbite.spaceslingshot.util.*
  * Handles the Game Screen functionality.
  */
 class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean = false) : Screen {
-    lateinit var thrusterLineDrawers:List<LineDraw>
 
     lateinit var starryBackground: TextureRegion
 
@@ -123,12 +122,6 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
 
         Util.runPredictor()
 
-        val list:MutableList<LineDraw> = mutableListOf()
-        gameScreenData.ship.burnHandles.forEach { handle ->
-            list += LineDraw(Vector2(), Vector2(), MyGame.manager["dash", Texture::class.java])
-        }
-
-        thrusterLineDrawers = list.toList()
         predictorLineDrawer.size = 3
     }
 
@@ -214,10 +207,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
                     setGamePaused(false)
             }
 
-            thrusterLineDrawers.forEachIndexed { i, drawer ->
-                val handle = gameScreenData.ship.burnHandles[i]
-                drawer.setStartAndEnd(handle.burnHandleBasePosition, handle.burnHandlePosition)
-            }
+
 //            predictorLineDrawer.setStartAndEnd(gameScreenData.ship.burnBallBasePosition, gameScreenData.ship.burnHandleLocation)
         }
 
@@ -250,7 +240,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
 
         //When we're paused, draw the thruster handles and lines.
         if(paused) {
-            thrusterLineDrawers.forEach { drawer -> drawer.draw(batch) }
+            drawShipControls(batch)
         }
 
         //Draw planets
@@ -285,6 +275,9 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
 //        drawPrediction(MyGame.shapeRenderer)
 
         renderer.end()
+    }
+
+    private fun drawShipControls(batch:SpriteBatch){
 
     }
 

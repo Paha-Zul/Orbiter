@@ -1,0 +1,76 @@
+
+gameScreenAtlas.png
+size: 1024,1024
+format: RGBA8888
+filter: MipMapNearestNearest,MipMapNearestNearest
+repeat: none
+arrow
+  rotate: false
+  xy: 390, 384
+  size: 46, 56
+  orig: 46, 56
+  offset: 0, 0
+  index: -1
+arrowCircle
+  rotate: false
+  xy: 516, 594
+  size: 120, 120
+  orig: 120, 120
+  offset: 0, 0
+  index: -1
+asteroid.
+  rotate: false
+  xy: 2, 184
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+doubleArrow
+  rotate: false
+  xy: 260, 254
+  size: 46, 56
+  orig: 46, 56
+  offset: 0, 0
+  index: -1
+fuelContainer
+  rotate: false
+  xy: 2, 67
+  size: 240, 115
+  orig: 240, 115
+  offset: 0, 0
+  index: -1
+ring
+  rotate: false
+  xy: 260, 312
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+spaceship
+  rotate: false
+  xy: 516, 716
+  size: 215, 238
+  orig: 215, 238
+  offset: 0, 0
+  index: -1
+station
+  rotate: false
+  xy: 2, 442
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
+thrustFire
+  rotate: false
+  xy: 733, 862
+  size: 108, 92
+  orig: 108, 92
+  offset: 0, 0
+  index: -1
+whiteCircle
+  rotate: false
+  xy: 2, 2
+  size: 63, 63
+  orig: 63, 63
+  offset: 0, 0
+  index: -1

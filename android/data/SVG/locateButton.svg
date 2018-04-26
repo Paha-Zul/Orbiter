@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="128"
+   height="128"
+   viewBox="0 0 128 128"
+   id="svg8282"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="locateButton.svg"
+   inkscape:export-filename="C:\Users\Paha\Google Drive\AllProjectFiles\Java\SpaceSlingshot\android\gameScreenData\GUI\locateButton.png"
+   inkscape:export-xdpi="92.8125"
+   inkscape:export-ydpi="92.8125">
+  <defs
+     id="defs8284" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2.296875"
+     inkscape:cx="49.792442"
+     inkscape:cy="60.240898"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1680"
+     inkscape:window-height="987"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata8287">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-924.3622)">
+    <path
+       style="display:inline;fill:#9dbffe;fill-opacity:1;fill-rule:evenodd;stroke:#78b8f9;stroke-width:1.09994888;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 111.10506,926.00937 83.657766,953.45666 71.948432,941.74733 70.512983,982.1571 110.9227,980.7216 99.213396,969.01229 126.6607,941.56499 Z"
+       id="path4745"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc" />
+    <path
+       style="display:inline;fill:#9dbffe;fill-opacity:1;fill-rule:evenodd;stroke:#78b8f9;stroke-width:1.08329082;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 1.105813,940.8739 27.031611,27.03161 -11.531995,11.53201 39.797781,1.41371 -1.413759,-39.79774 -11.531977,11.53198 -27.031623,-27.03162 z"
+       id="path4745-8"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc" />
+    <path
+       style="display:inline;fill:#9dbffe;fill-opacity:1;fill-rule:evenodd;stroke:#78b8f9;stroke-width:1.09994876;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 16.827183,1051.2446 27.447308,-27.4473 11.709283,11.7094 1.435434,-40.40984 -40.409665,1.43554 11.709252,11.7093 -27.4472429,27.4472 z"
+       id="path4745-8-2"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc" />
+    <path
+       style="display:inline;fill:#9dbffe;fill-opacity:1;fill-rule:evenodd;stroke:#78b8f9;stroke-width:1.09994876;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 126.95053,1036.1507 -27.447358,-27.4473 11.709398,-11.70919 -40.409811,-1.43543 1.435543,40.40962 11.709285,-11.7093 27.447243,27.4472 z"
+       id="path4745-8-2-1"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc" />
+  </g>
+</svg>

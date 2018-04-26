@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="64"
+   height="64"
+   viewBox="0 0 64.000002 64.000002"
+   id="svg4162"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="leaderboardIcon.svg"
+   inkscape:export-filename="C:\Users\Paha\Google Drive\AllProjectFiles\Java\SpaceSlingshot\android\gameScreenData\GUI\removeAdsIcon.png"
+   inkscape:export-xdpi="92.8125"
+   inkscape:export-ydpi="92.8125">
+  <defs
+     id="defs4164" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="9.1875"
+     inkscape:cx="31.862709"
+     inkscape:cy="21.529981"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer6"
+     showgrid="false"
+     inkscape:window-width="1680"
+     inkscape:window-height="987"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     units="px">
+    <sodipodi:guide
+       position="-58.214288,128"
+       orientation="0,1"
+       id="guide4747"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata4167">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="leaderboard"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-988.36223)"
+     style="display:none">
+    <g
+       id="g4800"
+       transform="matrix(0.39232354,0,0,0.39232354,-65.705952,696.21902)">
+      <rect
+         inkscape:export-ydpi="92.8125"
+         inkscape:export-xdpi="92.8125"
+         inkscape:export-filename="C:\Users\Paha\Google Drive\AllProjectFiles\Java\SpaceSlingshot\android\gameScreenData\GUI\leaderboardIcon.png"
+         ry="4.3251753"
+         rx="5.871778"
+         y="750.93976"
+         x="228.51392"
+         height="150.29659"
+         width="40.926601"
+         id="rect4717"
+         style="opacity:1;fill:#9dbffe;fill-opacity:1;stroke:#78b8f9;stroke-width:3.00000024;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         inkscape:export-ydpi="92.8125"
+         inkscape:export-xdpi="92.8125"
+         inkscape:export-filename="C:\Users\Paha\Google Drive\AllProjectFiles\Java\SpaceSlingshot\android\gameScreenData\GUI\leaderboardIcon.png"
+         ry="3.5140069"
+         rx="3.166172"
+         y="841.0611"
+         x="278.84015"
+         height="60.427212"
+         width="41.430664"
+         id="rect4717-7"
+         style="opacity:1;fill:#9dbffe;fill-opacity:1;stroke:#78b8f9;stroke-width:3.00000024;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         inkscape:export-ydpi="92.8125"
+         inkscape:export-xdpi="92.8125"
+         inkscape:export-filename="C:\Users\Paha\Google Drive\AllProjectFiles\Java\SpaceSlingshot\android\gameScreenData\GUI\leaderboardIcon.png"
+         ry="4.4875188"
+         rx="3.8852887"
+         y="798.06976"
+         x="177.81784"
+         height="103.28442"
+         width="41.162266"
+         id="rect4717-79"
+         style="opacity:1;fill:#9dbffe;fill-opacity:1;stroke:#78b8f9;stroke-width:3.00000024;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="play"
+     style="display:none"
+     transform="translate(0,-389.54333)">
+    <path
+       style="opacity:1;fill:#9dbffe;fill-opacity:1;stroke:#78b8f9;stroke-width:1.37437224;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 10.011869,392.97601 c 1.221727,0 46.095018,22.30738 46.095018,27.07281 0,4.76542 -45.002901,29.44137 -46.095018,29.96521 -1.0921129,0.52383 -2.1187518,-1.09088 -2.1187518,-2.11875 l 0,-52.80051 c 0,-1.02522 0.8970287,-2.11876 2.1187518,-2.11876 z"
+       id="rect4792"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="zzzzzz"
+       inkscape:export-xdpi="92.8125"
+       inkscape:export-ydpi="92.8125"
+       inkscape:export-filename="C:\Users\Paha\Google Drive\AllProjectFiles\Java\SpaceSlingshot\android\gameScreenData\GUI\playButtonIcon.png" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="quit"
+     style="display:none"
+     transform="translate(0,-162.77166)">
+    <g
+       id="g4749"
+       transform="matrix(0.28765859,0,0,0.28765859,-0.6163829,162.73975)">
+      <path
+         inkscape:connector-curvature="0"
+         id="path5346"
+         d="M 165.1582,21.96875 152.90039,45.357422 A 78.748609,78.748609 0 0 1 192.13477,113.38672 78.748609,78.748609 0 0 1 113.38672,192.13477 78.748609,78.748609 0 0 1 34.636719,113.38672 78.748609,78.748609 0 0 1 70.326172,47.486328 L 70,47.486328 57.810547,24.228516 A 105.18855,105.18855 0 0 0 8.1972656,113.38672 105.18855,105.18855 0 0 0 113.38672,218.57422 105.18855,105.18855 0 0 0 218.57422,113.38672 105.18855,105.18855 0 0 0 165.1582,21.96875 Z"
+         style="opacity:1;fill:#9dbffe;fill-opacity:1;stroke:#78b8f9;stroke-width:3.00000024;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         y="4.133595"
+         x="97.354912"
+         height="85.276123"
+         width="32.061836"
+         id="rect5384"
+         style="opacity:1;fill:#9dbffe;fill-opacity:1;stroke:#78b8f9;stroke-width:3.00000024;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer5"
+     inkscape:label="endlessIcon"
+     style="display:none"
+     transform="translate(0,-162.77166)">
+    <path
+       style="opacity:1;fill:#9dbffe;fill-opacity:1;stroke:#78b8f9;stroke-width:1;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 18.578919,177.47262 a 17.298913,17.298913 0 0 0 -17.2993946,17.29939 17.298913,17.298913 0 0 0 17.2993946,17.29869 17.298913,17.298913 0 0 0 13.424248,-6.40152 17.298914,17.298914 0 0 0 13.418619,6.40152 17.298914,17.298914 0 0 0 17.298689,-17.29869 17.298914,17.298914 0 0 0 -17.298689,-17.29939 17.298914,17.298914 0 0 0 -13.42425,6.40081 17.298913,17.298913 0 0 0 -13.418617,-6.40081 z m 0,7.69253 a 9.6061245,9.6061245 0 0 1 9.570937,8.83493 17.298914,17.298914 0 0 0 -0.02746,0.77193 17.298914,17.298914 0 0 0 0.0317,0.62614 9.6061245,9.6061245 0 0 1 -9.575176,8.98002 9.6061245,9.6061245 0 0 1 -9.6068615,-9.60616 9.6061245,9.6061245 0 0 1 9.6068615,-9.60686 z m 26.842867,0 a 9.6061252,9.6061252 0 0 1 9.606158,9.60686 9.6061252,9.6061252 0 0 1 -9.606158,9.60616 9.6061252,9.6061252 0 0 1 -9.570941,-8.83564 17.298913,17.298913 0 0 0 0.02679,-0.77052 17.298913,17.298913 0 0 0 -0.03099,-0.62191 9.6061252,9.6061252 0 0 1 9.575168,-8.98495 z"
+       id="path4709"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="C:\Users\Paha\Google Drive\AllProjectFiles\Java\SpaceSlingshot\android\gameScreenData\GUI\endlessButton.png"
+       inkscape:export-xdpi="92.8125"
+       inkscape:export-ydpi="92.8125" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer6"
+     inkscape:label="backIcon"
+     transform="translate(0,-162.77166)"
+     style="display:inline">
+    <path
+       style="fill:#9dbffe;fill-opacity:1;fill-rule:evenodd;stroke:#78b8f9;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 63.211596,184.77165 -35.289222,0 0,-15.05479 -26.9003579,25.05479 26.9003579,25.0548 0,-15.0548 35.289222,0 z"
+       id="path4745"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer7"
+     inkscape:label="levelsIcon"
+     style="display:none">
+    <g
+       id="g4811"
+       transform="translate(-2.0203051,0.3788072)"
+       style="fill:#9dbffe;fill-opacity:1;stroke:#78b8f9;stroke-opacity:1">
+      <text
+         sodipodi:linespacing="125%"
+         id="text4758"
+         y="44.035381"
+         x="2.0854897"
+         style="font-style:normal;font-weight:normal;font-size:33.01869965px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#9dbffe;fill-opacity:1;stroke:#78b8f9;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           y="44.035381"
+           x="2.0854897"
+           id="tspan4760"
+           sodipodi:role="line">1</tspan></text>
+    </g>
+    <g
+       id="g4806"
+       transform="translate(-2.6516489,0.3788072)"
+       style="fill:#9dbffe;fill-opacity:1;stroke:#78b8f9;stroke-opacity:1">
+      <text
+         sodipodi:linespacing="125%"
+         id="text4793"
+         y="44.237919"
+         x="24.802286"
+         style="font-style:normal;font-weight:normal;font-size:32.97797012px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#9dbffe;fill-opacity:1;stroke:#78b8f9;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           y="44.237919"
+           x="24.802286"
+           id="tspan4795"
+           sodipodi:role="line">2</tspan></text>
+    </g>
+    <g
+       id="g4801"
+       transform="translate(-4.0406102,0.3788072)"
+       style="fill:#9dbffe;fill-opacity:1;stroke:#78b8f9;stroke-opacity:1">
+      <text
+         sodipodi:linespacing="125%"
+         id="text4797"
+         y="43.687698"
+         x="47.427406"
+         style="font-style:normal;font-weight:normal;font-size:32.10786057px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#9dbffe;fill-opacity:1;stroke:#78b8f9;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           y="43.687698"
+           x="47.427406"
+           id="tspan4799"
+           sodipodi:role="line">3</tspan></text>
+    </g>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="gpgLoginIcon"
+     style="display:none">
+    <path
+       style="opacity:1;fill:#9dbffe;fill-opacity:1;stroke:#78b8f9;stroke-width:0.69297141;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 29.234567,18.496077 c -3.273249,0 -5.41313,2.672828 -5.908391,5.908392 L 22.501078,29.792126 20.4066,41.712767 c -0.299497,1.704146 0.856447,2.834232 1.376124,3.161913 0.519677,0.327681 1.228237,0.655504 1.935806,0.627478 0.70757,-0.02803 1.990485,-0.474972 2.749364,-1.112151 l 8.784693,-7.375392 12.395217,0 8.784693,7.375392 c 0.75888,0.637179 2.040352,1.084123 2.747922,1.112151 0.707569,0.02803 1.417571,-0.299797 1.937248,-0.627478 0.519677,-0.327681 1.675621,-1.457767 1.376124,-3.161913 L 60.70656,31.417078 c -0.0067,-0.204686 -1.243417,-7.012609 -1.243417,-7.012609 -0.582668,-3.220971 -2.635142,-5.908392 -5.908391,-5.908392 z"
+       id="rect4171"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="scccssccccsscccss" />
+    <path
+       style="display:inline;fill:#6afd87;fill-opacity:1;fill-rule:evenodd;stroke:#09cc37;stroke-width:0.2980836;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 1.1160166,34.980838 10.5191384,0 0,4.487586 8.018556,-7.468422 -8.018556,-7.468425 0,4.487589 -10.5191384,0 z"
+       id="path4745-3"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc" />
+    <g
+       id="g4299">
+      <rect
+         transform="scale(-1,1)"
+         y="22.345562"
+         x="-30.877251"
+         height="7.933867"
+         width="1.6834724"
+         id="rect4245"
+         style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         transform="matrix(0,-1,-1,0,0,0)"
+         y="-34.002449"
+         x="-27.154232"
+         height="7.933867"
+         width="1.6834724"
+         id="rect4245-3"
+         style="display:inline;opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+    <g
+       id="g4293"
+       transform="translate(-0.08928571,0.68303037)">
+      <circle
+         r="1.3839285"
+         cy="22.973215"
+         cx="51.316963"
+         id="path4264"
+         style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <circle
+         r="1.3839285"
+         cy="28.285715"
+         cx="51.316963"
+         id="path4264-6"
+         style="display:inline;opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <circle
+         r="1.3839285"
+         cy="25.696426"
+         cx="54.107143"
+         id="path4264-2"
+         style="display:inline;opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <circle
+         r="1.3839285"
+         cy="25.696426"
+         cx="48.526787"
+         id="path4264-60"
+         style="display:inline;opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+  </g>
+  <g
+     style="display:none"
+     inkscape:label="gpgLogoutIcon"
+     id="g4303"
+     inkscape:groupmode="layer">
+    <path
+       sodipodi:nodetypes="scccssccccsscccss"
+       inkscape:connector-curvature="0"
+       id="path4305"
+       d="m 29.234567,18.496077 c -3.273249,0 -5.41313,2.672828 -5.908391,5.908392 L 22.501078,29.792126 20.4066,41.712767 c -0.299497,1.704146 0.856447,2.834232 1.376124,3.161913 0.519677,0.327681 1.228237,0.655504 1.935806,0.627478 0.70757,-0.02803 1.990485,-0.474972 2.749364,-1.112151 l 8.784693,-7.375392 12.395217,0 8.784693,7.375392 c 0.75888,0.637179 2.040352,1.084123 2.747922,1.112151 0.707569,0.02803 1.417571,-0.299797 1.937248,-0.627478 0.519677,-0.327681 1.675621,-1.457767 1.376124,-3.161913 L 60.70656,31.417078 c -0.0067,-0.204686 -1.243417,-7.012609 -1.243417,-7.012609 -0.582668,-3.220971 -2.635142,-5.908392 -5.908391,-5.908392 z"
+       style="opacity:1;fill:#9dbffe;fill-opacity:1;stroke:#78b8f9;stroke-width:0.69297141;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       sodipodi:nodetypes="cccccccc"
+       inkscape:connector-curvature="0"
+       id="path4307"
+       d="m 19.723347,29.019163 -10.5191384,0 0,-4.487586 -8.018556,7.468422 8.018556,7.468425 0,-4.487589 10.5191384,0 z"
+       style="display:inline;fill:#fd7167;fill-opacity:1;fill-rule:evenodd;stroke:#e41203;stroke-width:0.29800001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <g
+       id="g4309">
+      <rect
+         style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect4311"
+         width="1.6834724"
+         height="7.933867"
+         x="-30.877251"
+         y="22.345562"
+         transform="scale(-1,1)" />
+      <rect
+         style="display:inline;opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect4313"
+         width="1.6834724"
+         height="7.933867"
+         x="-27.154232"
+         y="-34.002449"
+         transform="matrix(0,-1,-1,0,0,0)" />
+    </g>
+    <g
+       transform="translate(-0.08928571,0.68303037)"
+       id="g4315">
+      <circle
+         style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="circle4317"
+         cx="51.316963"
+         cy="22.973215"
+         r="1.3839285" />
+      <circle
+         style="display:inline;opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="circle4319"
+         cx="51.316963"
+         cy="28.285715"
+         r="1.3839285" />
+      <circle
+         style="display:inline;opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="circle4321"
+         cx="54.107143"
+         cy="25.696426"
+         r="1.3839285" />
+      <circle
+         style="display:inline;opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="circle4323"
+         cx="48.526787"
+         cy="25.696426"
+         r="1.3839285" />
+    </g>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer8"
+     inkscape:label="removeAdsIcon"
+     style="display:none">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:32.847229px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#9dbffe;fill-opacity:1;stroke:#78b8f9;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="11.944513"
+       y="42.047714"
+       id="text4189"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4191"
+         x="11.944513"
+         y="42.047714">Ad</tspan></text>
+    <path
+       style="opacity:1;fill:#e26464;fill-opacity:1;stroke:#fc4e41;stroke-width:0.34553739;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 32,0.37109375 A 31.628016,31.628016 0 0 0 0.37109375,32 31.628016,31.628016 0 0 0 32,63.628906 31.628016,31.628016 0 0 0 63.628906,32 31.628016,31.628016 0 0 0 32,0.37109375 Z M 32,4.7226562 A 27.276785,27.276785 0 0 1 50.03125,11.566406 L 11.574219,50.025391 A 27.276785,27.276785 0 0 1 4.7226562,32 27.276785,27.276785 0 0 1 32,4.7226562 Z M 52.636719,14.210938 A 27.276785,27.276785 0 0 1 59.277344,32 27.276785,27.276785 0 0 1 32,59.277344 27.276785,27.276785 0 0 1 14.199219,52.650391 l 38.4375,-38.439453 z"
+       id="path4193-2"
+       inkscape:connector-curvature="0" />
+  </g>
+</svg>

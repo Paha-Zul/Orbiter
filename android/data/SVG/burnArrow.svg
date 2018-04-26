@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="64"
+   height="64"
+   viewBox="0 0 64.000002 64.000001"
+   id="svg4151"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   inkscape:export-filename="C:\Users\Paha\Google Drive\AllProjectFiles\Java\SpaceSlingshot\android\assets\img\arrow.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90"
+   sodipodi:docname="burnArrow.svg">
+  <defs
+     id="defs4153" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="7.9195959"
+     inkscape:cx="23.882536"
+     inkscape:cy="30.934054"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer2"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata4156">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-988.36216)"
+     style="display:none">
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.42352489;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 20.488684,993.02744 -4.295985,4.29433 23.089053,23.08893 -23.201974,23.2003 4.295985,4.2961 23.200314,-23.2021 0.04816,0.049 4.295985,-4.296 -27.431536,-27.42981 z"
+       id="rect4699"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4732"
+       d="m 20.488684,993.02744 -4.295985,4.29433 23.089053,23.08893 -23.201974,23.2003 4.295985,4.2961 23.200314,-23.2021 0.04816,0.049 4.295985,-4.296 -27.431536,-27.42981 z"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.42352489;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4732-3"
+       d="m 20.488684,993.02742 -4.295985,4.29433 23.089053,23.08905 -23.201974,23.2003 4.295985,4.2961 23.200314,-23.2021 0.04816,0.049 4.295985,-4.296 -27.431536,-27.42993 z"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.42352489;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Layer 2">
+    <path
+       id="path4732-3-0-5"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.42352489;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 12.407462,4.665239 -4.2959842,4.29433 23.0890542,23.089049 -23.2019752,23.2003 4.2959842,4.2961 23.200316,-23.2021 0.04816,0.049 4.295985,-4.296 L 12.407464,4.665989 Z m 16.162441,2e-7 -4.295985,4.29433 23.089054,23.0890488 -23.201975,23.2003 4.295985,4.2961 23.200315,-23.2021 0.04816,0.049 4.295985,-4.296 L 28.569905,4.6659892 Z"
+       inkscape:connector-curvature="0" />
+  </g>
+</svg>

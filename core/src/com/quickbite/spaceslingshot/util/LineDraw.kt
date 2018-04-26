@@ -32,8 +32,8 @@ class LineDraw(start:Vector2, end:Vector2, texture:Texture) : IDrawable, IUpdate
     }
 
     override fun draw(batch: SpriteBatch) {
-        if(this.points.size == 0)
-            batch.draw(textureRegion, startPoint.x, startPoint.y, 0f, 0f, distance, size.toFloat(), 1f, 1f, rotation)
+        if(this.points.isEmpty())
+            batch.draw(textureRegion, startPoint.x, startPoint.y, size/2f, size/2f, distance, size.toFloat(), 1f, 1f, rotation)
         else{
             for(i in 0..points.size-2){
                 val nextPoint = points[i+1].position
@@ -44,7 +44,6 @@ class LineDraw(start:Vector2, end:Vector2, texture:Texture) : IDrawable, IUpdate
                 this.textureRegion.setRegion(0f, 0f, distance/ size, 1f)
                 batch.draw(textureRegion, currPoint.x, currPoint.y, 0f, 0f, distance, size.toFloat(), 1f, 1f, rotation)
             }
-
         }
     }
 
@@ -67,7 +66,7 @@ class LineDraw(start:Vector2, end:Vector2, texture:Texture) : IDrawable, IUpdate
         this.textureRegion.setRegion(0f, 0f, distance/ size, 1f)
 
         //Clear the point list if it has anything in it.
-        if(this.points.size > 0)
+        if(this.points.isNotEmpty())
             this.points = listOf()
     }
 

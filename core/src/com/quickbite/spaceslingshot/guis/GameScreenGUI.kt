@@ -51,16 +51,13 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
     lateinit var bottomPauseProgressBar:ProgressBar
 
     lateinit var relocateShipButton:Button
-    var bottomTable:Table
+    private var bottomTable:Table = Table()
 
-    val buttonUp = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("button"), 40, 40, 25, 25))
-    val buttonDown = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("button_down"), 40, 40, 25, 25))
+    private val buttonNewUp = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("buttonNew"), 25, 25, 20, 25))
+    private val buttonNewDown = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("buttonNew_down"), 25, 25, 20, 25))
 
-    val buttonNewUp = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("buttonNew"), 25, 25, 20, 25))
-    val buttonNewDown = NinePatchDrawable(NinePatch(MyGame.GUIAtlas.findRegion("buttonNew_down"), 25, 25, 20, 25))
-
-    val boxUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("buttonNewSmallSolid"))
-    val boxDown = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("buttonNewSmallSolid_down"))
+    private val boxUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("buttonNewSmallSolid"))
+    private val boxDown = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("buttonNewSmallSolid_down"))
 
     val checks = arrayOf(
             Image(MyGame.GUIAtlas.findRegion("checkmark")),
@@ -68,7 +65,6 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
             Image(MyGame.GUIAtlas.findRegion("checkmark")))
 
     init{
-        bottomTable = Table()
 
         //Need a bottom bar
         val buttonStyle = TextButton.TextButtonStyle()

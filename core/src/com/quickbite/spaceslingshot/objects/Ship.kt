@@ -2,6 +2,7 @@ package com.quickbite.spaceslingshot.objects
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -30,6 +31,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     override var dead:Boolean  = false
 
     var maxFuel = fuel
+    val thrusterLineDrawers:List<LineDraw> = List(3, {LineDraw(Vector2(), Vector2(), MyGame.manager["dash", Texture::class.java])})
 
     val fuelTaken:Float
         get() {
@@ -277,16 +279,20 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
         //Adjust all sprites
         if(!testShip) {
-                sprite.setPosition(position.x - shipWidth / 2f, position.y - shipHeight / 2f)
-                ring.setPosition(position.x - ringRadius, position.y - ringRadius)
-                burnHandles.forEach(BurnHandle::setPosition)
+            sprite.setPosition(position.x - shipWidth / 2f, position.y - shipHeight / 2f)
+            ring.setPosition(position.x - ringRadius, position.y - ringRadius)
+            burnHandles.forEach(BurnHandle::setPosition)
+            drawHandles(batch)
+            thrusterLineDrawers.forEachIndexed { i, drawer ->
+                val handle = GameScreen.gameScreenData.ship.burnHandles[i]
+                drawer.setStartAndEnd(handle.burnHandleBasePosition, handle.burnHandlePosition)
+            }
+            thrusterLineDrawers.forEach { drawer -> drawer.draw(batch) }
         }
 
         if(!hideShipSprite) {
             sprite.draw(batch)
             drawThrusters(batch)
-            if(GameScreen.paused)
-                drawHandles(batch)
         }
 
         if(exploding)
@@ -314,7 +320,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         }
     }
 
-    private fun drawHandles(batch: SpriteBatch){
+    fun drawHandles(batch: SpriteBatch){
         setBurnHandlePosition()
 
         ring.draw(batch)
@@ -323,17 +329,10 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
     private fun applyVelocity(){
         position.set(body.position.x*Constants.BOX2D_INVERSESCALE, body.position.y*Constants.BOX2D_INVERSESCALE)
-//        this.position.translate(this.velocity.x, this.velocity.y)
-//        this.body.setTransform(this.position.x*Constants.BOX2D_SCALE, this.position.y*Constants.BOX2D_SCALE, this.rotation)
     }
 
     fun addVelocity(x:Float, y:Float){
         body.setLinearVelocity(body.linearVelocity.x + x*Constants.VELOCITY_SCALE, body.linearVelocity.y + y*Constants.VELOCITY_SCALE)
-
-//        body.setLinearVelocity(body.linearVelocity.x + x*Constants.VELOCITY_SCALE, body.linearVelocity.y + y*Constants.VELOCITY_SCALE)
-//        this.velocity.set(body.linearVelocity.x*Constants.VELOCITY_INVERSESCALE, body.linearVelocity.y*Constants.VELOCITY_INVERSESCALE)
-
-//        this.velocity.set(this.velocity.x + x*Constants.VELOCITY_SCALE, this.velocity.y + y*Constants.VELOCITY_SCALE)
     }
 
     fun addVelocityForward(force:Float){
@@ -637,15 +636,14 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     }
 
     private fun getThruster(shipLocation: ShipLocation):Thruster{
-        val thruster:Thruster
+        val thruster = when(shipLocation){
+            ShipLocation.Rear -> thrusters.filter { it.location == ShipLocation.Rear }[0]
+            ShipLocation.Left -> thrusters.filter { it.location == ShipLocation.Right }[0] //Get the opposite
+            ShipLocation.Right -> thrusters.filter { it.location == ShipLocation.Left }[0] //Get the opposite
+            else -> thrusters.filter { it.location == ShipLocation.Rear }[0]
+        }
 
         //We do this because we want to flip left/right
-        when(shipLocation){
-            ShipLocation.Rear -> thruster = thrusters.filter { it.location == ShipLocation.Rear }[0]
-            ShipLocation.Left -> thruster = thrusters.filter { it.location == ShipLocation.Right }[0] //Get the opposite
-            ShipLocation.Right -> thruster = thrusters.filter { it.location == ShipLocation.Left }[0] //Get the opposite
-            else -> thruster = thrusters.filter { it.location == ShipLocation.Rear }[0]
-        }
 
 //        return thrusters.filter { it.location == shipLocation }[0]
         return thruster
@@ -681,14 +679,10 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
     class BurnHandle(val ship: Ship, val burnHandleLocation:ShipLocation, val rotationOffset:Float){
         companion object{
-            lateinit var normalBurnTexture:TextureRegion
-            lateinit var doubleBurnTexture:TextureRegion
-            val burnHandleSize = 30f
+            var normalBurnTexture:TextureRegion = MyGame.gameScreenAtlas.findRegion("arrow")
+            var doubleBurnTexture:TextureRegion = MyGame.gameScreenAtlas.findRegion("doubleArrow")
+            const val burnHandleSize = 30f
 
-            init{
-                normalBurnTexture = MyGame.gameScreenAtlas.findRegion("arrow")
-                doubleBurnTexture = MyGame.gameScreenAtlas.findRegion("doubleArrow")
-            }
         }
 
         val burnHandlePosition = Vector2()
@@ -716,7 +710,5 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         }
     }
 
-    private class DockingData(val position: Vector2, val rotation:Float, val callback:()->Unit){
-
-    }
+    private class DockingData(val position: Vector2, val rotation:Float, val callback:()->Unit)
 }

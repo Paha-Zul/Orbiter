@@ -29,7 +29,7 @@ object Loader {
         for(file in dir.list()){
             if(file.isDirectory && recursive)
                 loadAllImgs(manager, file, true)
-            else if(file.extension() == "pack"){
+            else if(file.extension() == "atlas"){
                 manager.load(file.path(), TextureAtlas::class.java)
             }
         }

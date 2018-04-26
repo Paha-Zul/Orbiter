@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="128"
+   height="128"
+   viewBox="0 0 128 128"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
+   sodipodi:docname="arrow.svg"
+   enable-background="new"
+   inkscape:export-filename="C:\Users\Paha\Google Drive\AllProjectFiles\Java\SpaceSlingshot\android\data\gameScreenGraphics\arrowCircle.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <defs
+     id="defs4">
+    <inkscape:path-effect
+       effect="bend_path"
+       id="path-effect4150"
+       is_visible="true"
+       bendpath="m 110.42685,942.06097 c 0,0 -81.402947,-9.85177 -96.124641,15.38296 -10.1517248,17.40125 -9.6456709,43.96957 -4.6215367,55.60867 12.8844947,29.8487 46.0195317,33.3445 46.0195317,33.3445"
+       prop_scale="1"
+       scale_y_rel="false"
+       vertical="false"
+       bendpath-nodetypes="cssc" />
+    <inkscape:path-effect
+       effect="bend_path"
+       id="path-effect4148"
+       is_visible="true"
+       bendpath="m 8.7328517,1007.8981 c 0,0 11.9184453,39.2605 53.8253013,39.2605 41.906857,0 54.825917,-34.1513 54.825917,-34.1513"
+       prop_scale="1"
+       scale_y_rel="false"
+       vertical="false"
+       bendpath-nodetypes="czc" />
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter4162">
+      <feBlend
+         inkscape:collect="always"
+         mode="screen"
+         in2="BackgroundImage"
+         id="feBlend4164" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter4174">
+      <feBlend
+         inkscape:collect="always"
+         mode="screen"
+         in2="BackgroundImage"
+         id="feBlend4176" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="7.3880518"
+     inkscape:cx="87.683574"
+     inkscape:cy="66.404874"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer2"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="background"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-924.36216)"
+     style="display:inline;opacity:0.98999999;filter:url(#filter4174)">
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.73115945;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4168"
+       width="125.8292"
+       height="118.33099"
+       x="1.0853996"
+       y="929.19666" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Layer 2"
+     style="display:inline;opacity:0.98999999;filter:url(#filter4162)">
+    <path
+       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 114.36974,75.398879 c -5.17791,22.683051 -25.476831,39.608491 -49.728894,39.608491 -28.170596,0 -51.007375,-22.836768 -51.007377,-51.007363 0,-28.170596 22.836781,-51.007379 51.007377,-51.007377 24.285702,10e-7 44.607284,16.972437 49.750344,39.70292"
+       id="path4145"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="csssc" />
+    <path
+       sodipodi:type="star"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path4156"
+       sodipodi:sides="3"
+       sodipodi:cx="120.88111"
+       sodipodi:cy="70.19146"
+       sodipodi:r1="17.081667"
+       sodipodi:r2="8.5408335"
+       sodipodi:arg1="-1.5707963"
+       sodipodi:arg2="-0.52359878"
+       inkscape:flatsided="false"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="m 120.88111,53.109793 7.39658,12.81125 7.39658,12.811251 -14.79316,-10e-7 -14.79316,0 7.39658,-12.81125 z"
+       inkscape:transform-center-y="-1.2970142"
+       transform="matrix(0.5246686,0.12756441,-0.12756441,0.5246686,60.659456,19.626082)"
+       inkscape:transform-center-x="1.089507" />
+  </g>
+</svg>
