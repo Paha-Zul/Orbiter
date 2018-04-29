@@ -25,7 +25,7 @@ class Asteroid(val position: Vector2, val radius:Float, val velocity:Vector2, va
 
     override val uniqueID: Long = MathUtils.random(Long.MAX_VALUE)
     override var physicsArePaused: Boolean = false
-    lateinit var sprite:Sprite
+    private val sprite:Sprite
 
     val tempVel:Vector2 = Vector2()
 
@@ -86,7 +86,7 @@ class Asteroid(val position: Vector2, val radius:Float, val velocity:Vector2, va
 
         circle.dispose()
 
-        this.body.userData = BodyData(BodyData.ObjectType.Ship, this.uniqueID, this, this)
+        this.body.userData = BodyData(BodyData.ObjectType.Asteroid, this.uniqueID, this, this)
     }
 
     override fun setPhysicsPaused(pausePhysics: Boolean) {

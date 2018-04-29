@@ -45,7 +45,7 @@ object LevelManager {
             success = true
         }
 
-        Util.runPredictor()
+        Predictor.queuePrediction = true
 
         return success
     }

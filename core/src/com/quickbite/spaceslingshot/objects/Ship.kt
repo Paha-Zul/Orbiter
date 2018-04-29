@@ -79,6 +79,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
             BurnHandle(this, ShipLocation.Right, -90f)
     )
 
+    /** This velocity is the 'unscaled' value of velocity. The Box2D body holds the 'scaled' value for the physics world **/
     val velocity:Vector2 = Vector2()
 
     override var physicsArePaused = false
@@ -154,6 +155,14 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
                     val container = otherData.dataObject as FuelContainer
                     this.fuel = Math.min(this.fuel + container.fuel, this.maxFuel)
                     container.dead = true
+
+                //If we collided with an asteroid....
+                }else if(otherData.type == BodyData.ObjectType.Asteroid){
+                    val asteroidVelocity = other.body.linearVelocity.cpy().scl(Constants.BOX2D_SCALE * 1/2f) //TODO Magic Number!!!
+                    val shipVelocity = GameScreen.gameScreenData.ship.velocity //Grab the ships velocity
+                    Predictor.setShipVelocityAsCurrentPredictorVelocity() //Get the current velocity we need to be at
+                    shipVelocity.add(asteroidVelocity)
+                    Predictor.queuePrediction = true
                 }
 
             }, this.uniqueID)
@@ -264,14 +273,15 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         if(delta >= Constants.PHYSICS_TIME_STEP){ //If we pass over the time step amount
             timeCounter -= Constants.PHYSICS_TIME_STEP //Subtract that amount from our counter
             Predictor.currPointIndex++ //increase the point index
-            if(Predictor.currPointIndex >= Predictor.points.size - 1){
-                Util.setShipVelocityAsCurrentPredictorVelocity(this)
-                Util.runPredictor()
+            if(Predictor.currPointIndex >= Predictor.points.size - 1){ //If we are past the last point, predict again!
+                Predictor.setShipVelocityAsCurrentPredictorVelocity()
+                Predictor.queuePrediction = true
             }
             val newPosition = Vector2(Predictor.points[Predictor.currPointIndex].position) //Make a copy so we don't change the predictor ship
             position.set(newPosition.x, newPosition.y)
             newPosition.set(newPosition.x*Constants.BOX2D_SCALE, newPosition.y*Constants.BOX2D_SCALE)
             body.setTransform(newPosition, rotation)
+            burnFuel()
         }
     }
 
@@ -342,7 +352,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
         addVelocity(x, y)
     }
 
-    fun addVelocityDirection(force:Float, facing:Vector2){
+    private fun addVelocityDirection(force:Float, facing:Vector2){
         val angle = (rotation + facing.angle())*MathUtils.degreesToRadians
         val x = MathUtils.cos(angle)*force
         val y = MathUtils.sin(angle)*force

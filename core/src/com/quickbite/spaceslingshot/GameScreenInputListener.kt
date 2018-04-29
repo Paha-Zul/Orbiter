@@ -10,6 +10,7 @@ import com.quickbite.spaceslingshot.objects.Ship
 import com.quickbite.spaceslingshot.screens.GameScreen
 import com.quickbite.spaceslingshot.util.Constants
 import com.quickbite.spaceslingshot.util.GH
+import com.quickbite.spaceslingshot.util.Predictor
 import com.quickbite.spaceslingshot.util.Util
 
 /**
@@ -50,7 +51,7 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
         draggingScreen = false
 
         if(runPredictor)
-            Util.runPredictor()
+            Predictor.queuePrediction = true
 
         return false
     }
@@ -107,12 +108,12 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
         when {
             draggingRotateShip -> {
                 ship.setRotationTowardsMouse(worldPos.x, worldPos.y)
-                Util.runPredictor()
+                Predictor.queuePrediction = true
             }
             draggingShipBurnTime -> {
                 ship.dragBurn(worldPos.x, worldPos.y, shipLocation)
                 GameScreen.gui.fuelBar.setAmounts(ship.fuel, ship.fuelTaken)
-                Util.runPredictor()
+                Predictor.queuePrediction = true
             }
             draggingScreen -> {
                 offset.set(screenX - startDragPos.x, screenY - startDragPos.y) //The difference between where the screen was and is now.

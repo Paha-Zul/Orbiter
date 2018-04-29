@@ -398,5 +398,45 @@
       }
     ],
     "achievements": [["win", ""], ["time", "10.0"], ["fuel", "50"]]
+  },
+  {
+    "level": 9,
+    "name": "Test",
+    "ship": {
+      "pos": [240, 50],
+      "fuel": 50,
+      "velocity": [0, 0]
+    },
+    "planets":[
+      {
+        "name": "GenericPlanet",
+        "pos": [300, 500],
+        "radius": 80,
+        "gravityRange": 150,
+        "density": 0.05,
+        "planetType": "Desert"
+      }
+
+    ],
+    "homeStation":{
+      "pos": [240, 1500],
+      "size": 75,
+      "fuelStorage": 100,
+      "homeStation": true,
+      "rotation": 270
+    },
+    "obstacles":[
+
+    ],
+    "asteroidSpawners":[
+      {
+        "immediate": true,
+        "pos": [-50, 50],
+        "spawnDir": [1, 0],
+        "spawnFreq": [4, 8],
+        "speedRange": [0.5, 1.5]
+      }
+    ],
+    "achievements": [["win", ""], ["time", "10.0"], ["fuel", "50"]]
   }
 ]

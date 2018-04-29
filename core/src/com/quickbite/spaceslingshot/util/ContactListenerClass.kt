@@ -13,6 +13,7 @@ class ContactListenerClass : ContactListener{
         val dataA = contact.fixtureA.body.userData as BodyData
         val dataB = contact.fixtureB.body.userData as BodyData
 
+
         //call this event for both bodies
         EventSystem.callEvent("collide_end", listOf(contact.fixtureB), dataA.id)
         EventSystem.callEvent("collide_end", listOf(contact.fixtureA), dataB.id)

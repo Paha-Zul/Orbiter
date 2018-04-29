@@ -3,18 +3,34 @@ package com.quickbite.spaceslingshot.util
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import com.quickbite.spaceslingshot.data.GameScreenData
-import com.quickbite.spaceslingshot.data.ShipData
 import com.quickbite.spaceslingshot.objects.Ship
 import com.quickbite.spaceslingshot.objects.ShipDataHolder
 import com.quickbite.spaceslingshot.objects.Thruster
+import com.quickbite.spaceslingshot.screens.GameScreen
 
 /**
  * Created by Paha on 8/7/2016.
  */
 object Predictor : Disposable{
+    var queuePrediction = false
+
     val predictorShip = Ship(Vector2(0f,0f), 0f, Vector2(0f, 0f), true)
     private val steps = 300
     private val stepSizeToRecord = 1
+
+    var currPointIndex = 0
+
+    private lateinit var ship:Ship
+    private lateinit var pausePhysicsFunc:()->Unit
+    private lateinit var resumePhysicsFunc:()->Unit
+    private lateinit var physicsStep:()->Unit
+
+    fun init(ship:Ship, pausePhysicsFunc:()->Unit, resumePhysicsFunc:()->Unit, physicsStep:()->Unit){
+        this.ship = ship
+        this.pausePhysicsFunc = pausePhysicsFunc
+        this.resumePhysicsFunc = resumePhysicsFunc
+        this.physicsStep = physicsStep
+    }
 
     val points: Array<ShipDataHolder> = Array(steps / stepSizeToRecord, {
         ShipDataHolder(Vector2(), 0f, Vector2(), 0f, listOf(
@@ -24,15 +40,30 @@ object Predictor : Disposable{
         ))
     })
 
-    var currPointIndex = 0
+    fun update(){
+        if(queuePrediction)
+            predict()
+    }
 
-    fun runPrediction(ship: Ship, pausePhysics:()->Unit, resumePhysics:()->Unit, physicsStep:()->Unit){
+    private fun predict(){
+        runPrediction()
+        GameScreen.predictorLineDrawer.points = Predictor.points.toList()
+        queuePrediction = false
+    }
+
+
+    fun setShipVelocityAsCurrentPredictorVelocity() {
+        ship.velocity.set(Predictor.points[Predictor.currPointIndex].velocity)
+    }
+
+
+    private fun runPrediction(){
         val pointToStartFrom = points[currPointIndex]
         predictorShip.reset(Vector2(pointToStartFrom.position), ship.fuel, Vector2(ship.velocity))
         predictorShip.setShipRotation(ship.rotation)
         predictorShip.copyThrusters(ship.thrusters)
 
-        pausePhysics()
+        pausePhysicsFunc()
 
         Tests.clearPredictorList()
 
@@ -66,7 +97,7 @@ object Predictor : Disposable{
         predictorShip.setVelocity(0f, 0f)
 
         //Resume physics now that we are done
-        resumePhysics()
+        resumePhysicsFunc()
     }
 
     private fun simulate(data:GameScreenData, ship:Ship){

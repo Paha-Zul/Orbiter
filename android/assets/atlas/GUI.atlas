@@ -2,109 +2,109 @@
 GUI.png
 size: 512,512
 format: RGBA8888
-filter: MipMapNearestNearest,MipMapNearestNearest
+filter: Linear,Linear
 repeat: none
 backButton
   rotate: false
-  xy: 136, 116
+  xy: 268, 380
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 backIcon
   rotate: false
-  xy: 340, 104
+  xy: 334, 70
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 buttonNew
   rotate: false
-  xy: 2, 44
-  size: 132, 66
-  orig: 132, 66
+  xy: 268, 314
+  size: 128, 64
+  orig: 128, 64
   offset: 0, 0
   index: -1
 buttonNewSmall
   rotate: false
-  xy: 398, 240
+  xy: 136, 46
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 buttonNewSmallSolid
   rotate: false
-  xy: 402, 376
+  xy: 402, 102
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 buttonNewSmallSolid_down
   rotate: false
-  xy: 272, 70
+  xy: 334, 138
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 buttonNewSmall_down
   rotate: false
-  xy: 408, 104
+  xy: 402, 238
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 buttonNew_down
   rotate: false
-  xy: 268, 336
-  size: 131, 66
-  orig: 131, 66
+  xy: 2, 44
+  size: 128, 64
+  orig: 128, 64
   offset: 0, 0
   index: -1
 checkBoxSquare
   rotate: false
-  xy: 408, 37
+  xy: 272, 3
   size: 65, 65
   orig: 65, 65
   offset: 0, 0
   index: -1
 checkmark
   rotate: false
-  xy: 268, 206
+  xy: 136, 114
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 checkmark_background
   rotate: false
-  xy: 401, 308
+  xy: 402, 34
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 endlessIcon
   rotate: false
-  xy: 402, 444
+  xy: 402, 170
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 fuelBarBackground
   rotate: false
-  xy: 268, 404
+  xy: 268, 260
   size: 132, 52
   orig: 132, 52
   offset: 0, 0
   index: -1
 fuelBarOverlay
   rotate: false
-  xy: 268, 458
+  xy: 268, 206
   size: 132, 52
   orig: 132, 52
   offset: 0, 0
   index: -1
 test
   rotate: false
-  xy: 268, 458
+  xy: 268, 206
   size: 132, 52
   split: 14, 17, 5, 27
   pad: 6, 5, 24, 6
@@ -113,28 +113,28 @@ test
   index: -1
 gameOverDialog
   rotate: false
-  xy: 2, 246
+  xy: 2, 244
   size: 264, 264
   orig: 264, 264
   offset: 0, 0
   index: -1
 gpgLoginIcon
   rotate: false
-  xy: 340, 36
+  xy: 402, 306
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 gpgLogoutIcon
   rotate: false
-  xy: 266, 138
+  xy: 398, 374
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 leaderboardIcon
   rotate: false
-  xy: 398, 172
+  xy: 204, 2
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
@@ -148,28 +148,28 @@ levelsIcon
   index: -1
 locateButton
   rotate: false
-  xy: 2, 112
+  xy: 2, 110
   size: 132, 132
   orig: 132, 132
   offset: 0, 0
   index: -1
 playButtonIcon
   rotate: false
-  xy: 136, 48
+  xy: 398, 442
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 quitButtonIcon
   rotate: false
-  xy: 272, 2
+  xy: 266, 70
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 removeAdsIcon
   rotate: false
-  xy: 204, 48
+  xy: 266, 138
   size: 66, 66
   orig: 66, 66
   offset: 0, 0

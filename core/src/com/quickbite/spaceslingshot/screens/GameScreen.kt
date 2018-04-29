@@ -101,7 +101,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
         pauseTimer = false
 
         gameScreenData.ship = Ship()
-        Util.runPredictor()
+        Predictor.queuePrediction = true
         gui = GameScreenGUI(this)
 
         Gdx.input.inputProcessor = InputMultiplexer(MyGame.stage, GameScreenInputListener(this))
@@ -120,7 +120,9 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
 
         GameScreen.gui.fuelBar.setAmounts(gameScreenData.ship.fuel, 0f, gameScreenData.ship.fuel)
 
-        Util.runPredictor()
+        Predictor.init(gameScreenData.ship, {pauseAllPhysicsExceptPredictorShip(gameScreenData)}, { resumeAllPhysicsExceptPredictorShip(gameScreenData)},
+                {doPhysicsStep(Constants.PHYSICS_TIME_STEP)})
+        Predictor.queuePrediction = true
 
         predictorLineDrawer.size = 3
     }
@@ -138,12 +140,18 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
     }
 
     override fun render(delta: Float) {
+        //General update of things
         update(delta)
-        if(!paused) doPhysicsStep(delta)
+        //This is the physics update
+        if(!paused)
+            doPhysicsStep(delta)
+        //Then we draw
         draw(MyGame.batch)
 
+        //Debug render AFTER we draw
         MyGame.debugRenderer.render(MyGame.world, MyGame.Box2dCamera.combined)
 
+        //Update stage
         MyGame.stage.act()
         MyGame.stage.draw()
     }
@@ -151,21 +159,26 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
     private fun update(delta:Float){
         EventSystem.executeEventQueue()
         gameScreenData.endlessGame?.update(delta)
+        Predictor.update()
 
-        //Not pausePhysics update...
+        //Not paused update
         if(!paused) {
+            //If the timer isn't paused, subtract time from it
             if(!pauseTimer)
                 gameScreenData.levelTimer += delta
 
+            //Clamp the pause limit
             gameScreenData.pauseLimit = Math.min(gameScreenData.pauseLimit + Constants.PAUSE_AMTPERTICK, 100f)
 
 //            runPredictor()
+           //Update ship, planets, asteroids, stations, fuel containers here
             gameScreenData.ship.update(delta)
             gameScreenData.planetList.forEach { obj -> obj.update(delta)}
             gameScreenData.asteroidSpawnerList.forEach { spawner -> spawner.update(delta) }
             gameScreenData.stationList.forEach { station -> station.update(delta) }
             gameScreenData.fuelContainerList.forEach { station -> station.update(delta) }
 
+            //Kill off asteroids here if dead
             for(i in (gameScreenData.asteroidList.size-1).downTo(0)){
                 gameScreenData.asteroidList[i].update(delta)
                 if(gameScreenData.asteroidList[i].dead) {
@@ -174,6 +187,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
                 }
             }
 
+            //Kill off fuel containers here if dead
             for(i in (gameScreenData.fuelContainerList.size-1).downTo(0)){
                 gameScreenData.fuelContainerList[i].update(delta)
                 if(gameScreenData.fuelContainerList[i].dead) {
@@ -182,8 +196,10 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
                 }
             }
 
+            //Sync up the fuel bar (GUI) with the ship's fuel
             gui.fuelBar.setAmounts(gameScreenData.ship.fuel, gameScreenData.ship.fuelTaken)
 
+            //TODO Wtf is this
             Tests.addToShipList(Tests.MovementData(Vector2(gameScreenData.ship.position), Vector2(gameScreenData.ship.velocity), gameScreenData.ship.rotation,
                     gameScreenData.ship.planetList.size, gameScreenData.ship.fuel, delta))
 
@@ -196,9 +212,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
                 gameOver() //Run the game over logic
             }
 
-//            runPredictor()
-
-            //Paused update...
+        //Paused update...
         }else{
             //Don't allow the pause counter to go down if we are on the game over screen
             if(!GameScreen.finished) {
@@ -206,9 +220,6 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
                 if (gameScreenData.pauseLimit <= 0)
                     setGamePaused(false)
             }
-
-
-//            predictorLineDrawer.setStartAndEnd(gameScreenData.ship.burnBallBasePosition, gameScreenData.ship.burnHandleLocation)
         }
 
         gui.bottomPauseProgressBar.value = gameScreenData.pauseLimit
@@ -380,8 +391,8 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
         GameScreen.paused = paused
 
         if(paused) {
-            Util.setShipVelocityAsCurrentPredictorVelocity(GameScreen.gameScreenData.ship)
-            Util.runPredictor()
+            Predictor.setShipVelocityAsCurrentPredictorVelocity()
+            Predictor.queuePrediction = true
             gui.bottomPauseText.setText("Resume")
         }else{
 
