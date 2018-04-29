@@ -10,16 +10,16 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="128"
-   height="64"
-   viewBox="0 0 128 64"
+   width="256"
+   height="128"
+   viewBox="0 0 256 128"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
    sodipodi:docname="buttonNew.svg"
-   inkscape:export-filename="C:\Users\Paha\Google Drive\AllProjectFiles\Java\SpaceSlingshot\android\gameScreenData\GUI\buttonNew.png"
-   inkscape:export-xdpi="92.8125"
-   inkscape:export-ydpi="92.8125">
+   inkscape:export-filename="C:\Users\Paha\Google Drive\AllProjectFiles\Java\SpaceSlingshot\android\data\GUI\buttonNew.png"
+   inkscape:export-xdpi="48"
+   inkscape:export-ydpi="48">
   <defs
      id="defs4">
     <linearGradient
@@ -55,7 +55,7 @@
        x2="125.26319"
        y2="927.8606"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.4946841,0,0,0.4946841,0.84974807,531.38188)" />
+       gradientTransform="matrix(0.99680942,0,0,0.98785714,1.224444,11.939664)" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient4854"
@@ -65,7 +65,7 @@
        x2="125.26319"
        y2="927.8606"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.4946841,0,0,0.4946841,0.84974968,-456.98028)" />
+       gradientTransform="matrix(0.99680943,0,0,0.9878564,1.2244448,-976.42173)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -74,16 +74,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="6.4965436"
-     inkscape:cx="68.836475"
-     inkscape:cy="32.261514"
+     inkscape:zoom="2.296875"
+     inkscape:cx="110.16084"
+     inkscape:cy="60.787789"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer1"
      showgrid="false"
      units="px"
-     inkscape:window-width="1680"
-     inkscape:window-height="987"
-     inkscape:window-x="1912"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      showguides="true"
@@ -91,11 +91,13 @@
     <sodipodi:guide
        position="137.76557,40.17521"
        orientation="0,1"
-       id="guide5388" />
+       id="guide5388"
+       inkscape:locked="false" />
     <sodipodi:guide
        position="7.0806883,25.090265"
        orientation="0,1"
-       id="guide5390" />
+       id="guide5390"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -105,7 +107,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -113,11 +115,11 @@
      inkscape:label="up"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-988.36216)"
-     style="display:none">
+     transform="translate(0,-924.36216)"
+     style="display:inline">
     <path
-       style="fill:url(#linearGradient4152);fill-opacity:1;fill-rule:evenodd;stroke:#93c4fc;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 1.5993076,989.63033 -0.1249265,39.35187 19.4260869,22.4244 105.625442,0 0,-40.9135 -22.7991,-21.17508 z"
+       style="fill:url(#linearGradient4152);fill-opacity:1;fill-rule:evenodd;stroke:#93c4fc;stroke-width:4.01194668;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 2.7348381,927.03684 -0.2517322,78.58356 39.1443861,44.7802 H 254.46722 v -81.70202 l -45.94115,-42.28541 z"
        id="path4136"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccccc" />
@@ -126,10 +128,11 @@
      inkscape:groupmode="layer"
      id="layer4"
      inkscape:label="down"
-     style="display:inline">
+     style="display:none"
+     transform="translate(0,64)">
     <path
-       style="fill:url(#linearGradient4152-3);fill-opacity:1;fill-rule:evenodd;stroke:#93c4fc;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 1.5993097,1.2681687 -0.124927,39.3518703 19.4260863,22.4244 105.625441,0 0,-40.9135 -22.7991,-21.17508028 z"
+       style="fill:url(#linearGradient4152-3);fill-opacity:1;fill-rule:evenodd;stroke:#93c4fc;stroke-width:4.01194525;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 2.73484,-61.325278 2.4831069,17.258198 41.627493,62.038466 H 254.46723 v -81.701963 l -45.94116,-42.285447 z"
        id="path4136-3"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccccc"
