@@ -56,10 +56,11 @@ class Planet(position: Vector2, radius: Int, _gravityRangeRadius: Float, _densit
     }
 
     override fun draw(batch: SpriteBatch) {
-        val ringSize = (radius + _gravityRangeRadius)*2f
-
         sprite.draw(batch)
-//        ring.draw(batch)
+    }
+
+    fun drawRing(batch:SpriteBatch){
+        val ringSize = (radius + _gravityRangeRadius)*2f
         gravityRing.draw(batch, position.x - ringSize/2f, position.y - ringSize/2f, ringSize, ringSize)
     }
 

@@ -66,7 +66,7 @@ public class MyGame extends Game {
 
 		debugRenderer = new Box2DDebugRenderer();
 
-		font = new BitmapFont(Gdx.files.internal("fonts/mainFont.fnt"));
+		font = new BitmapFont(Gdx.files.internal("fonts/secFont.fnt"));
 
         camera = new OrthographicCamera(480, 800);
         UICamera = new OrthographicCamera(480, 800);

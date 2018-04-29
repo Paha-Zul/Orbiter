@@ -255,6 +255,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
         }
 
         //Draw planets
+        gameScreenData.planetList.forEach { obj -> obj.drawRing(batch)}
         gameScreenData.planetList.forEach { obj -> obj.draw(batch)}
 
         //Draw obstacles

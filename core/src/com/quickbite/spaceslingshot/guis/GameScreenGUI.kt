@@ -258,7 +258,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         timeLabel.setFontScale(0.2f)
         timeLabel.setAlignment(Align.center)
 
-        mainMenuButton = TextButton("Main Menu", textButtonStyle)
+        mainMenuButton = TextButton("Main \n   Menu", textButtonStyle)
         mainMenuButton.label.setFontScale(0.15f)
 
         retryButton = TextButton("Retry", textButtonStyle)
@@ -343,13 +343,15 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         if(failed) gameOverStatusLabel.setText("Failed")
         else gameOverStatusLabel.setText("Success!")
 
-        innerTable.add(gameOverStatusLabel).width(280f)
-        innerTable.row().spaceTop(10f).width(280f)
-        innerTable.add(timeLabel).width(280f)
-        innerTable.row().spaceTop(10f).width(280f)
-        innerTable.add(completedTable).width(280f)
-        innerTable.row().spaceTop(10f).width(280f)
-        innerTable.add(buttonTable).width(280f).padBottom(5f)
+        val width = 340f
+
+        innerTable.add(gameOverStatusLabel).width(width)
+        innerTable.row().spaceTop(10f).width(width)
+        innerTable.add(timeLabel).width(width)
+        innerTable.row().spaceTop(10f).width(width)
+        innerTable.add(completedTable).width(width)
+        innerTable.row().spaceTop(10f).width(width)
+        innerTable.add(buttonTable).width(width).padBottom(5f)
 
         gameOverTable.add(innerTable).fill().expand()
 
@@ -366,11 +368,13 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
             buttonTable.add(nextLevelButton).width(100f).height(50f)
         }
 
-        gameOverTable.setSize(300f, 300f)
+        gameOverTable.setSize(width + 20f, 300f) // The +20 is a little extra breathing room
         gameOverTable.isTransform = true
         gameOverTable.setOrigin(Align.center)
         gameOverTable.setPosition(MyGame.viewport.worldWidth/2f - 150f, MyGame.viewport.worldHeight/2f - 200f)
         gameOverTable.setScale(0f)
+
+        //gameOverTable.debugAll()
 
         MyGame.stage.addActor(gameOverTable)
 
