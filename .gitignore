@@ -22,6 +22,8 @@
 # MY STUFF I GUESS
 /core/build
 .gradle/
+/build
+planet_*.png
 
 #Intellij IDEA
 *.iws
