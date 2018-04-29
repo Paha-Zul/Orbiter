@@ -31,7 +31,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     override var dead:Boolean  = false
 
     var maxFuel = fuel
-    val thrusterLineDrawers:List<LineDraw> = List(3, {LineDraw(Vector2(), Vector2(), MyGame.manager["dash", Texture::class.java])})
+    private val thrusterLineDrawers:List<LineDraw> = List(3, {LineDraw(Vector2(), Vector2(), MyGame.manager["dash", Texture::class.java])})
 
     val fuelTaken:Float
         get() {
@@ -99,6 +99,8 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     init{
         this.createBody()
 
+//        MyGame.world.QueryAABB()
+
         //If we're not the test ship...
         if(!testShip) {
             //The ship sprite
@@ -134,7 +136,6 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
                 if(otherData.type == BodyData.ObjectType.Planet) {
                     //If it wasn't a sensor, game over man!
                     if (!other.isSensor) {
-                        val planet = otherData.bodyOwner as Planet
                         setExploding()
                     }
 
@@ -268,12 +269,14 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     }
 
     private fun realShipSimulation(delta:Float){
+        if(exploding) return
+
         body.setLinearVelocity(0f, 0f)
         timeCounter += delta //Increment out counter
         if(delta >= Constants.PHYSICS_TIME_STEP){ //If we pass over the time step amount
             timeCounter -= Constants.PHYSICS_TIME_STEP //Subtract that amount from our counter
             Predictor.currPointIndex++ //increase the point index
-            if(Predictor.currPointIndex >= Predictor.points.size - 1){ //If we are past the last point, predict again!
+            if(Predictor.currPointIndex >= Predictor.points.size - 2){ //If we are past the last point, predict again!
                 Predictor.setShipVelocityAsCurrentPredictorVelocity()
                 Predictor.queuePrediction = true
             }
@@ -286,18 +289,21 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     }
 
     override fun draw(batch: SpriteBatch) {
-
         //Adjust all sprites
         if(!testShip) {
             sprite.setPosition(position.x - shipWidth / 2f, position.y - shipHeight / 2f)
             ring.setPosition(position.x - ringRadius, position.y - ringRadius)
             burnHandles.forEach(BurnHandle::setPosition)
-            drawHandles(batch)
             thrusterLineDrawers.forEachIndexed { i, drawer ->
                 val handle = GameScreen.gameScreenData.ship.burnHandles[i]
                 drawer.setStartAndEnd(handle.burnHandleBasePosition, handle.burnHandlePosition)
             }
-            thrusterLineDrawers.forEach { drawer -> drawer.draw(batch) }
+
+            //Only draw the handles and thruster lines if we are paused
+            if(GameScreen.paused) {
+                drawHandles(batch)
+                thrusterLineDrawers.forEach { drawer -> drawer.draw(batch) }
+            }
         }
 
         if(!hideShipSprite) {
@@ -305,6 +311,7 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
             drawThrusters(batch)
         }
 
+        //If we're exploding, explode!
         if(exploding)
             explodingEffect.draw(batch, Gdx.graphics.deltaTime)
     }
@@ -581,8 +588,10 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
 
     override fun createBody() {
         val bodyDef = BodyDef()
+//        bodyDef.type = if(testShip) BodyDef.BodyType.DynamicBody else BodyDef.BodyType.KinematicBody
         bodyDef.type = BodyDef.BodyType.DynamicBody
         bodyDef.position.set(position.x* Constants.BOX2D_SCALE, position.y* Constants.BOX2D_SCALE)
+        bodyDef.allowSleep = false
 
         val world = MyGame.world
         this.body = world.createBody(bodyDef)
@@ -646,17 +655,12 @@ class Ship(val position:Vector2, var fuel:Float, initialVelocity:Vector2, val te
     }
 
     private fun getThruster(shipLocation: ShipLocation):Thruster{
-        val thruster = when(shipLocation){
+        return when(shipLocation){
             ShipLocation.Rear -> thrusters.filter { it.location == ShipLocation.Rear }[0]
             ShipLocation.Left -> thrusters.filter { it.location == ShipLocation.Right }[0] //Get the opposite
             ShipLocation.Right -> thrusters.filter { it.location == ShipLocation.Left }[0] //Get the opposite
             else -> thrusters.filter { it.location == ShipLocation.Rear }[0]
         }
-
-        //We do this because we want to flip left/right
-
-//        return thrusters.filter { it.location == shipLocation }[0]
-        return thruster
     }
 
     private fun getBurnHandle(shipLocation: ShipLocation):BurnHandle{

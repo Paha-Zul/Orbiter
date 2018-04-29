@@ -81,7 +81,7 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotat
             }
 
             //If the ship's velocity is too great, lose!
-            if(ship.velocity.x > 0.5f || ship.velocity.y > 0.5f){
+            if(ship.velocity.x > 1f || ship.velocity.y > 1f){
                 ship.setExploding()
                 return@onEvent
             }
@@ -128,7 +128,7 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotat
 
     override fun createBody() {
         val bodyDef = BodyDef()
-        bodyDef.type = BodyDef.BodyType.StaticBody
+        bodyDef.type = BodyDef.BodyType.DynamicBody //This has to be dynamic for the ship to collide with it
         bodyDef.position.set(position.x* Constants.BOX2D_SCALE, position.y* Constants.BOX2D_SCALE)
 
         val world = MyGame.world

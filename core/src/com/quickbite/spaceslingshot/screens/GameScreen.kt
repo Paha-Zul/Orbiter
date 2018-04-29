@@ -149,7 +149,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
         draw(MyGame.batch)
 
         //Debug render AFTER we draw
-        MyGame.debugRenderer.render(MyGame.world, MyGame.Box2dCamera.combined)
+//        MyGame.debugRenderer.render(MyGame.world, MyGame.Box2dCamera.combined)
 
         //Update stage
         MyGame.stage.act()
@@ -269,21 +269,18 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
         //draw fuel containers
         gameScreenData.fuelContainerList.forEach { station -> station.draw(batch) }
 
-        //Draw the ship
-        gameScreenData.ship.draw(batch)
-
         //Draw the predictor line
         if(!GameScreen.finished)
             predictorLineDrawer.draw(batch)
+
+        //Draw the ship AFTER the predictor line
+        gameScreenData.ship.draw(batch)
 
         batch.end()
 
         val renderer = MyGame.shapeRenderer
         renderer.projectionMatrix = MyGame.camera.combined
         renderer.begin(ShapeRenderer.ShapeType.Filled)
-
-//        drawCenters()
-//        drawPrediction(MyGame.shapeRenderer)
 
         renderer.end()
     }

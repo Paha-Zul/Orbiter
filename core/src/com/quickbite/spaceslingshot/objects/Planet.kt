@@ -1,8 +1,6 @@
 package com.quickbite.spaceslingshot.objects
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -12,7 +10,6 @@ import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.CircleShape
 import com.badlogic.gdx.physics.box2d.FixtureDef
-import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Disposable
 import com.quickbite.spaceslingshot.MyGame
@@ -29,15 +26,13 @@ class Planet(position: Vector2, radius: Int, _gravityRangeRadius: Float, _densit
 
     override var physicsArePaused: Boolean = false
     var sprite:Sprite
-//    var ring:Sprite
     override val uniqueID: Long = MathUtils.random(Long.MAX_VALUE)
     override lateinit var body: Body
 
-    val ninePatchRing:TextureRegionDrawable
+    private val gravityRing:TextureRegionDrawable
 
     init{
         val size = radius*2f
-        val ringSize = (radius + _gravityRangeRadius)*2f
 
         texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
         sprite = Sprite(texture)
@@ -47,11 +42,7 @@ class Planet(position: Vector2, radius: Int, _gravityRangeRadius: Float, _densit
         sprite.rotation = rotation
 
         val ringTexture = MyGame.gameScreenAtlas.findRegion("gravityCircle")
-        ninePatchRing = TextureRegionDrawable(TextureRegion(ringTexture))
-//        ring = Sprite(ninePatchRing)
-//        ring.setPosition(position.x - ringSize/2f, position.y - ringSize/2f)
-//        ring.setSize(ringSize, ringSize)
-//        ring.color = Color.GRAY
+        gravityRing = TextureRegionDrawable(TextureRegion(ringTexture))
 
         createBody()
     }
@@ -69,7 +60,7 @@ class Planet(position: Vector2, radius: Int, _gravityRangeRadius: Float, _densit
 
         sprite.draw(batch)
 //        ring.draw(batch)
-        ninePatchRing.draw(batch, position.x - ringSize/2f, position.y - ringSize/2f, ringSize, ringSize)
+        gravityRing.draw(batch, position.x - ringSize/2f, position.y - ringSize/2f, ringSize, ringSize)
     }
 
     override fun createBody(){

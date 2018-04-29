@@ -22,7 +22,7 @@
 # MY STUFF I GUESS
 /core/build
 .gradle/
-/build
+build/
 planet_*.png
 
 #Intellij IDEA
