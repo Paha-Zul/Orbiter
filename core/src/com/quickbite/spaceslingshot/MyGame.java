@@ -13,6 +13,8 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FillViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.quickbite.spaceslingshot.data.json.PlanetDataManager;
 import com.quickbite.spaceslingshot.interfaces.ActionResolver;
@@ -58,6 +60,8 @@ public class MyGame extends Game {
 
 	@Override
 	public void create () {
+//		gsClient =
+
 		world = new World(new Vector2(0f, 0f), true);
 //		testWorld = new World(new Vector2(0f, 0f), true);
 
@@ -73,7 +77,7 @@ public class MyGame extends Game {
 		Box2dCamera = new OrthographicCamera(480 * Constants.BOX2D_SCALE, 800 * Constants.BOX2D_SCALE);
 
         viewport = new FillViewport(480, 800, camera);
-        UIViewport = new FillViewport(480, 800, UICamera);
+        UIViewport = new FitViewport(480, 800, UICamera);
 
 		manager = new EasyAssetManager();
 
@@ -127,6 +131,7 @@ public class MyGame extends Game {
 		UICamera.setToOrtho(false, width, height);
 
 		viewport.update(width, height, true);
+		UIViewport.update(width, height, true);
 //		stage.getViewport().update(width, height, true);
 	}
 

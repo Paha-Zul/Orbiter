@@ -22,13 +22,8 @@ public interface ActionResolver {
      * Submits the game structure settings to GameAnalytics. Call this only when the start game button is hit.
      */
     void submitGameStructure();
-
     void unlockAchievementGPGS(String achievementId);
-    void getCurrentRankInLeaderboards(String tableID, GameScreenGUI gameOverGUI);
-    void getLeaderboardGPGS(String leaderboardID);
-    void getAchievementsGPGS();
-    void getLeaderboardScore(String leaderboardID, int timeSpan);
-    void getCenteredLeaderboardScore(String leaderboardID, int timeSpan, int leaderboardType, float timeoutSeconds);
-    void getTopLeaderboardScores(String leaderboardID, int timeSpan, int numScores);
+    void showLeaderboard(String leaderboardID);
+    void showAchievements();
 
 }

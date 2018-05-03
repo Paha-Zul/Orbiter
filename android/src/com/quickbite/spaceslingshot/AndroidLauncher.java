@@ -1,57 +1,54 @@
 package com.quickbite.spaceslingshot;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
-import com.appodeal.gdx.GdxAppodeal;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.Timer;
-import com.example.android.trivialdrivesample.util.IabHelper;
-import com.example.android.trivialdrivesample.util.IabResult;
-import com.example.android.trivialdrivesample.util.Inventory;
-import com.example.android.trivialdrivesample.util.Purchase;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.games.Games;
-import com.google.android.gms.games.GamesStatusCodes;
-import com.google.android.gms.games.leaderboard.LeaderboardScore;
-import com.google.android.gms.games.leaderboard.LeaderboardVariant;
-import com.google.android.gms.games.leaderboard.Leaderboards;
-import com.google.example.games.basegameutils.GameHelper;
-import com.quickbite.spaceslingshot.guis.GameScreenGUI;
-import com.quickbite.spaceslingshot.guis.MainMenuGUI;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.games.*;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.quickbite.spaceslingshot.interfaces.ActionResolver;
 import com.quickbite.spaceslingshot.interfaces.AdInterface;
 import com.quickbite.spaceslingshot.interfaces.Transactions;
 
-public class AndroidLauncher extends AndroidApplication implements GameHelper.GameHelperListener, ActionResolver, AdInterface, Transactions {
-	GameHelper gameHelper;
+public class AndroidLauncher extends AndroidApplication implements ActionResolver, AdInterface, Transactions {
+	private static final int RC_UNUSED = 5001;
+	private static final int RC_SIGN_IN = 9001;
+
 	final private static String TAG = "AndroidLauncher";
 
 	private boolean resumed = false, changedFocus = false;
 
 	private View gameView;
+
 //	private InterstialAdMediator interAds;
 	private boolean showingBannerAd = false, showAds = false, bannerAdLoaded = false;
 
-	private boolean dailyGood = false, weeklyGood = false, allTimeGood = false;
-	private IabHelper mHelper;
-
+	// Client used to sign in with Google APIs
+	private GoogleSignInClient mGoogleSignInClient;
+	private AchievementsClient mAchievementsClient;
+	private LeaderboardsClient mLeaderboardsClient;
+	private EventsClient mEventsClient;
+	private PlayersClient mPlayersClient;
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		setupUpGameHelper();
 
 		Game game = new MyGame(this, this, this);
-
-//		GameAnalytics.configureBuild("1.0.2");
-//		GameAnalytics.initializeWithGameKey(this, "06fb38014af7b80c56da048dc58621f1", "33294fa657a1b0ccca1fecac2c80ae1b2e7e1ff8");
 
 		initBilling();
 
@@ -60,29 +57,28 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 
         setupAds(game);
 
-        super.onCreate(savedInstanceState);
+		mGoogleSignInClient = GoogleSignIn.getClient(this,
+				new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
+						.requestEmail()
+						.build());
+
+		super.onCreate(savedInstanceState);
 	}
 
 	/**
 	 * Sets up the gameHelper for Google Play Games
 	 */
 	private void setupUpGameHelper(){
-		if (gameHelper == null) {
-			gameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
-			gameHelper.setMaxAutoSignInAttempts(0);
-			gameHelper.enableDebugLog(true);
-		}
-
-		gameHelper.setup(this);
+		// Create the client used to sign in to Google services.
 	}
 
 	private void setupAds(Game game){
 		String appKey = "ecc3499bf389398ad32f0cbe07263654765899535432107b";
-		GdxAppodeal.disableLocationPermissionCheck();
-        GdxAppodeal.disableNetwork("cheetah");
-        GdxAppodeal.disableNetwork("mopub");
-        GdxAppodeal.setAutoCache(GdxAppodeal.INTERSTITIAL, true);
-        GdxAppodeal.initialize(appKey, GdxAppodeal.INTERSTITIAL | GdxAppodeal.BANNER);
+//		GdxAppodeal.disableLocationPermissionCheck();
+//        GdxAppodeal.disableNetwork("cheetah");
+//        GdxAppodeal.disableNetwork("mopub");
+//        GdxAppodeal.setAutoCache(GdxAppodeal.INTERSTITIAL, true);
+//        GdxAppodeal.initialize(appKey, GdxAppodeal.INTERSTITIAL | GdxAppodeal.BANNER);
 
 //		AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
 //		cfg.useAccelerometer = false;
@@ -137,8 +133,8 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 
 	@Override
 	public void showBannerAd() {
-        if(showAds)
-		    GdxAppodeal.show(GdxAppodeal.BANNER_BOTTOM);
+//        if(showAds)
+//		    GdxAppodeal.show(GdxAppodeal.BANNER_BOTTOM);
 
 //		if(showAds) {
 //			showingBannerAd = true;
@@ -153,7 +149,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 
 	@Override
 	public void hideBannerAd() {
-		GdxAppodeal.hide(GdxAppodeal.BANNER_BOTTOM);
+//		GdxAppodeal.hide(GdxAppodeal.BANNER_BOTTOM);
 
 //		showingBannerAd = false;
 //		runOnUiThread(new Runnable() {
@@ -171,7 +167,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 
 	@Override
 	public void showInterAd() {
-        GdxAppodeal.show(GdxAppodeal.INTERSTITIAL);
+//        GdxAppodeal.show(GdxAppodeal.INTERSTITIAL);
 
 //		if(showAds) {
 //			try {
@@ -202,34 +198,60 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 	public void onStart(){
 		super.onStart();
 
-		gameHelper.onStart(this);
+//		gameHelper.onStart(this);
 	}
 
 	@Override
 	public void onStop(){
 		super.onStop();
 
-		gameHelper.onStop();
+//		gameHelper.onStop();
 	}
+
+
 
 	@Override
 	public void onActivityResult(int request, int response, Intent data) {
 		super.onActivityResult(request, response, data);
-		gameHelper.onActivityResult(request, response, data);
-//		mHelper.handleActivityResult(request, response, gameScreenData);
 
-		/** Don't uncomment below? */
+		if (request == RC_SIGN_IN) {
+			Task<GoogleSignInAccount> task =
+					GoogleSignIn.getSignedInAccountFromIntent(getIntent());
 
-//		if ((request == 100) && response == GamesActivityResultCodes.RESULT_RECONNECT_REQUIRED) {
-//			gameHelper.disconnect();
-//			// update your logic here (show login btn, hide logout btn).
-//		} else {
-//			try {
-//				gameHelper.onActivityResult(request, response, gameScreenData);
-//			}catch(Exception e){
-//				e.printStackTrace();
-//			}
-//		}
+			try {
+				GoogleSignInAccount account = task.getResult(ApiException.class);
+				onConnected(account);
+			} catch (ApiException apiException) {
+				String message = apiException.getMessage();
+				if (message == null || message.isEmpty()) {
+					message = getString(R.string.signin_other_error);
+				}
+
+				onDisconnected();
+
+				new AlertDialog.Builder(this)
+						.setMessage(message)
+						.setNeutralButton(android.R.string.ok, null)
+						.show();
+			}
+		}
+	}
+
+	private void onConnected(GoogleSignInAccount googleSignInAccount) {
+		Log.d(TAG, "onConnected(): connected to Google APIs");
+
+		mAchievementsClient = Games.getAchievementsClient(this, googleSignInAccount);
+		mLeaderboardsClient = Games.getLeaderboardsClient(this, googleSignInAccount);
+		mEventsClient = Games.getEventsClient(this, googleSignInAccount);
+		mPlayersClient = Games.getPlayersClient(this, googleSignInAccount);
+	}
+
+	private void onDisconnected() {
+		Log.d(TAG, "onDisconnected()");
+
+		mAchievementsClient = null;
+		mLeaderboardsClient = null;
+		mPlayersClient = null;
 	}
 
 	@Override
@@ -270,36 +292,61 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 
 	@Override
 	public boolean getSignedInGPGS() {
-		return gameHelper.isSignedIn();
+//		return gsClient.isSessionActive();
+		return GoogleSignIn.getLastSignedInAccount(this) != null;
 	}
 
 	@Override
 	public void loginGPGS() {
-		try {
-			runOnUiThread(new Runnable(){
-				public void run() {
-					gameHelper.beginUserInitiatedSignIn();
-				}
-			});
-		} catch (final Exception ex) {
-			ex.printStackTrace();
-		}
+
+//		if (!GoogleSignIn.hasPermissions(
+////				GoogleSignIn.getLastSignedInAccount(getContext()),Drive.SCOPE_APPFOLDER)) {
+////			GoogleSignIn.requestPermissions(
+////					MyExampleActivity.this,
+////					RC_REQUEST_PERMISSION_SUCCESS_CONTINUE_FILE_CREATION,
+////					GoogleSignIn.getLastSignedInAccount(getActivity()),
+////					Drive.SCOPE_APPFOLDER);
+////		} else {
+////			saveToDriveAppFolder();
+////		}
+
+		startActivityForResult(mGoogleSignInClient.getSignInIntent(), RC_SIGN_IN);
+	}
+
+	/**
+	 * Signs in to GPG silently. We can use this to silently sign back in when the game changes state (minimized)
+	 */
+	private void signInSilently(){
+		mGoogleSignInClient.silentSignIn().addOnCompleteListener(this,
+				new OnCompleteListener<GoogleSignInAccount>() {
+					@Override
+					public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
+						if (task.isSuccessful()) {
+							Log.d(TAG, "signInSilently(): success");
+							onConnected(task.getResult());
+						} else {
+							Log.d(TAG, "signInSilently(): failure", task.getException());
+							onDisconnected();
+						}
+					}
+				});
 	}
 
 	@Override
 	public void logoutGPGS() {
-		runOnUiThread(new Runnable() {
-			public void run() {
-				gameHelper.signOut();
-			}
-		});
+//		runOnUiThread(new Runnable() {
+//			public void run() {
+//				gsClient.logOff();
+//			}
+//		});
 	}
 
 	@Override
 	public void submitLeaderboardScore(String tableID, long score) {
-		if (getSignedInGPGS()) {
-			Games.Leaderboards.submitScore(gameHelper.getApiClient(), tableID, score);
-		}
+//		if (getSignedInGPGS()) {
+//			gsClient.submitToLeaderboard(tableID, score, null);
+////			Games.Leaderboards.submitScore(gameHelper.getApiClient(), tableID, score);
+//		}
 	}
 
 	/**
@@ -307,285 +354,145 @@ public class AndroidLauncher extends AndroidApplication implements GameHelper.Ga
 	 * @param timeOutTimer
 	 */
 	private void checkToCancelTimer(Timer timeOutTimer){
-		if(dailyGood && weeklyGood && allTimeGood){
-			timeOutTimer.clear();
-			dailyGood = weeklyGood = allTimeGood = false;
-		}
+//		if(dailyGood && weeklyGood && allTimeGood){
+//			timeOutTimer.clear();
+//			dailyGood = weeklyGood = allTimeGood = false;
+//		}
 	}
 
 	@Override
 	public void unlockAchievementGPGS(String achievementId) {
-		if (getSignedInGPGS()) {
-			Games.Achievements.unlock(gameHelper.getApiClient(), achievementId);
-		}
+//		if (getSignedInGPGS())
+//			gsClient.unlockAchievement(achievementId);
 	}
 
 	@Override
-	public void getCurrentRankInLeaderboards(String tableID, final GameScreenGUI gameOverGUI) {
-		dailyGood = weeklyGood = allTimeGood = false;
+	public void showLeaderboard(String leaderboardID) {
+		if(!getSignedInGPGS())
+			return;
 
-		if (getSignedInGPGS()) {
-			final Timer timeOutTimer = new Timer();
-
-			Log.i("AndroidGame", "Trying to get ranks");
-
-			final PendingResult<Leaderboards.LoadPlayerScoreResult> dailyResult = Games.Leaderboards.loadCurrentPlayerLeaderboardScore(gameHelper.getApiClient(), tableID, LeaderboardVariant.TIME_SPAN_DAILY, LeaderboardVariant.COLLECTION_PUBLIC);
-			final PendingResult<Leaderboards.LoadPlayerScoreResult> weekylResult = Games.Leaderboards.loadCurrentPlayerLeaderboardScore(gameHelper.getApiClient(), tableID, LeaderboardVariant.TIME_SPAN_WEEKLY, LeaderboardVariant.COLLECTION_PUBLIC);
-			final PendingResult<Leaderboards.LoadPlayerScoreResult> allTimeResult = Games.Leaderboards.loadCurrentPlayerLeaderboardScore(gameHelper.getApiClient(), tableID, LeaderboardVariant.TIME_SPAN_ALL_TIME, LeaderboardVariant.COLLECTION_PUBLIC);
-
-			dailyResult.setResultCallback(new ResultCallback<Leaderboards.LoadPlayerScoreResult>() {
-				@Override
-				public void onResult(@NonNull Leaderboards.LoadPlayerScoreResult loadScoresResult) {
-					String status = loadScoresResult.getStatus().getStatusMessage();
-					boolean okay = loadScoresResult.getStatus().getStatusCode() == GamesStatusCodes.STATUS_OK;
-					boolean notNull = loadScoresResult.getScore() != null;
-					Log.i("AndroidGame", "Received all time rank. Okay/notNull? "+okay+"/"+notNull);
-					if(okay && notNull) {
-						Log.i("AndroidGame", "Implementing daily rank");
-//						gameOverGUI.setDailyRank(loadScoresResult.getScore().getDisplayRank());
-						dailyGood = true;
-						checkToCancelTimer(timeOutTimer);
-					}else{
-						Log.i("AndroidGame", "[daily] Something went wrong, status: "+status);
-//						gameOverGUI.setDailyRank("Error");
+		//Call to get the leaderboard
+		mLeaderboardsClient.getAllLeaderboardsIntent()
+				//Add a success listener
+				.addOnSuccessListener(new OnSuccessListener<Intent>() {
+					@Override
+					public void onSuccess(Intent intent) {
+						//Show the leaderboard!
+						startActivityForResult(intent, RC_UNUSED);
 					}
-				}
-			});
-
-			weekylResult.setResultCallback(new ResultCallback<Leaderboards.LoadPlayerScoreResult>() {
-				@Override
-				public void onResult(@NonNull Leaderboards.LoadPlayerScoreResult loadScoresResult) {
-					String status = loadScoresResult.getStatus().getStatusMessage();
-					boolean okay = loadScoresResult.getStatus().getStatusCode() == GamesStatusCodes.STATUS_OK;
-					boolean notNull = loadScoresResult.getScore() != null;
-					Log.i("AndroidGame", "Received weekly rank. Okay/notNull? "+okay+"/"+notNull);
-					if(okay && notNull) {
-						Log.i("AndroidGame", "Implementing weekly rank");
-//						gameOverGUI.setWeeklyRank(loadScoresResult.getScore().getDisplayRank());
-						weeklyGood = true;
-						checkToCancelTimer(timeOutTimer);
-					}else{
-						Log.i("AndroidGame", "[weekly] Something went wrong, status: "+status);
-//						gameOverGUI.setWeeklyRank("Error");
+				})
+				//Add a failure listener
+				.addOnFailureListener(new OnFailureListener() {
+					@Override
+					public void onFailure(@NonNull Exception e) {
+						//Handle it!
+//						handleException(e, getString(R.string.leaderboards_exception));
 					}
-				}
-			});
-
-			allTimeResult.setResultCallback(new ResultCallback<Leaderboards.LoadPlayerScoreResult>() {
-				@Override
-				public void onResult(@NonNull Leaderboards.LoadPlayerScoreResult loadScoresResult) {
-					String status = loadScoresResult.getStatus().getStatusMessage();
-					boolean okay = loadScoresResult.getStatus().getStatusCode() == GamesStatusCodes.STATUS_OK;
-					boolean notNull = loadScoresResult.getScore() != null;
-					Log.i("AndroidGame", "Received all time rank. Okay/notNull? "+okay+"/"+notNull);
-					if(okay && notNull) {
-						Log.i("AndroidGame", "Implementing all time rank");
-//						gameOverGUI.setAllTimeRank(loadScoresResult.getScore().getDisplayRank());
-						allTimeGood = true;
-						checkToCancelTimer(timeOutTimer);
-					}else{
-						Log.i("AndroidGame", "[all time] Something went wrong, status: "+status);
-//						gameOverGUI.setAllTimeRank("Error");
-					}
-				}
-			});
-
-			final double timeStarted = TimeUtils.millis();
-			final double _timeout = 15000; //In millis, 15 seconds
-
-			Log.i("AndroidGame", "Started getting scores at "+timeStarted);
-
-			//If we wait too long, cancel the result.
-			timeOutTimer.scheduleTask(new Timer.Task() {
-				@Override
-				public void run() {
-//					if(TimeUtils.millis() >= timeStarted + _timeout || !gameOverGUI.isShowing()) {
-//						Log.i("AndroidGame", "Getting ranks expired after "+(_timeout/1000)+" seconds, at "+(timeStarted + _timeout));
-//
-//						dailyResult.cancel();
-//						weekylResult.cancel();
-//						allTimeResult.cancel();
-//						timeOutTimer.clear();
-//
-//						if(!dailyGood) gameOverGUI.setDailyRank("NA");
-//						if(!weeklyGood) gameOverGUI.setWeeklyRank("NA");
-//						if(!allTimeGood) gameOverGUI.setAllTimeRank("NA");
-//
-//						dailyGood = weeklyGood = allTimeGood = false;
-//					}
-				}
-			}, 0, 0.5f);
-		}else {
-//			gameOverGUI.setDailyRank("Log In");
-//			gameOverGUI.setWeeklyRank("Log In");
-//			gameOverGUI.setAllTimeRank("Log In");
-		}
+				});
 	}
 
 	@Override
-	public void getLeaderboardGPGS(String leaderboardID) {
-		if (getSignedInGPGS()) {
-			startActivityForResult(Games.Leaderboards.getAllLeaderboardsIntent(gameHelper.getApiClient()), 100);
-		}
-	}
+	public void showAchievements() {
+//		try {
+//			gsClient.showAchievements();
+//		} catch (GameServiceException e) {
+//			e.printStackTrace();
+//		}
 
-	@Override
-	public void getAchievementsGPGS() {
-		//startActivityForResult(gameHelper.getGamesClient().getAchievementsIntent(), 100);
-	}
-
-	@Override
-	public void getLeaderboardScore(String leaderboardID, int timeSpan) {
-		Games.Leaderboards.loadCurrentPlayerLeaderboardScore(gameHelper.getApiClient(), leaderboardID,
-				timeSpan, LeaderboardVariant.COLLECTION_PUBLIC);
-	}
-
-	@Override
-	public void getCenteredLeaderboardScore(String leaderboardID, int timeSpan, int leaderboardType, float timeoutMillis) {
-		final double timeStarted = TimeUtils.millis();
-		final double _timeout = timeoutMillis; //In millis
-
-		final Timer timeOutTimer = new Timer();
-
-		final PendingResult<Leaderboards.LoadScoresResult> pendingResult = Games.Leaderboards.loadPlayerCenteredScores(gameHelper.getApiClient(),
-				leaderboardID, timeSpan, leaderboardType, 1);
-
-		//Create the callback. If valid, call the GUI to load the scores.
-		pendingResult.setResultCallback(new ResultCallback<Leaderboards.LoadScoresResult>() {
-			@Override
-			public void onResult(@NonNull Leaderboards.LoadScoresResult loadScoresResult) {
-				timeOutTimer.clear(); //Clear the timeOutTimer
-
-				if(loadScoresResult.getStatus().getStatusCode() != GamesStatusCodes.STATUS_OK)
-					return;
-
-				for(LeaderboardScore score : loadScoresResult.getScores()){
-					score.getDisplayRank();
-				}
-			}
-		});
-
-		//If we wait too long, cancel the result.
-		timeOutTimer.scheduleTask(new Timer.Task() {
-			@Override
-			public void run() {
-				if(TimeUtils.millis() >= timeStarted + _timeout) {
-					pendingResult.cancel();
-					timeOutTimer.clear();
-				}
-			}
-		}, 0, 0.5f);
-
-	}
-
-	@Override
-	public void getTopLeaderboardScores(String leaderboardID, int timeSpan, int numScores) {
-		Games.Leaderboards.loadTopScores(gameHelper.getApiClient(), leaderboardID, timeSpan, LeaderboardVariant.COLLECTION_PUBLIC, 10);
+//		//startActivityForResult(gameHelper.getGamesClient().getAchievementsIntent(), 100);
 	}
 
 	@Override
 	public void submitEvent(String eventID, String GA_ID) {
-//		if(!eventID.isEmpty())
-//			Games.Events.increment(gameHelper.getApiClient(), eventID, 1);
-//
-//		if(!GA_ID.isEmpty())
-//			GameAnalytics.addDesignEventWithEventId(GA_ID);
+		//TODO Do we need this?
 	}
 
 	@Override
 	public void submitGameStructure() {
-//		GameAnalytics.addDesignEventWithEventId(GH.getCurrGameConfig());
+		//TODO Do we need this?
 	}
 
 	private void initBilling(){
-		mHelper = new IabHelper(this, getString(R.string.d2) + getString(R.string.d1) + getString(R.string.d3));
-
-		mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
-			@Override
-			public void onIabSetupFinished(IabResult result) {
-				if (!result.isSuccess()) {
-					// Oh noes, there was a problem.
-				}else {
-					//Let's then query the inventory...
-					try {
-						mHelper.queryInventoryAsync(mGotInventoryListener);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		});
+//		mHelper = new IabHelper(this, getString(R.string.d2) + getString(R.string.d1) + getString(R.string.d3));
+//
+//		mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+//			@Override
+//			public void onIabSetupFinished(IabResult result) {
+//				if (!result.isSuccess()) {
+//					// Oh noes, there was a problem.
+//				}else {
+//					//Let's then query the inventory...
+//					try {
+//						mHelper.queryInventoryAsync(mGotInventoryListener);
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			}
+//		});
 	}
 
 	@Override
 	public void purchaseNoAds() {
-		try {
-			//Launch the purchase flow with a test SKU for now.
-			mHelper.launchPurchaseFlow(this, SKU_NOADS, RC_REQUEST, new IabHelper.OnIabPurchaseFinishedListener() {
-				@Override
-				public void onIabPurchaseFinished(IabResult result, Purchase info) {
-
-					//If it is successful, hide the banner ad and remove the ad button
-					if(result.isSuccess()){
-						showAds = false; //Toggle off the ads
-						hideBannerAd();
-						MainMenuGUI.Companion.removeAdsButton();
-//						GameAnalytics.addBusinessEventWithCurrency("USD", 99, info.getItemType(), "no_ads", "menu", "", "Google Play", info.getSignature());
-					}else{
-						Log.e(TAG, "Purchase was not successful");
-					}
-				}
-			}, "hmm");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		try {
+//			//Launch the purchase flow with a test SKU for now.
+//			mHelper.launchPurchaseFlow(this, SKU_NOADS, RC_REQUEST, new IabHelper.OnIabPurchaseFinishedListener() {
+//				@Override
+//				public void onIabPurchaseFinished(IabResult result, Purchase info) {
+//
+//					//If it is successful, hide the banner ad and remove the ad button
+//					if(result.isSuccess()){
+//						showAds = false; //Toggle off the ads
+//						hideBannerAd();
+//						MainMenuGUI.Companion.removeAdsButton();
+////						GameAnalytics.addBusinessEventWithCurrency("USD", 99, info.getItemType(), "no_ads", "menu", "", "Google Play", info.getSignature());
+//					}else{
+//						Log.e(TAG, "Purchase was not successful");
+//					}
+//				}
+//			}, "hmm");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 	}
 
-    /**
-     * This queries the inventory for items. We can use this to check for purchases.
-     */
-	private IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
-		@Override
-		public void onQueryInventoryFinished(IabResult result, Inventory inv) {
-			if(result.isFailure() || mHelper == null || inv == null) {
-				return;
-			}
 
-            //Check if we have the NO_ADS purchase
-			if (inv.hasPurchase(SKU_NOADS)) {
-				showAds = false;
-				hideBannerAd();
+//    /**
+//     * This queries the inventory for items. We can use this to check for purchases.
+//     */
+//	private IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
+//		@Override
+//		public void onQueryInventoryFinished(IabResult result, Inventory inv) {
+//			if(result.isFailure() || mHelper == null || inv == null) {
+//				return;
+//			}
+//
+//            //Check if we have the NO_ADS purchase
+//			if (inv.hasPurchase(SKU_NOADS)) {
+//				showAds = false;
+//				hideBannerAd();
+//
+//				//If it matches my test device, consume it for now. (the equals('number') is my device id)
+//				if(Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID).equals("93c5883d462d97e9")){
+//					try {
+//                        //Try to consume it
+//						mHelper.consumeAsync(inv.getPurchase(SKU_NOADS), new IabHelper.OnConsumeFinishedListener() {
+//							@Override
+//							public void onConsumeFinished(Purchase purchase, IabResult result) {
+//
+//							}
+//						});
+//					} catch (Exception e) {
+//						Log.e(TAG, "Error", e);
+//						e.printStackTrace();
+//					}
+//				}
+//			} else {
+//				showAds = true;
+//			}
+//		}
+//	};
 
-				//If it matches my test device, consume it for now. (the equals('number') is my device id)
-				if(Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID).equals("93c5883d462d97e9")){
-					try {
-                        //Try to consume it
-						mHelper.consumeAsync(inv.getPurchase(SKU_NOADS), new IabHelper.OnConsumeFinishedListener() {
-							@Override
-							public void onConsumeFinished(Purchase purchase, IabResult result) {
-
-							}
-						});
-					} catch (Exception e) {
-						Log.e(TAG, "Error", e);
-						e.printStackTrace();
-					}
-				}
-			} else {
-				showAds = true;
-			}
-		}
-	};
-
-	@Override
-	public void onSignInFailed() {
-//		SoundManager.playMusic();
-	}
-
-	@Override
-	public void onSignInSucceeded() {
-//		SoundManager.playMusic();
-	}
 
 
 	/**

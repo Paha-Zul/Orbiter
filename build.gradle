@@ -1,15 +1,16 @@
 buildscript {
-    ext.kotlin_version = '1.2.31'
+    ext.kotlin_version = '1.2.40'
     ext.gradle_tools_version = '2.3.0'
     repositories {
         mavenLocal()
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         jcenter()
+        google()
     }
     dependencies {
         classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
-        classpath "com.android.tools.build:gradle:$gradle_tools_version"
+        classpath 'com.android.tools.build:gradle:3.1.2'
         classpath "com.mobidevelop.robovm:robovm-gradle-plugin:$gradle_tools_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
@@ -23,21 +24,22 @@ allprojects {
     version = '1.0'
     ext {
         appName = "SpaceSlingshot"
-        gdxVersion = '1.9.3'
+        gdxVersion = '1.9.6'
+        gamesvcsVersion = '0.2.3'
         roboVMVersion = '2.2.0'
         box2DLightsVersion = '1.4'
         ashleyVersion = '1.7.0'
         aiVersion = '1.8.0'
         adMobVersion = '10.2.0'
-        googleServicesVersion = '10.2.0'
+        googleServicesVersion = '15.0.0'
         gdxPayVersion = '0.9.0'
     }
 
     repositories {
-        mavenLocal()
-        mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        jcenter()
+        google()
     }
 }
 
@@ -55,13 +57,12 @@ project(":desktop") {
 
 project(":android") {
     apply plugin: "android"
-//    apply plugin: "kotlin-android"
 
     configurations { natives }
 
     dependencies {
         compile project(":core")
-        compile project(":BaseGameUtils")
+//        compile project(":BaseGameUtils")
         compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
@@ -76,12 +77,14 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86_64"
 
-        //Appodeal
-//        compile "com.google.android.gms:play-services-games:$googleServicesVersion"
+        compile "com.google.android.gms:play-services-games:$googleServicesVersion"
+        compile "com.google.android.gms:play-services-auth:$googleServicesVersion"
 
-        compile "com.google.android.gms:play-services-location:$googleServicesVersion"
-        compile ("com.google.android.gms:play-services-ads:$adMobVersion")
-        compile fileTree(dir: 'libs', include: '*.jar')
+//        compile "de.golfgl.gdxgamesvcs:gdx-gamesvcs-android-gpgs:$gamesvcsVersion"
+
+//        compile "com.google.android.gms:play-services-location:$googleServicesVersion"
+//        compile ("com.google.android.gms:play-services-ads:$adMobVersion")
+//        compile fileTree(dir: 'libs', include: '*.jar')
 
 //        compile 'com.google.android.gms:play-services-location:10.0.1'
 //        compile 'com.android.support:support-v4:23+'
@@ -127,13 +130,13 @@ project(":ios") {
 
 project(":core") {
     apply plugin: "java"
-//    apply plugin: "kotlin"
 
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.3"
-//        compile 'com.flowpowered:flow-noise:1.0.1-SNAPSHOT'
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+
+//        compile "de.golfgl.gdxgamesvcs:gdx-gamesvcs-core:$gamesvcsVersion"
     }
 }
 

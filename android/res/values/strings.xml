@@ -3,9 +3,11 @@
 
     <string name="app_name">SpaceSlingshot</string>
     <string name="app_id">616929353460</string>
+    <string name="web_id">616929353460-d6d4saiq8pth3gic7d4qe12sfd6upua3.apps.googleusercontent.com</string>
     <string name="endlessLeaderboard">CgkI9L3rnvoREAIQAQ</string>
     <string name="d1">fj8mjnvjyDhu8hTNDwfi3/z+C61C4647VbKt5c7E9n1n75LgskdWgTqI3fSmPnX1MkDPGalfEL01pSbcHxTNKr5yLVnXvP97h9+n7yyqTujjpC7QxI57nQq91S</string>
     <string name="d2">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgaF1sRuBJ14GIR9oUg/GyEHa0lAXHkAku4cl9GjG4o8iZF6dxjgqNsTONzsacCfN138vVVipwMDweM</string>
     <string name="d3">E2iCLn6mPLOg8B5JG6ALQdRjeQKJsc8O2jUuKv4oqjk4koigFyDhVzEUu7y2mA3lTRN4IMHL0tyq6c13d8I1TLlWfAWjB8hxlAwT916MeMGBTPwWBLjWKsZ/WVDpA/4giEfJ+SvpEAAtNQIDAQAB</string>
+    <string name="signin_other_error">There was an issue with sign in.  Please try again later.</string>
 
 </resources>

@@ -173,6 +173,7 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
                 if(!MyGame.actionResolver.signedInGPGS) {
                     MyGame.actionResolver.loginGPGS() //Login
 
+
                     //Make a timer to check if we are logged in. When we are, enable the button
                     Timer.schedule(object:Timer.Task(){
                         override fun run() {
@@ -202,7 +203,7 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
 
         leaderboardButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                MyGame.actionResolver.getLeaderboardGPGS(Constants.LEADERBOARD)
+                MyGame.actionResolver.showLeaderboard(Constants.LEADERBOARD)
             }
         })
 

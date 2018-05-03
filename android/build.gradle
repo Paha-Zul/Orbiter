@@ -1,6 +1,6 @@
 android {
-    buildToolsVersion '25.0.0'
-    compileSdkVersion 23
+    buildToolsVersion '27.0.3'
+    compileSdkVersion 26
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -12,21 +12,21 @@ android {
             jniLibs.srcDirs = ['libs']
         }
 
-        instrumentTest.setRoot('tests')
+//        instrumentTest.setRoot('tests')
     }
     defaultConfig {
         applicationId "com.quickbite.spaceslingshot"
         minSdkVersion 15
-        targetSdkVersion 24
-        multiDexEnabled true
+        targetSdkVersion 26
+//        multiDexEnabled true
     }
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
-            proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
-            proguardFile 'proguard-project.txt'
+//            minifyEnabled true
+//            shrinkResources true
+//            proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
+//            proguardFile 'proguard-project.txt'
         }
 //        debug {
 //            minifyEnabled true
@@ -34,16 +34,24 @@ android {
 //            proguardFile 'proguard-project.txt'
 //        }
     }
+
+    dexOptions {
+        //javaMaxHeapSize=1024M for 32bit Java,2048M for 64bit Java
+        javaMaxHeapSize "4098M"
+        //javaMaxHeapSize "2048M"
+    }
+
+
 }
 // called every time gradle gets executed, takes the native dependencies of
 // the natives configuration, and extracts them to the proper libs/ folders
 // so they get packed with the APK.
 task copyAndroidNatives() {
-    file("libs/armeabi/").mkdirs();
-    file("libs/armeabi-v7a/").mkdirs();
-    file("libs/arm64-v8a/").mkdirs();
-    file("libs/x86_64/").mkdirs();
-    file("libs/x86/").mkdirs();
+    file("libs/armeabi/").mkdirs()
+    file("libs/armeabi-v7a/").mkdirs()
+    file("libs/arm64-v8a/").mkdirs()
+    file("libs/x86_64/").mkdirs()
+    file("libs/x86/").mkdirs()
 
     configurations.natives.files.each { jar ->
         def outputDir = null
@@ -135,5 +143,5 @@ idea {
     }
 }
 dependencies {
-    compile 'com.android.support:multidex:1.0.1'
+//    compile 'com.android.support:multidex:1.0.1'
 }

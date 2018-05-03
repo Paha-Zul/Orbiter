@@ -24,6 +24,10 @@
 .gradle/
 build/
 planet_*.png
+*.so
+*.apk
+release/
+libs/
 
 #Intellij IDEA
 *.iws

@@ -3,7 +3,6 @@ package com.quickbite.spaceslingshot.desktop;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.quickbite.spaceslingshot.MyGame;
-import com.quickbite.spaceslingshot.guis.GameScreenGUI;
 import com.quickbite.spaceslingshot.guis.MainMenuGUI;
 import com.quickbite.spaceslingshot.interfaces.ActionResolver;
 import com.quickbite.spaceslingshot.interfaces.AdInterface;
@@ -61,32 +60,12 @@ public class DesktopLauncher implements ActionResolver, AdInterface, Transaction
 	}
 
 	@Override
-	public void getCurrentRankInLeaderboards(String tableID, GameScreenGUI gameOverGUI) {
+	public void showLeaderboard(String leaderboardID) {
 
 	}
 
 	@Override
-	public void getLeaderboardGPGS(String leaderboardID) {
-
-	}
-
-	@Override
-	public void getAchievementsGPGS() {
-
-	}
-
-	@Override
-	public void getLeaderboardScore(String leaderboardID, int timeSpan) {
-
-	}
-
-	@Override
-	public void getCenteredLeaderboardScore(String leaderboardID, int timeSpan, int leaderboardType, float timeoutSeconds) {
-
-	}
-
-	@Override
-	public void getTopLeaderboardScores(String leaderboardID, int timeSpan, int numScores) {
+	public void showAchievements() {
 
 	}
 
