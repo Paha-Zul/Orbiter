@@ -379,10 +379,6 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         if(!prefAchievements[1]) checks[1].color.a = 0f
         if(!prefAchievements[2]) checks[2].color.a = 0f
 
-        checks[0].debug()
-        checks[1].debug()
-        checks[2].debug()
-
         //Open the table quickly and display the checks fo the achievements
         GameOverTable.gameOverTable.addAction(Actions.sequence(Actions.scaleTo(1f, 1f, 0.1f), Actions.delay(1f), object: Action() {
             override fun act(delta: Float): Boolean {
@@ -408,9 +404,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
 
         val coords = Vector2(0f, 0f) // (0,0) for the bottom left of the actor
         box.localToStageCoordinates(coords) //Translate to stage
-        box.stage.stageToScreenCoordinates(coords)
-//        MyGame.stage.stageToScreenCoordinates(coords) //Translate to screen
-        coords.y = Gdx.graphics.height - coords.y //Gotta flip the Y here
+//        coords.y = Gdx.graphics.height - coords.y - checkmark.height/2f //Gotta flip the Y here
 
         checkmark.color.a = 0f
         checkmark.setSize(startSize, startSize)
@@ -421,17 +415,9 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
                 checkmark.addAction(Actions.fadeIn(speed))
                 checkmark.addAction(Actions.sizeTo(64f, 64f, speed))
                 checkmark.addAction(Actions.moveTo(coords.x, coords.y, speed))
-                checkmark.addAction(object :Action(){
-                    override fun act(delta: Float): Boolean {
-                        checkmark
-                        return true
-                    }
-                })
                 return true
             }
         }))
-
-        checkmark.debug()
 
         MyGame.stage.addActor(checkmark)
     }
