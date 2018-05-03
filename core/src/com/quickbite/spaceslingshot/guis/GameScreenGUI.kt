@@ -373,7 +373,6 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         stack2.add(checks[1])
         stack3.add(checks[2])
 
-
         val prefAchievements = AchievementManager.loadAchievementsFromPref((GameScreen.gameScreenData.currLevel+1).toString())
         if(!prefAchievements[0]) checks[0].color.a = 0f
         if(!prefAchievements[1]) checks[1].color.a = 0f
@@ -394,6 +393,7 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
             }
         }))
 
+        containerTable.setOrigin(Align.center)
         containerTable.setFillParent(true)
         containerTable.add(GameOverTable.gameOverTable).center()
         MyGame.stage.addActor(containerTable)
