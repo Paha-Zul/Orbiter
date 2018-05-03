@@ -1,5 +1,6 @@
 package com.quickbite.spaceslingshot.guis
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -368,10 +369,19 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
         GameOverTable.gameOverTable.setOrigin(Align.center)
         GameOverTable.gameOverTable.setScale(0f)
 
+        stack1.add(checks[0])
+        stack2.add(checks[1])
+        stack3.add(checks[2])
+
+
         val prefAchievements = AchievementManager.loadAchievementsFromPref((GameScreen.gameScreenData.currLevel+1).toString())
-        if(prefAchievements[0]) stack1.add(checks[0])
-        if(prefAchievements[1]) stack2.add(checks[1])
-        if(prefAchievements[2]) stack3.add(checks[2])
+        if(!prefAchievements[0]) checks[0].color.a = 0f
+        if(!prefAchievements[1]) checks[1].color.a = 0f
+        if(!prefAchievements[2]) checks[2].color.a = 0f
+
+        checks[0].debug()
+        checks[1].debug()
+        checks[2].debug()
 
         //Open the table quickly and display the checks fo the achievements
         GameOverTable.gameOverTable.addAction(Actions.sequence(Actions.scaleTo(1f, 1f, 0.1f), Actions.delay(1f), object: Action() {
@@ -398,8 +408,9 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
 
         val coords = Vector2(0f, 0f) // (0,0) for the bottom left of the actor
         box.localToStageCoordinates(coords) //Translate to stage
-        MyGame.stage.stageToScreenCoordinates(coords) //Translate to scren
-        coords.y = MyGame.UIViewport.worldHeight - coords.y //Gotta flip the Y here
+        box.stage.stageToScreenCoordinates(coords)
+//        MyGame.stage.stageToScreenCoordinates(coords) //Translate to screen
+        coords.y = Gdx.graphics.height - coords.y //Gotta flip the Y here
 
         checkmark.color.a = 0f
         checkmark.setSize(startSize, startSize)
@@ -410,9 +421,17 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
                 checkmark.addAction(Actions.fadeIn(speed))
                 checkmark.addAction(Actions.sizeTo(64f, 64f, speed))
                 checkmark.addAction(Actions.moveTo(coords.x, coords.y, speed))
+                checkmark.addAction(object :Action(){
+                    override fun act(delta: Float): Boolean {
+                        checkmark
+                        return true
+                    }
+                })
                 return true
             }
         }))
+
+        checkmark.debug()
 
         MyGame.stage.addActor(checkmark)
     }

@@ -12,10 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.viewport.FillViewport;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.utils.viewport.*;
 import com.quickbite.spaceslingshot.data.json.PlanetDataManager;
 import com.quickbite.spaceslingshot.interfaces.ActionResolver;
 import com.quickbite.spaceslingshot.interfaces.AdInterface;
@@ -36,7 +33,7 @@ public class MyGame extends Game {
 	public static ShapeRenderer shapeRenderer;
     public static OrthographicCamera camera, UICamera, Box2dCamera;
     public static Viewport viewport, UIViewport;
-    public static Stage stage, worldStage;
+    public static Stage stage;
 	public static BitmapFont font;
 	public static EasyAssetManager manager;
 	public static World world;
@@ -76,13 +73,12 @@ public class MyGame extends Game {
         UICamera = new OrthographicCamera(480, 800);
 		Box2dCamera = new OrthographicCamera(480 * Constants.BOX2D_SCALE, 800 * Constants.BOX2D_SCALE);
 
-        viewport = new FillViewport(480, 800, camera);
+        viewport = new FitViewport(480, 800, camera);
         UIViewport = new FitViewport(480, 800, UICamera);
 
 		manager = new EasyAssetManager();
 
         stage = new Stage(UIViewport);
-        worldStage = new Stage(viewport);
 
 		batch = new SpriteBatch();
 		batch.setProjectionMatrix(camera.combined);
