@@ -30,8 +30,9 @@ allprojects {
         box2DLightsVersion = '1.4'
         ashleyVersion = '1.7.0'
         aiVersion = '1.8.0'
-        adMobVersion = '10.2.0'
+        adMobVersion = '15.0.0'
         googleServicesVersion = '15.0.0'
+        supportVersion = '27.0.2'
         gdxPayVersion = '0.9.0'
     }
 
@@ -47,11 +48,11 @@ project(":desktop") {
     apply plugin: "java"
 
     dependencies {
-        compile project(":core")
-        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-        compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
+        implementation project(":core")
+        implementation "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        implementation "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
+        implementation "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
     }
 }
 
@@ -61,38 +62,27 @@ project(":android") {
     configurations { natives }
 
     dependencies {
-        compile project(":core")
-//        compile project(":BaseGameUtils")
-        compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
+        implementation project(":core")
+//        implementation project(":BaseGameUtils")
+        implementation "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
 
-        compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+        implementation "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-armeabi"
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-armeabi-v7a"
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-arm64-v8a"
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86_64"
 
-        compile "com.google.android.gms:play-services-games:$googleServicesVersion"
-        compile "com.google.android.gms:play-services-auth:$googleServicesVersion"
-
-//        compile "de.golfgl.gdxgamesvcs:gdx-gamesvcs-android-gpgs:$gamesvcsVersion"
-
-//        compile "com.google.android.gms:play-services-location:$googleServicesVersion"
-//        compile ("com.google.android.gms:play-services-ads:$adMobVersion")
-//        compile fileTree(dir: 'libs', include: '*.jar')
-
-//        compile 'com.google.android.gms:play-services-location:10.0.1'
-//        compile 'com.android.support:support-v4:23+'
-
-//        compile "com.google.android.gms:play-services-ads:$adMobVersion"
-//        compile "com.google.android.gms:play-services-games:$googleServicesVersion"
-//        compile "com.android.support:appcompat-v7:20.0.+"
-//        compile "com.android.support:support-v4:20.0.+"
+        implementation "com.android.support:appcompat-v7:${supportVersion}"
+        implementation "com.android.support:support-v4:${supportVersion}"
+        implementation "com.google.android.gms:play-services-games:${googleServicesVersion}"
+        implementation "com.google.android.gms:play-services-auth:${googleServicesVersion}"
+        implementation ("com.google.android.gms:play-services-ads:$adMobVersion")
     }
 }
 
@@ -101,13 +91,13 @@ project(":ios") {
     apply plugin: "robovm"
 
     dependencies {
-        compile project(":core")
-        compile "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
-        compile "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
-        compile "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
+        implementation project(":core")
+        implementation "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
+        implementation "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
+        implementation "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
+        implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
 
-        compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-ios"
+        implementation "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-ios"
     }
 }
 
@@ -117,14 +107,14 @@ project(":ios") {
 //
 //
 //    dependencies {
-//        compile project(":core")
-//        compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
-//        compile "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
-//        compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"
-//        compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.3:sources"
+//        implementation project(":core")
+//        implementation "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
+//        implementation "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
+//        implementation "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"
+//        implementation "net.dermetfan.libgdx-utils:libgdx-utils:0.13.3:sources"
 //
-//        compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion:sources"
-//        compile "com.badlogicgames.gdx:gdx-box2d-gwt:$gdxVersion:sources"
+//        implementation "com.badlogicgames.gdx:gdx-box2d:$gdxVersion:sources"
+//        implementation "com.badlogicgames.gdx:gdx-box2d-gwt:$gdxVersion:sources"
 //    }
 //}
 
@@ -132,11 +122,9 @@ project(":core") {
     apply plugin: "java"
 
     dependencies {
-        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
-        compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.3"
-        compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-
-//        compile "de.golfgl.gdxgamesvcs:gdx-gamesvcs-core:$gamesvcsVersion"
+        implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+        implementation "net.dermetfan.libgdx-utils:libgdx-utils:0.13.3"
+        implementation "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
     }
 }
 
@@ -147,7 +135,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 sourceSets {
     main.java.srcDirs += 'src/main/kotlin'

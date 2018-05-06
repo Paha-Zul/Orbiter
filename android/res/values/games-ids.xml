@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Google Play game services IDs.
+Save this file as res/values/games-ids.xml in your project.
+-->
+<resources>
+    <!-- package_name -->
+    <string name="package_name" translatable="false">com.quickbite.spaceslingshot</string>
+    <!-- achievement First Endless Game -->
+    <string name="achievement_first_endless_game" translatable="false">CgkI9L3rnvoREAIQAg</string>
+    <!-- achievement First Real Challenge -->
+    <string name="achievement_first_real_challenge" translatable="false">CgkI9L3rnvoREAIQAw</string>
+    <!-- achievement Supported Developer -->
+    <string name="achievement_supported_developer" translatable="false">CgkI9L3rnvoREAIQBA</string>
+    <!-- achievement To the Top -->
+    <string name="achievement_to_the_top" translatable="false">CgkI9L3rnvoREAIQBQ</string>
+    <!-- achievement To the Bottom -->
+    <string name="achievement_to_the_bottom" translatable="false">CgkI9L3rnvoREAIQBg</string>
+    <!-- leaderboard Endless -->
+    <string name="leaderboard_endless" translatable="false">CgkI9L3rnvoREAIQAQ</string>
+</resources>

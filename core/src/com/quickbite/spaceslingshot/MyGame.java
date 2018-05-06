@@ -53,6 +53,8 @@ public class MyGame extends Game {
 		MyGame.ads = ads;
 		MyGame.transactions = transactions;
 		MyGame.actionResolver = actionResolver;
+
+//		GoogleApiAvailability
 	}
 
 	@Override

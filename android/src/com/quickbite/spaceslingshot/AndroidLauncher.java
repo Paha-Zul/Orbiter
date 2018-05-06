@@ -5,15 +5,27 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+
+import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.badlogic.gdx.utils.Timer;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.games.*;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -44,6 +56,8 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
 	private EventsClient mEventsClient;
 	private PlayersClient mPlayersClient;
 
+	private AdView bannerAdView;
+
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		setupUpGameHelper();
@@ -53,14 +67,39 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
 		initBilling();
 
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-		initialize(game, config);
+		View gameView = initializeForView(game, config);
 
-        setupAds(game);
+        setupAds(game, gameView);
 
 		mGoogleSignInClient = GoogleSignIn.getClient(this,
 				new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
 						.requestEmail()
+						.requestId()
 						.build());
+
+		int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
+		switch (code){
+			case ConnectionResult.SUCCESS:
+				System.out.println("Success");
+				break;
+			case ConnectionResult.SERVICE_MISSING:
+				System.out.println("Missing");
+				break;
+			case ConnectionResult.SERVICE_INVALID:
+				System.out.println("Invalid");
+				break;
+			case ConnectionResult.SERVICE_UPDATING:
+				System.out.println("Updating");
+				break;
+			case ConnectionResult.API_VERSION_UPDATE_REQUIRED:
+				System.out.println("Need to update");
+				break;
+			case ConnectionResult.SERVICE_DISABLED:
+				System.out.println("Disabled");
+				break;
+		}
+
+		signInSilently();
 
 		super.onCreate(savedInstanceState);
 	}
@@ -72,8 +111,35 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
 		// Create the client used to sign in to Google services.
 	}
 
-	private void setupAds(Game game){
-		String appKey = "ecc3499bf389398ad32f0cbe07263654765899535432107b";
+	private void setupAds(Game game, View gameView){
+		MobileAds.initialize(this, getString(R.string.admob_app_id));
+		bannerAdView = new AdView(this);
+		bannerAdView.setAdSize(AdSize.SMART_BANNER);
+		bannerAdView.setAdUnitId(getString(R.string.admob_test_ad));
+
+		AdRequest adRequest = new AdRequest.Builder().build();
+		bannerAdView.loadAd(adRequest);
+
+				AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
+		cfg.useAccelerometer = false;
+		cfg.useCompass = false;
+
+		// Do the stuff that initialize() would do for you
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+
+		FrameLayout fLayout = new FrameLayout(this);
+		FrameLayout.LayoutParams fParams = new FrameLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT,
+				Gravity.BOTTOM|android.view.Gravity.CENTER_HORIZONTAL);
+		fLayout.setLayoutParams(fParams);
+
+		fLayout.addView(gameView);
+		fLayout.addView(bannerAdView, fParams);
+		setContentView(fLayout);
+
+		bannerAdView.setVisibility(View.VISIBLE);
+
+//		String appKey = "ecc3499bf389398ad32f0cbe07263654765899535432107b";
 //		GdxAppodeal.disableLocationPermissionCheck();
 //        GdxAppodeal.disableNetwork("cheetah");
 //        GdxAppodeal.disableNetwork("mopub");
@@ -133,31 +199,21 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
 
 	@Override
 	public void showBannerAd() {
-//        if(showAds)
-//		    GdxAppodeal.show(GdxAppodeal.BANNER_BOTTOM);
-
-//		if(showAds) {
-//			showingBannerAd = true;
-//			runOnUiThread(new Runnable() {
-//				@Override
-//				public void run() {
-//					adView.setVisibility(View.VISIBLE);
-//				}
-//			});
-//		}
+		if(showAds)
+			bannerAdView.setVisibility(View.VISIBLE);
 	}
 
 	@Override
 	public void hideBannerAd() {
-//		GdxAppodeal.hide(GdxAppodeal.BANNER_BOTTOM);
-
-//		showingBannerAd = false;
-//		runOnUiThread(new Runnable() {
-//			@Override
-//			public void run() {
-//				adView.setVisibility(View.GONE);
-//			}
-//		});
+		try {
+			runOnUiThread(new Runnable() {
+				public void run() {
+					bannerAdView.setVisibility(View.INVISIBLE);
+				}
+			});
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 	}
 
 	@Override
@@ -197,6 +253,8 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
 	@Override
 	public void onStart(){
 		super.onStart();
+
+
 
 //		gameHelper.onStart(this);
 	}
@@ -329,6 +387,8 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
 							onDisconnected();
 						}
 					}
+
+
 				});
 	}
 
