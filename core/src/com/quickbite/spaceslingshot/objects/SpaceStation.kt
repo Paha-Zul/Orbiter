@@ -24,7 +24,7 @@ import com.quickbite.spaceslingshot.util.EventSystem
  * Created by Paha on 9/23/2016.
  */
 
-class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotation:Float, val homeStation:Boolean = false):SpaceBody(position, size, 0f, 0f), IUniqueID, IPhysicsBody, Disposable{
+class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, rotation:Float, val homeStation:Boolean = false):SpaceBody(position, size, rotation), IUniqueID, IPhysicsBody, Disposable{
 
     companion object{
         val arrowOffsets:List<Vector2> = listOf(
@@ -58,9 +58,9 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotat
     init{
 //        sprite = Sprite(MyGame.manager["station", Texture::class.java])
         sprite = Sprite(MyGame.gameScreenAtlas.findRegion("station"))
-        sprite.setSize(radius*2f, radius*2f)
-        sprite.setPosition(position.x - radius, position.y - radius)
-        sprite.setOrigin(radius.toFloat(), radius.toFloat())
+        sprite.setSize(this.size *2f, this.size *2f)
+        sprite.setPosition(position.x - this.size, position.y - this.size)
+        sprite.setOrigin(this.size.toFloat(), this.size.toFloat())
         sprite.rotation = rotation
 
         arrow.setSize(32f, 32f)
@@ -69,10 +69,10 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotat
         arrow.rotation = this.rotation + 180f
 
         EventSystem.onEvent("hit_station", { args ->
-            val ship = args[0] as Ship
-
             //If the ship is a test ship, ignore
-            if(ship.testShip) return@onEvent
+            if(args[0] is TestShip) return@onEvent
+
+            val ship = args[0] as PlayerShip
 
             //If the ship is not docking in the right spot, lose!
             if(!checkCloseToDocking(ship.position, dstToDock)){
@@ -120,9 +120,12 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotat
 
     override fun draw(batch: SpriteBatch) {
         timer.update(0.016f)
+        arrow.rotation = this.rotation + 180f
         arrow.setPosition(currArrowSpot.x - arrow.width/2f, currArrowSpot.y - arrow.height/2f)
         arrow.draw(batch)
 
+        sprite.setPosition(position.x - size, position.y - size)
+        sprite.rotation = rotation
         sprite.draw(batch)
     }
 
@@ -139,7 +142,7 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, val rotat
         val circle = CircleShape()
 
         circle.position = Vector2(0f, 0f)
-        circle.radius = (radius/2f) * Constants.BOX2D_SCALE
+        circle.radius = (size/2f) * Constants.BOX2D_SCALE
 
         mainFixture.shape = circle
         mainFixture.isSensor = true

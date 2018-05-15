@@ -1,6 +1,7 @@
 package com.quickbite.spaceslingshot.objects
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.quickbite.spaceslingshot.interfaces.IDrawable
 import com.quickbite.spaceslingshot.interfaces.IUpdateable
@@ -8,23 +9,23 @@ import com.quickbite.spaceslingshot.interfaces.IUpdateable
 /**
  * Created by Paha on 8/12/2016.
  */
-open class SpaceBody(val position: Vector2, val radius: Int, protected val _gravityRangeRadius: Float, protected val _density: Float) : IDrawable, IUpdateable {
-    override var dead: Boolean = false
+open class SpaceBody(val position: Vector2, val size: Int, var rotation:Float) : IDrawable, IUpdateable {
 
-    val gravityRange:Float
-        get() = radius + _gravityRangeRadius
-
-    fun getPull(dst:Float):Float{
-        val normalValue = 1f - (dst/gravityRange)
-        return normalValue*_density
+    companion object {
+        protected val rect = Rectangle()
     }
+
+    override var dead: Boolean = false
 
     override fun draw(batch: SpriteBatch) {
 
     }
 
-    override fun update(delta: Float) {
+    open fun draw2(batch:SpriteBatch){
 
+    }
+
+    override fun update(delta: Float) {
     }
 
     override fun fixedUpdate(delta: Float) {
@@ -33,5 +34,10 @@ open class SpaceBody(val position: Vector2, val radius: Int, protected val _grav
 
     override fun dispose() {
 
+    }
+
+    open fun clickedOn(x:Float, y:Float):Boolean{
+        rect.set(position.x - size.toFloat()/2f, position.y - size.toFloat()/2f, size.toFloat(), size.toFloat())
+        return rect.contains(x, y)
     }
 }

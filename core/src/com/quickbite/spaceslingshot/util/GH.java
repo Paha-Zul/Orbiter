@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.quickbite.spaceslingshot.LevelManager;
-import com.quickbite.spaceslingshot.objects.Ship;
+import com.quickbite.spaceslingshot.objects.ShipBase;
 import com.quickbite.spaceslingshot.screens.GameScreen;
 
 /**
@@ -60,7 +60,7 @@ public class GH {
         return pixmaptex;
     }
 
-    public static float getRotationFromLocation(Ship.ShipLocation location){
+    public static float getRotationFromLocation(ShipBase.ShipLocation location){
         //TODO For some reason the left and right need to be flipped here...
         switch(location){
             case Rear:

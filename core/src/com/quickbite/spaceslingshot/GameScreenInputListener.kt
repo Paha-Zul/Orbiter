@@ -6,12 +6,11 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.TimeUtils
-import com.quickbite.spaceslingshot.objects.Ship
+import com.quickbite.spaceslingshot.objects.ShipBase
 import com.quickbite.spaceslingshot.screens.GameScreen
 import com.quickbite.spaceslingshot.util.Constants
 import com.quickbite.spaceslingshot.util.GH
 import com.quickbite.spaceslingshot.util.Predictor
-import com.quickbite.spaceslingshot.util.Util
 
 /**
  * Created by Paha on 8/7/2016.
@@ -20,7 +19,7 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
     var draggingRotateShip = false
     var draggingShipBurnTime = false
     var draggingScreen = false
-    var shipLocation:Ship.ShipLocation = Ship.ShipLocation.Rear
+    var shipLocation:ShipBase.ShipLocation = ShipBase.ShipLocation.Rear
     var rotationOffset:Float = 0f
 
     val startDragPos:Vector2 = Vector2()

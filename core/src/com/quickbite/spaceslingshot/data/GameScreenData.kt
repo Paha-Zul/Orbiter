@@ -14,7 +14,7 @@ class GameScreenData(val gameScreen: GameScreen, isEndlessGame: Boolean = false)
     var currLevel = 0 //The current level index
     var pauseLimit = 100f //The amount of pause time we have
 
-    lateinit var ship: Ship
+    lateinit var ship: PlayerShip
     val planetList: Array<Planet> = Array()
     val obstacleList: Array<Obstacle> = Array()
     val asteroidSpawnerList: Array<AsteroidSpawner> = Array()

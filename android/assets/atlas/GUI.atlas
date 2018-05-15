@@ -2,60 +2,60 @@
 GUI.png
 size: 512,512
 format: RGBA8888
-filter: Linear,Linear
+filter: MipMapNearestNearest,MipMapNearestNearest
 repeat: none
 backButton
   rotate: false
-  xy: 268, 380
+  xy: 136, 114
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 backIcon
   rotate: false
-  xy: 334, 70
+  xy: 136, 46
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 buttonNew
   rotate: false
-  xy: 268, 314
+  xy: 2, 44
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
   index: -1
 buttonNewSmall
   rotate: false
-  xy: 136, 46
+  xy: 266, 70
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 buttonNewSmallSolid
   rotate: false
-  xy: 402, 102
+  xy: 266, 138
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 buttonNewSmallSolid_down
   rotate: false
-  xy: 334, 138
+  xy: 402, 102
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 buttonNewSmall_down
   rotate: false
-  xy: 402, 238
+  xy: 398, 442
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 buttonNew_down
   rotate: false
-  xy: 2, 44
+  xy: 268, 314
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
@@ -69,21 +69,21 @@ checkBoxSquare
   index: -1
 checkmark
   rotate: false
-  xy: 136, 114
+  xy: 268, 380
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 checkmark_background
   rotate: false
-  xy: 402, 34
+  xy: 334, 138
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 endlessIcon
   rotate: false
-  xy: 402, 170
+  xy: 398, 374
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
@@ -120,21 +120,35 @@ gameOverDialog
   index: -1
 gpgLoginIcon
   rotate: false
-  xy: 402, 306
+  xy: 204, 2
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 gpgLogoutIcon
   rotate: false
-  xy: 398, 374
+  xy: 402, 238
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
+inputBoxBackground
+  rotate: false
+  xy: 466, 476
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+inputBoxBackgroundFilled
+  rotate: false
+  xy: 204, 80
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 leaderboardIcon
   rotate: false
-  xy: 204, 2
+  xy: 334, 70
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
@@ -155,21 +169,21 @@ locateButton
   index: -1
 playButtonIcon
   rotate: false
-  xy: 398, 442
+  xy: 402, 306
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 quitButtonIcon
   rotate: false
-  xy: 266, 70
+  xy: 402, 34
   size: 66, 66
   orig: 66, 66
   offset: 0, 0
   index: -1
 removeAdsIcon
   rotate: false
-  xy: 266, 138
+  xy: 402, 170
   size: 66, 66
   orig: 66, 66
   offset: 0, 0

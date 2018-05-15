@@ -42,7 +42,7 @@ class EndlessGame(screen:GameScreen) : IUpdateable, Disposable{
         MyGame.camera.position.set(0f, 0f, 0f)
 
         val startingPlanet = Planet(Vector2(MyGame.camera.position.x, MyGame.camera.position.y - 100f), 50, 75f, 0.1f, 0f,
-                ProceduralPlanetTextureGenerator.getNextTexture(), false)
+                ProceduralPlanetTextureGenerator.getNextTexture())
 
         nextPlanetToPass = startingPlanet
 
@@ -109,7 +109,7 @@ class EndlessGame(screen:GameScreen) : IUpdateable, Disposable{
 
         //Create the planet
         val planet = Planet(Vector2(nextPlanetPosition.x, nextPlanetPosition.y), randSize, randGravity, randDensity, 0f,
-                ProceduralPlanetTextureGenerator.getNextTexture(), false)
+                ProceduralPlanetTextureGenerator.getNextTexture())
 
         data.planetList.add(planet)
     }

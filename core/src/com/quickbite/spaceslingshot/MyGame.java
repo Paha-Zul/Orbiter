@@ -35,6 +35,7 @@ public class MyGame extends Game {
     public static Viewport viewport, UIViewport;
     public static Stage stage;
 	public static BitmapFont font;
+	public static BitmapFont scaledFont;
 	public static EasyAssetManager manager;
 	public static World world;
 
@@ -70,6 +71,8 @@ public class MyGame extends Game {
 		debugRenderer = new Box2DDebugRenderer();
 
 		font = new BitmapFont(Gdx.files.internal("fonts/secFont.fnt"));
+		scaledFont = new BitmapFont(Gdx.files.internal("fonts/secFont.fnt"));
+		scaledFont.getData().setScale(0.15f);
 
         camera = new OrthographicCamera(480, 800);
         UICamera = new OrthographicCamera(480, 800);

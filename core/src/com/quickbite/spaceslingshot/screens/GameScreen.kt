@@ -17,9 +17,7 @@ import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.data.GameScreenData
 import com.quickbite.spaceslingshot.data.json.JsonLevelData
 import com.quickbite.spaceslingshot.guis.GameScreenGUI
-import com.quickbite.spaceslingshot.objects.Obstacle
-import com.quickbite.spaceslingshot.objects.Planet
-import com.quickbite.spaceslingshot.objects.Ship
+import com.quickbite.spaceslingshot.objects.*
 import com.quickbite.spaceslingshot.util.*
 
 /**
@@ -55,7 +53,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
             GameScreen.lost = lost
         }
 
-        fun applyGravity(planet:Planet, ship:Ship){
+        fun applyGravity(planet:Planet, ship:ShipBase){
             val dst = planet.position.dst(ship.position)
             if(dst <= planet.gravityRange){
                 val pull = planet.getPull(dst)
@@ -100,7 +98,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
         paused = true
         pauseTimer = false
 
-        gameScreenData.ship = Ship()
+        gameScreenData.ship = PlayerShip()
         Predictor.queuePrediction = true
         gui = GameScreenGUI(this)
 
@@ -200,8 +198,8 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
             gui.fuelBar.setAmounts(gameScreenData.ship.fuel, gameScreenData.ship.fuelTaken)
 
             //TODO Wtf is this
-            Tests.addToShipList(Tests.MovementData(Vector2(gameScreenData.ship.position), Vector2(gameScreenData.ship.velocity), gameScreenData.ship.rotation,
-                    gameScreenData.ship.planetList.size, gameScreenData.ship.fuel, delta))
+//            Tests.addToShipList(Tests.MovementData(Vector2(gameScreenData.ship.position), Vector2(gameScreenData.ship.velocity), gameScreenData.ship.rotation,
+//                    gameScreenData.ship.planetList.size, gameScreenData.ship.fuel, delta))
 
             Tests.update()
 
@@ -302,19 +300,14 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
     /**
      * @return An Integer representing the result. 0 for collision, 1 for collided with target (passed), 2 for nothing
      */
-    private fun checkHitPlanet(planets: Array<Planet>, obstacles:Array<Obstacle>, ship: Ship):Int{
+    private fun checkHitPlanet(planets: Array<Planet>, obstacles:Array<Obstacle>, ship: PlayerShip):Int{
         var dead = false
         var passed = false
         planets.forEach { planet ->
             val dst = planet.position.dst(ship.position)
-            if(dst <= planet.radius){
-                if(!planet.homePlanet) {
-                    dead = true
-                    return@forEach
-                }else{
-                    passed = true
-                    return@forEach
-                }
+            if(dst <= planet.size){
+                passed = true
+                return@forEach
             }
         }
 
@@ -328,7 +321,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
         return if(dead) 0 else if(passed) 1 else 2
     }
 
-    fun toggleShipBurn(shipLocation: Ship.ShipLocation){
+    fun toggleShipBurn(shipLocation: ShipBase.ShipLocation){
         gameScreenData.ship.toggleDoubleBurn(shipLocation)
         gui.fuelBar.setAmounts(gameScreenData.ship.fuel, gameScreenData.ship.fuelTaken)
     }

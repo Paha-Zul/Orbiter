@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
 import com.quickbite.spaceslingshot.LevelManager
 import com.quickbite.spaceslingshot.MyGame
+import com.quickbite.spaceslingshot.screens.EditorScreen
 import com.quickbite.spaceslingshot.screens.GameScreen
 import com.quickbite.spaceslingshot.screens.MainMenuScreen
 import com.quickbite.spaceslingshot.util.Constants
@@ -85,6 +86,12 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         playButtonStyle.down = buttonDown
         playButtonStyle.imageUp = TextureRegionDrawable(MyGame.GUIAtlas.findRegion("playButtonIcon"))
 
+        val editorButtonStyle = TextButton.TextButtonStyle()
+        editorButtonStyle.font = MyGame.font
+        editorButtonStyle.up = buttonUp
+        editorButtonStyle.over = buttonDown
+        editorButtonStyle.down = buttonDown
+
         val leaderboardButtonStyle = ImageButton.ImageButtonStyle()
         leaderboardButtonStyle.up = buttonUp
         leaderboardButtonStyle.over = buttonDown
@@ -125,6 +132,9 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         val playButton = ImageButton(playButtonStyle)
         playButton.imageCell.size(55f, 55f)
 
+        val editorButton = TextButton("Editor", editorButtonStyle)
+        editorButton.label.setFontScale(0.2f)
+
         val leaderboardButton = ImageButton(leaderboardButtonStyle)
         leaderboardButton.imageCell.size(55f, 55f)
         if(!MyGame.actionResolver.signedInGPGS)
@@ -145,6 +155,8 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         mainMenuTable.add(titleLabel).spaceBottom(100f).expandX().fillX()
         mainMenuTable.row().expandX().fillX()
         mainMenuTable.add(playButton).size(128f, 64f).spaceBottom(20f).expandX().fillX()
+        mainMenuTable.row().expandX().fillX()
+        mainMenuTable.add(editorButton).size(128f, 64f).spaceBottom(20f).expandX().fillX()
         mainMenuTable.row().expandX().fillX()
         mainMenuTable.add(leaderboardButton).size(128f, 64f).spaceBottom(20f).expandX().fillX()
         mainMenuTable.row().expandX().fillX()
@@ -198,6 +210,13 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
                         }
                     }, 0f, 0.3f, 100)
                 }
+            }
+        })
+
+        editorButton.addListener(object:ChangeListener(){
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                MyGame.stage.clear()
+                mainMenu.game.screen = EditorScreen(mainMenu.game)
             }
         })
 

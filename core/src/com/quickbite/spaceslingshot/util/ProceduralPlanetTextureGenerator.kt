@@ -439,14 +439,10 @@ object ProceduralPlanetTextureGenerator {
         return tmpColor2.lerp(tmpColor3, shadowValue)
     }
 
-    fun getNextTexture(homePlanet:Boolean = false): Texture {
-        if(!homePlanet) {
-            val texture = textureArray[textureCounter]!!
-            textureCounter = (textureCounter + 1) % textureArray.size
-            return texture
-        }else{
-            return MyGame.manager["wormhole", Texture::class.java]
-        }
+    fun getNextTexture(): Texture {
+        val texture = textureArray[textureCounter]!!
+        textureCounter = (textureCounter + 1) % textureArray.size
+        return texture
     }
 
     private class PlanetTypeData(val col1:Pair<Color, Color>, val col2:Pair<Color, Color>, val col3:Pair<Color, Color>, val min:Float, val mid:Float, val max:Float){}

@@ -3,9 +3,7 @@ package com.quickbite.spaceslingshot.util
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import com.quickbite.spaceslingshot.data.GameScreenData
-import com.quickbite.spaceslingshot.objects.Ship
-import com.quickbite.spaceslingshot.objects.ShipDataHolder
-import com.quickbite.spaceslingshot.objects.Thruster
+import com.quickbite.spaceslingshot.objects.*
 import com.quickbite.spaceslingshot.screens.GameScreen
 
 /**
@@ -14,18 +12,18 @@ import com.quickbite.spaceslingshot.screens.GameScreen
 object Predictor : Disposable{
     var queuePrediction = false
 
-    val predictorShip = Ship(Vector2(0f,0f), 0f, Vector2(0f, 0f), true)
+    val predictorShip = TestShip(Vector2(0f,0f), 0f)
     private val steps = 300
     private val stepSizeToRecord = 1
 
     var currPointIndex = 0
 
-    private lateinit var ship:Ship
+    private lateinit var ship:PlayerShip
     private lateinit var pausePhysicsFunc:()->Unit
     private lateinit var resumePhysicsFunc:()->Unit
     private lateinit var physicsStep:()->Unit
 
-    fun init(ship:Ship, pausePhysicsFunc:()->Unit, resumePhysicsFunc:()->Unit, physicsStep:()->Unit){
+    fun init(ship:PlayerShip, pausePhysicsFunc:()->Unit, resumePhysicsFunc:()->Unit, physicsStep:()->Unit){
         this.ship = ship
         this.pausePhysicsFunc = pausePhysicsFunc
         this.resumePhysicsFunc = resumePhysicsFunc
@@ -34,9 +32,9 @@ object Predictor : Disposable{
 
     val points: Array<ShipDataHolder> = Array(steps / stepSizeToRecord, {
         ShipDataHolder(Vector2(), 0f, Vector2(), 0f, listOf(
-                Thruster(0.005f, 0.1f, Vector2(1f, 0f), Ship.ShipLocation.Rear, 0f), //Rear
-                Thruster(0.005f, 0.1f, Vector2(0f, -1f), Ship.ShipLocation.Left, -90f), //Left
-                Thruster(0.005f, 0.1f, Vector2(0f, 1f), Ship.ShipLocation.Right, 90f) //Right
+                Thruster(0.005f, 0.1f, Vector2(1f, 0f), ShipBase.ShipLocation.Rear, 0f), //Rear
+                Thruster(0.005f, 0.1f, Vector2(0f, -1f), ShipBase.ShipLocation.Left, -90f), //Left
+                Thruster(0.005f, 0.1f, Vector2(0f, 1f), ShipBase.ShipLocation.Right, 90f) //Right
         ))
     })
 
@@ -100,7 +98,7 @@ object Predictor : Disposable{
         resumePhysicsFunc()
     }
 
-    private fun simulate(data:GameScreenData, ship:Ship){
+    private fun simulate(data:GameScreenData, ship:PlayerShip){
         data.planetList.forEach { planet ->
             val dst = ship.position.dst(planet.position)
             if(dst <= planet.gravityRange){

@@ -84,7 +84,7 @@ object LevelManager {
 
         //TODO Add rotation to station here too
         val hs = levelData.homeStation
-        planetTexture = ProceduralPlanetTextureGenerator.getNextTexture(true)
+        planetTexture = ProceduralPlanetTextureGenerator.getNextTexture()
         data.stationList.add(SpaceStation(Vector2(hs.pos[0].toFloat(), hs.pos[1].toFloat()), hs.size, hs.fuelStorage, hs.rotation, true))
 
         val sd = levelData.ship

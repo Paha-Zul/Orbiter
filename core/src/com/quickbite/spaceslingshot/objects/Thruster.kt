@@ -9,7 +9,7 @@ import com.quickbite.spaceslingshot.util.MutablePair
  * @param burnForce The amount of force that this thruster outputs.
  * @param fuelBurnedPerTick The amount of fuel that the thruster consumes per tick.
  */
-class Thruster(var burnForce:Float, var fuelBurnedPerTick:Float, val burnDirection:Vector2, val location:Ship.ShipLocation, val rotationOffset:Float) {
+class Thruster(var burnForce:Float, var fuelBurnedPerTick:Float, val burnDirection:Vector2, val location:ShipBase.ShipLocation, val rotationOffset:Float) {
     private var _result:MutablePair<Float, Float> = MutablePair(0f, 0f)
 
     var burnTime:Int = 0

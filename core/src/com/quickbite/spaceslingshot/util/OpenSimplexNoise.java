@@ -2100,7 +2100,7 @@ public class OpenSimplexNoise {
 	//Gradients for 3D. They approximate the directions to the
 	//vertices of a rhombicuboctahedron from the center, skewed so
 	//that the triangular and square facets can be inscribed inside
-	//circles of the same radius.
+	//circles of the same size.
 	private static byte[] gradients3D = new byte[] {
 		-11,  4,  4,     -4,  11,  4,    -4,  4,  11,
 		 11,  4,  4,      4,  11,  4,     4,  4,  11,
@@ -2115,7 +2115,7 @@ public class OpenSimplexNoise {
 	//Gradients for 4D. They approximate the directions to the
 	//vertices of a disprismatotesseractihexadecachoron from the center,
 	//skewed so that the tetrahedral and cubic facets can be inscribed inside
-	//spheres of the same radius.
+	//spheres of the same size.
 	private static byte[] gradients4D = new byte[] {
 	     3,  1,  1,  1,      1,  3,  1,  1,      1,  1,  3,  1,      1,  1,  1,  3,
 	    -3,  1,  1,  1,     -1,  3,  1,  1,     -1,  1,  3,  1,     -1,  1,  1,  3,

@@ -16,10 +16,7 @@ import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.badlogic.gdx.utils.Timer;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.*;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -47,7 +44,7 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
 	private View gameView;
 
 //	private InterstialAdMediator interAds;
-	private boolean showingBannerAd = false, showAds = false, bannerAdLoaded = false;
+	private boolean showingBannerAd = false, showAds = true, bannerAdLoaded = false;
 
 	// Client used to sign in with Google APIs
 	private GoogleSignInClient mGoogleSignInClient;
@@ -57,6 +54,7 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
 	private PlayersClient mPlayersClient;
 
 	private AdView bannerAdView;
+	private InterstitialAd interstitialAd;
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
@@ -112,15 +110,28 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
 	}
 
 	private void setupAds(Game game, View gameView){
-		MobileAds.initialize(this, getString(R.string.admob_app_id));
+		MobileAds.initialize(this, getString(R.string.admob_app_id)); //Initialize the mobile ads
+
 		bannerAdView = new AdView(this);
 		bannerAdView.setAdSize(AdSize.SMART_BANNER);
 		bannerAdView.setAdUnitId(getString(R.string.admob_test_ad));
 
+		interstitialAd = new InterstitialAd(this);
+		interstitialAd.setAdUnitId(getString(R.string.admob_test_inter_ad));
+		interstitialAd.loadAd(new AdRequest.Builder().build());
+
+		interstitialAd.setAdListener(new AdListener() {
+			@Override
+			public void onAdClosed() {
+				// Load the next interstitial.
+				interstitialAd.loadAd(new AdRequest.Builder().build());
+			}
+		});
+
 		AdRequest adRequest = new AdRequest.Builder().build();
 		bannerAdView.loadAd(adRequest);
 
-				AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
+		AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
 		cfg.useAccelerometer = false;
 		cfg.useCompass = false;
 
@@ -199,8 +210,17 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
 
 	@Override
 	public void showBannerAd() {
-		if(showAds)
-			bannerAdView.setVisibility(View.VISIBLE);
+		try {
+			runOnUiThread(new Runnable() {
+				public void run() {
+					if(showAds)
+						bannerAdView.setVisibility(View.VISIBLE);
+				}
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
@@ -211,9 +231,9 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
 					bannerAdView.setVisibility(View.INVISIBLE);
 				}
 			});
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -225,19 +245,19 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
 	public void showInterAd() {
 //        GdxAppodeal.show(GdxAppodeal.INTERSTITIAL);
 
-//		if(showAds) {
-//			try {
-//				runOnUiThread(new Runnable() {
-//					public void run() {
-//						if (interAds.isLoaded()) {
-//							interAds.show();
-//						}
-//					}
-//				});
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		}
+		if(showAds) {
+			try {
+				runOnUiThread(new Runnable() {
+					public void run() {
+						if (interstitialAd.isLoaded()) {
+							interstitialAd.show();
+						}
+					}
+				});
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
