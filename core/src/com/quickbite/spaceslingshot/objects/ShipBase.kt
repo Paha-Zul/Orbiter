@@ -78,8 +78,8 @@ abstract class ShipBase(position: Vector2, var fuel:Float) : SpaceBody(position,
      * Sets the ships rotation along with the graphics of the ship
      * @param rotation The rotation in degrees.
      */
-    open fun setShipRotation(rotation:Float, rotationOffset:Float = 0f){
-        this.rotation = rotation + rotationOffset
+    open fun setShipRotation(rotation:Float){
+        this.rotation = rotation
         this.body.setTransform(position.x* Constants.BOX2D_SCALE, position.y* Constants.BOX2D_SCALE, rotation*MathUtils.degreesToRadians)
     }
 

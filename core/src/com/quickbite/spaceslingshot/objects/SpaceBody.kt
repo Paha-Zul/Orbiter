@@ -9,11 +9,13 @@ import com.quickbite.spaceslingshot.interfaces.IUpdateable
 /**
  * Created by Paha on 8/12/2016.
  */
-open class SpaceBody(val position: Vector2, val size: Int, var rotation:Float) : IDrawable, IUpdateable {
+open class SpaceBody(val position: Vector2, val size: Int, rotation:Float) : IDrawable, IUpdateable {
 
     companion object {
         protected val rect = Rectangle()
     }
+
+    open var rotation = rotation
 
     override var dead: Boolean = false
 

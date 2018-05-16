@@ -31,6 +31,7 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
 
 
     private var hideShipSprite = false
+    var hideControls = false
 
     private val easeAlpha: Interpolation = Interpolation.linear
 
@@ -48,6 +49,8 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
     val tmpVector = Vector2()
 
     private lateinit var dockingData: DockingData
+
+    override var rotation = 0f
 
     val burnHandles:Array<BurnHandle> = arrayOf(
             BurnHandle(this, ShipLocation.Rear, 0f),
@@ -187,7 +190,7 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
         }
 
         //Only draw the handles and thruster lines if we are paused
-        if(GameScreen.paused) {
+        if(GameScreen.paused && !hideControls) {
             drawHandles(batch)
             thrusterLineDrawers.forEach { drawer -> drawer.draw(batch) }
         }
@@ -276,8 +279,8 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
         }
     }
 
-    override fun setShipRotation(rotation: Float, rotationOffset: Float) {
-        super.setShipRotation(rotation, rotationOffset)
+    override fun setShipRotation(rotation: Float) {
+        super.setShipRotation(rotation)
         sprite.rotation = this.rotation
         burnHandles.forEach { handle -> handle.burnHandle.rotation = this.rotation + handle.rotationOffset }
         ring.rotation = this.rotation - 90 //Give an offset of 90 so the arrow doesn't sit under the burn ball
@@ -345,9 +348,10 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
     /**
      * Sets the rotation of the ship towards the mouse. Also handles all graphics related to the ship.
      */
-    fun setRotationTowardsMouse(mouseX:Float, mouseY:Float, rotationOffset:Float = 0f){
+    fun setRotationTowardsMouse(mouseX:Float, mouseY:Float){
         val rot = MathUtils.atan2(mouseY - position.y, mouseX - position.x)*MathUtils.radiansToDegrees
-        setShipRotation(rot, rotationOffset)
+        println(rot)
+        setShipRotation(rot)
 
         setBurnHandlePosition()
     }
@@ -428,8 +432,6 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
         return burnHandles.filter { it.burnHandleLocation == shipLocation }[0]
     }
 
-
-
     /**
      * Drags the burn handle to the location of the mouse
      * @param mouseX The mouse's X position
@@ -449,7 +451,7 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
             thruster.burnTime = (fuel / thruster.fuelBurnedPerTick).toInt()
         }
 
-        this.setRotationTowardsMouse(mouseX, mouseY, rotationOffset)
+        this.setRotationTowardsMouse(mouseX, mouseY)
     }
 
     override fun reset(position: Vector2, fuel: Float, initialVelocity: Vector2) {

@@ -45,6 +45,12 @@ class EditorScreen(val game:MyGame) : Screen{
             checkClickedOn()
         }
 
+        checkDelete()
+
+        draw()
+    }
+
+    private fun draw(){
         MyGame.batch.begin()
         showPlacing()
         placedThings.forEach {
@@ -79,14 +85,20 @@ class EditorScreen(val game:MyGame) : Screen{
             placedThings.forEach {
                 if(it.clickedOn(worldCoords.x, worldCoords.y)) {
                     currentlySelected = it //Set the currently selected
-                    if(currentlySelected is Planet) { //If it's a planet
-                        editorGUI.clickedOn("planet", currentlySelected!!)
-                        return
-                    }
+                    editorGUI.clickedOn(currentlySelected!!)
+                    return
                 }
             }
 
-            editorGUI.clickedOn("", null)
+            editorGUI.clickedOn(null)
+        }
+    }
+
+    private fun checkDelete(){
+        if(currentlySelected != null && Gdx.input.isKeyJustPressed(Input.Keys.FORWARD_DEL)){
+           placedThings -= currentlySelected!!
+            currentlySelected = null
+            editorGUI.clickedOn(null)
         }
     }
 
@@ -101,7 +113,7 @@ class EditorScreen(val game:MyGame) : Screen{
         //Replace it with a new planet
         currentlySelected = Planet(currentlySelected!!.position, size, gravityRange, gravityDensity, 0f, (currentlySelected!! as Planet).sprite.texture)
         placedThings += currentlySelected!! //Add it back to the list
-        editorGUI.clickedOn("planet", currentlySelected) //Reopen the editor GUI with the correct reference
+        editorGUI.clickedOn(currentlySelected) //Reopen the editor GUI with the correct reference
     }
 
     /**
@@ -126,8 +138,10 @@ class EditorScreen(val game:MyGame) : Screen{
                 currentlyPlacing = station
             }
             "ship" -> {
-                val station = PlayerShip(Vector2(worldCoords.x, worldCoords.y), 100f)
-                currentlyPlacing = station
+                val ship = PlayerShip(Vector2(worldCoords.x, worldCoords.y), 100f)
+                ship.rotation = 0f
+                ship.hideControls = true
+                currentlyPlacing = ship
             }
         }
     }
