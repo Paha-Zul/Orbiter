@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.guis.EditorGUI
 import com.quickbite.spaceslingshot.objects.*
+import com.quickbite.spaceslingshot.util.EditorUtil
 import com.quickbite.spaceslingshot.util.ProceduralPlanetTextureGenerator
 
 /**
@@ -46,6 +47,7 @@ class EditorScreen(val game:MyGame) : Screen{
         }
 
         checkDelete()
+        checkSave()
 
         draw()
     }
@@ -99,6 +101,16 @@ class EditorScreen(val game:MyGame) : Screen{
            placedThings -= currentlySelected!!
             currentlySelected = null
             editorGUI.clickedOn(null)
+        }
+    }
+
+    private fun checkSave(){
+        if(Gdx.input.isKeyJustPressed(Input.Keys.F5))
+            EditorUtil.saveCurrent(placedThings)
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.F6)) {
+            val list = EditorUtil.loadScene()
+            placedThings.clear()
+            placedThings.addAll(list)
         }
     }
 
