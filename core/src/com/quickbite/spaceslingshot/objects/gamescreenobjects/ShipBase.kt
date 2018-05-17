@@ -1,4 +1,4 @@
-package com.quickbite.spaceslingshot.objects
+package com.quickbite.spaceslingshot.objects.gamescreenobjects
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils
@@ -143,7 +143,7 @@ abstract class ShipBase(position: Vector2, var fuel:Float) : SpaceBody(position,
     /**
      * Gets a thruster based on the ship location
      */
-    protected fun getThruster(shipLocation: ShipLocation):Thruster{
+    protected fun getThruster(shipLocation: ShipLocation): Thruster {
 //        return when(shipLocation){
 //            Ship.ShipLocation.Rear -> thrusters.filter { it.location == Ship.ShipLocation.Rear }[0]
 //            Ship.ShipLocation.Left -> thrusters.filter { it.location == Ship.ShipLocation.Right }[0] //Get the opposite

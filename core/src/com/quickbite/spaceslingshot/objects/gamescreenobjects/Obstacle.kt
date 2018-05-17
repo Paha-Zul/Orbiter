@@ -1,4 +1,4 @@
-package com.quickbite.spaceslingshot.objects
+package com.quickbite.spaceslingshot.objects.gamescreenobjects
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Sprite

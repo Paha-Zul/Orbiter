@@ -17,8 +17,8 @@ import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.gameScreenData.GameScreenData
 import com.quickbite.spaceslingshot.gameScreenData.json.JsonLevelData
 import com.quickbite.spaceslingshot.guis.GameScreenGUI
-import com.quickbite.spaceslingshot.objects.Obstacle
-import com.quickbite.spaceslingshot.objects.Planet
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.Obstacle
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.Planet
 import com.quickbite.spaceslingshot.objects.Ship
 import com.quickbite.spaceslingshot.util.*
 

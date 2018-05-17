@@ -1,4 +1,4 @@
-package com.quickbite.spaceslingshot.util
+package com.quickbite.spaceslingshot.objects
 
 /**
  * Created by Paha on 2/7/2016.

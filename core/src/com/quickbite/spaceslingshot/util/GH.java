@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.quickbite.spaceslingshot.LevelManager;
-import com.quickbite.spaceslingshot.objects.ShipBase;
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.ShipBase;
 import com.quickbite.spaceslingshot.screens.GameScreen;
 
 /**

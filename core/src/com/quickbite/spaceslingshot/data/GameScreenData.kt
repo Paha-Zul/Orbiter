@@ -1,9 +1,9 @@
 package com.quickbite.spaceslingshot.data
 
 import com.badlogic.gdx.utils.Array
-import com.quickbite.spaceslingshot.objects.*
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.*
 import com.quickbite.spaceslingshot.screens.GameScreen
-import com.quickbite.spaceslingshot.util.EndlessGame
+import com.quickbite.spaceslingshot.screens.EndlessGame
 
 /**
  * Created by Paha on 8/6/2016.

@@ -4,6 +4,7 @@ import com.badlogic.gdx.physics.box2d.Contact
 import com.badlogic.gdx.physics.box2d.ContactImpulse
 import com.badlogic.gdx.physics.box2d.ContactListener
 import com.badlogic.gdx.physics.box2d.Manifold
+import com.quickbite.spaceslingshot.objects.BodyData
 
 /**
  * Created by Paha on 9/10/2016.

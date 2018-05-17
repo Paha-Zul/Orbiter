@@ -1,4 +1,4 @@
-package com.quickbite.spaceslingshot.objects
+package com.quickbite.spaceslingshot.objects.gamescreenobjects
 
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
@@ -19,7 +19,7 @@ class AsteroidSpawner(val position: Vector2, val spawnDirection:Vector2, val spa
         counter += delta
         if(counter >= chosenTime){
             val randSpeed = MathUtils.random(speedRange.first, speedRange.second)
-            val asteroid = Asteroid(Vector2(position.x, position.y), 10f,Vector2(spawnDirection.x*randSpeed, spawnDirection.y*randSpeed), 10f)
+            val asteroid = Asteroid(Vector2(position.x, position.y), 10f, Vector2(spawnDirection.x * randSpeed, spawnDirection.y * randSpeed), 10f)
             data.asteroidList.add(asteroid)
             counter = 0f
             chosenTime = MathUtils.random(spawnFrequency.first, spawnFrequency.second)

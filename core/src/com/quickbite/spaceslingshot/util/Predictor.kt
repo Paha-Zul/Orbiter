@@ -4,6 +4,10 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import com.quickbite.spaceslingshot.data.GameScreenData
 import com.quickbite.spaceslingshot.objects.*
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.PlayerShip
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.ShipBase
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.TestShip
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.Thruster
 import com.quickbite.spaceslingshot.screens.GameScreen
 
 /**
@@ -12,18 +16,18 @@ import com.quickbite.spaceslingshot.screens.GameScreen
 object Predictor : Disposable{
     var queuePrediction = false
 
-    val predictorShip = TestShip(Vector2(0f,0f), 0f)
+    val predictorShip = TestShip(Vector2(0f, 0f), 0f)
     private val steps = 300
     private val stepSizeToRecord = 1
 
     var currPointIndex = 0
 
-    private lateinit var ship:PlayerShip
+    private lateinit var ship: PlayerShip
     private lateinit var pausePhysicsFunc:()->Unit
     private lateinit var resumePhysicsFunc:()->Unit
     private lateinit var physicsStep:()->Unit
 
-    fun init(ship:PlayerShip, pausePhysicsFunc:()->Unit, resumePhysicsFunc:()->Unit, physicsStep:()->Unit){
+    fun init(ship: PlayerShip, pausePhysicsFunc:()->Unit, resumePhysicsFunc:()->Unit, physicsStep:()->Unit){
         this.ship = ship
         this.pausePhysicsFunc = pausePhysicsFunc
         this.resumePhysicsFunc = resumePhysicsFunc
@@ -98,7 +102,7 @@ object Predictor : Disposable{
         resumePhysicsFunc()
     }
 
-    private fun simulate(data:GameScreenData, ship:PlayerShip){
+    private fun simulate(data:GameScreenData, ship: PlayerShip){
         data.planetList.forEach { planet ->
             val dst = ship.position.dst(planet.position)
             if(dst <= planet.gravityRange){

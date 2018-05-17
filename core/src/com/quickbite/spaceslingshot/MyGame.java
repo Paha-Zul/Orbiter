@@ -21,7 +21,7 @@ import com.quickbite.spaceslingshot.screens.MainMenuScreen;
 import com.quickbite.spaceslingshot.util.Constants;
 import com.quickbite.spaceslingshot.util.ContactListenerClass;
 import com.quickbite.spaceslingshot.util.EasyAssetManager;
-import com.quickbite.spaceslingshot.util.JsonLevelLoader;
+import com.quickbite.spaceslingshot.json.JsonLevelLoader;
 import com.quickbite.spaceslingshot.util.Loader;
 
 import java.util.concurrent.ArrayBlockingQueue;

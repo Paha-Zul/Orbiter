@@ -390,23 +390,24 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         val numY = (maxHeight - offsets.top - offsets.bottom)/(buttonSize+spaceX)
 
         val numButtons = LevelManager.levels.size
+        val levelList = LevelManager.getOrderedLevels()
 
-        for(i in 1..numButtons){
-            val level = i-1
-            val levelButton = TextButton("${level+1}", boxTextButtonStyle)
+        for(i in 0 until numButtons){
+
+            val levelButton = TextButton("${levelList[i].level}", boxTextButtonStyle)
             levelButton.label.setFontScale(0.2f)
             levelButton.label.setAlignment(Align.center)
 
             levelButton.addListener(object:ChangeListener(){
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
                     MyGame.stage.clear() //Clear the stage
-                    val game = GameScreen(mainMenu.game, level, false) //Create the game screen instance
+                    val game = GameScreen(mainMenu.game, levelList[i].level, false) //Create the game screen instance
                     mainMenu.game.screen = game //Set the screen
                 }
             })
 
             buttonTable.add(levelButton).size(64f).space(spaceX.toFloat())
-            if(i%numX == 0) buttonTable.row()
+            if(i != 0 && i%numX == 0) buttonTable.row()
         }
 
         backButton.addListener(object:ChangeListener(){

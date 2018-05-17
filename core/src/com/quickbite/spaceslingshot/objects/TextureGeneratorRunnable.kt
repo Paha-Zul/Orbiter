@@ -1,4 +1,4 @@
-package com.quickbite.spaceslingshot.util
+package com.quickbite.spaceslingshot.objects
 
 import com.badlogic.gdx.graphics.Texture
 

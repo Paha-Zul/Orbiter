@@ -17,9 +17,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.quickbite.spaceslingshot.MyGame
-import com.quickbite.spaceslingshot.objects.*
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.Planet
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.PlayerShip
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.SpaceBody
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.SpaceStation
 import com.quickbite.spaceslingshot.screens.EditorScreen
-import com.quickbite.spaceslingshot.util.onEnterListener
+import com.quickbite.spaceslingshot.util.EditorUtil
 import com.quickbite.spaceslingshot.util.onLeaveFieldOrEnter
 
 class EditorGUI(val editorScreen: EditorScreen) {
@@ -27,6 +30,10 @@ class EditorGUI(val editorScreen: EditorScreen) {
     private val mainTable = Table()
     private val bottomTable = Table() //This table will be for 'contextual' things, like when we select a planet
     private val rightTable = Table() // This table is for placing things like stations, planets, the ship
+
+    private val saveLevelTable = Table()
+    private val overwriteTable = Table()
+    private val levelSelectTable = Table()
 
     private val defaultLabelStyle = Label.LabelStyle(MyGame.scaledFont, Color.WHITE)
     private val defaultTextFieldStyle = TextField.TextFieldStyle()
@@ -107,7 +114,132 @@ class EditorGUI(val editorScreen: EditorScreen) {
         return rect.contains(coords)
     }
 
-    fun clickedOn(body:SpaceBody?){
+    fun openSaveLevelDialog(){
+        saveLevelTable.clear()
+
+        val innerTable = Table()
+
+        innerTable.background = inputTextBackgroundFilled
+
+        val levelNumber = Label("Level Number:", defaultLabelStyle)
+        val levelNumberInput = TextField("", defaultTextFieldStyle)
+
+        val levelName = Label("Level Name:", defaultLabelStyle)
+        val levelNameInput = TextField("", defaultTextFieldStyle)
+
+        val saveLevelButton = TextButton("Save", defaultTextButtonStyle)
+        val cancelButton = TextButton("Cancel", defaultTextButtonStyle)
+
+        innerTable.add(levelNumber)
+        innerTable.add(levelNumberInput)
+        innerTable.row()
+        innerTable.add(levelName)
+        innerTable.add(levelNameInput)
+        innerTable.row()
+        innerTable.add(saveLevelButton)
+        innerTable.add(cancelButton)
+
+        saveLevelButton.addListener(object:ChangeListener(){
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                try{
+                    val number = levelNumberInput.text.toInt()
+                    val name = levelNameInput.text
+                    if(EditorUtil.levelExists(number)) {
+                        openOverwriteDialog(number, name)
+                    }else
+                        EditorUtil.saveLevel(number, name, editorScreen.placedThings)
+
+                    saveLevelTable.remove()
+                }catch(e:Exception){
+                    println(e)
+                }
+            }
+        })
+
+        cancelButton.addListener(object:ChangeListener(){
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                saveLevelTable.remove()
+            }
+        })
+
+        saveLevelTable.add(innerTable).center()
+        saveLevelTable.setFillParent(true)
+
+        MyGame.stage.addActor(saveLevelTable)
+    }
+
+    fun openOverwriteDialog(level:Int, levelName:String){
+        overwriteTable.clear()
+        overwriteTable.touchable = Touchable.enabled
+
+        val innerTable = Table()
+        innerTable.background = inputTextBackgroundFilled
+
+        val overwriteLabel = Label("Overwrite Level?", defaultLabelStyle)
+
+        val yesButton = TextButton("Yes", defaultTextButtonStyle)
+        val cancelButton = TextButton("Cancel", defaultTextButtonStyle)
+
+        innerTable.add(overwriteLabel).colspan(2)
+        innerTable.row()
+        innerTable.add(yesButton)
+        innerTable.add(cancelButton)
+
+        yesButton.addListener(object:ChangeListener(){
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                EditorUtil.saveLevel(level, levelName, editorScreen.placedThings)
+                overwriteTable.remove()
+            }
+        })
+
+        cancelButton.addListener(object:ChangeListener(){
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                overwriteTable.remove()
+            }
+        })
+
+        overwriteTable.setFillParent(true)
+        overwriteTable.add(innerTable).center()
+
+        MyGame.stage.addActor(overwriteTable)
+    }
+
+    fun openLoadLevelDialog(){
+        levelSelectTable.clear()
+
+        val levels = EditorUtil.loadedLevels.toList() //Copies the list so we don't screw it up
+        levels.sortedBy { it.level }
+
+        val numColsPerRow = 6
+
+        val innerTable = Table()
+        innerTable.background = inputTextBackgroundFilled
+
+        val levelsLabel = Label("Levels", defaultLabelStyle)
+        innerTable.add(levelsLabel).colspan(6)
+
+        levels.forEachIndexed{ i, level ->
+            if(i%numColsPerRow == 0)
+                innerTable.row()
+
+            val levelButton = TextButton(level.level.toString(), defaultTextButtonStyle)
+            levelButton.addListener(object:ChangeListener(){ //On click load the level and close this table
+                override fun changed(event: ChangeEvent?, actor: Actor?) {
+                    editorScreen.loadLevel(level.level)
+                    levelSelectTable.remove()
+                }
+            })
+
+            innerTable.add(levelButton)
+        }
+
+        levelSelectTable.setFillParent(true)
+        levelSelectTable.add(innerTable).center()
+
+        MyGame.stage.addActor(levelSelectTable)
+    }
+
+    fun clickedOn(body: SpaceBody?){
         if(body == null && insideUI())
             return
 
@@ -121,7 +253,7 @@ class EditorGUI(val editorScreen: EditorScreen) {
         }
     }
 
-    private fun clickedOnPlanet(planet:Planet){
+    private fun clickedOnPlanet(planet: Planet){
         bottomTable.clear()
 
         val planetSizeLabel = Label("Planet Size:", defaultLabelStyle)
@@ -192,7 +324,7 @@ class EditorGUI(val editorScreen: EditorScreen) {
         })
     }
 
-    private fun clickedOnStation(station:SpaceStation){
+    private fun clickedOnStation(station: SpaceStation){
         println("station")
         bottomTable.clear()
 
@@ -213,7 +345,7 @@ class EditorGUI(val editorScreen: EditorScreen) {
         }
     }
 
-    private fun clickedOnShip(ship:PlayerShip){
+    private fun clickedOnShip(ship: PlayerShip){
         //Need to be able to change initial velocity, rotation, position
 
         bottomTable.clear()

@@ -1,61 +1,86 @@
 package com.quickbite.spaceslingshot.util
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Json
 import com.quickbite.spaceslingshot.json.PlanetJson
 import com.quickbite.spaceslingshot.json.ShipJson
 import com.quickbite.spaceslingshot.json.StationJson
-import com.quickbite.spaceslingshot.objects.Planet
-import com.quickbite.spaceslingshot.objects.PlayerShip
-import com.quickbite.spaceslingshot.objects.SpaceBody
-import com.quickbite.spaceslingshot.objects.SpaceStation
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.Planet
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.PlayerShip
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.SpaceBody
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.SpaceStation
 
 object EditorUtil {
-    val json = Json()
+    private val json = Json()
+    var loadedLevels:MutableList<JsonLevel> = mutableListOf()
 
-    fun saveCurrent(list:List<SpaceBody>){
-        val jsonList = mutableListOf<Any>()
+    private val levelFile = "data/testLevel.json"
+
+    private var currLevelEditing = 0
+
+    fun init(){
+        val savedFile = Gdx.files.local(levelFile)
+
+        val data = json.fromJson(List::class.java, JsonLevel::class.java, savedFile.readString())
+        loadedLevels = data as MutableList<JsonLevel>
+    }
+
+    fun levelExists(number:Int) = loadedLevels.any { it.level ==  number}
+
+    fun saveLevel(levelNumber:Int, levelName:String, list:List<SpaceBody>){
+        var ship = ShipJson()
+        val planets = mutableListOf<PlanetJson>()
+        val stations = mutableListOf<StationJson>()
 
         list.forEach {
             when(it){
-                is PlayerShip -> jsonList +=
+                is PlayerShip -> ship =
                         ShipJson(it.position, it.rotation, it.velocity, it.fuel)
-                is SpaceStation -> jsonList +=
+                is SpaceStation -> stations +=
                         StationJson(it.position, it.rotation)
-                is Planet -> jsonList +=
+                is Planet -> planets +=
                         PlanetJson(it.position, it.size, it.rotation, it.gravityRangeRadius, it.density, 0L)
             }
         }
 
-        val file = Gdx.files.local("data/testLevel.json")
-        file.writeString(json.prettyPrint(jsonList), false)
+        val jsonLevel = JsonLevel().apply {
+            this.level = levelNumber
+            this.name = levelName
+            this.ship = ship
+            this.planets = planets
+            this.stations = stations
+        }
 
+        loadedLevels.add(jsonLevel) //Add it to the list
 
-//        println(json.prettyPrint(jsonList))
+        val file = Gdx.files.local(levelFile)
+        file.writeString(json.prettyPrint(loadedLevels), false)
     }
 
-    fun loadScene():List<SpaceBody>{
-        val savedFile = Gdx.files.local("data/testLevel.json")
-
-        //TODO This is broken.. can't convert to type
-        val data = json.fromJson(JsonList::class.java, savedFile.readString())
+    fun loadLevel(level:Int):List<SpaceBody>{
+        val data = loadedLevels.first { it.level == level }
 
         val objectList = mutableListOf<SpaceBody>()
 
-        data.list.forEach {
-            when(it){
-                is PlanetJson -> objectList += Planet(it.position, it.size, it.gravityRange,
-                        it.gravityStrength, it.rotation, ProceduralPlanetTextureGenerator.getNextTexture())
-                is ShipJson -> objectList += PlayerShip(it.position, it.fuel).apply { rotation = it.rotation }
-                is StationJson -> objectList += SpaceStation(it.position, 70, 0f, it.rotation, false)
-            }
+        data.stations.forEach {
+            objectList += SpaceStation(it.position, 70, 0f, it.rotation, false)
         }
+
+        data.planets.forEach {
+            objectList += Planet(it.position, it.size, it.gravityRange,
+                    it.gravityStrength, it.rotation, ProceduralPlanetTextureGenerator.getNextTexture())
+        }
+
+        objectList += PlayerShip(data.ship.position, data.ship.fuel).apply { rotation = data.ship.rotation; hideControls = true }
 
         return objectList
     }
 
-    private class JsonList(){
-        lateinit var list:Array<Any>
+    class JsonLevel{
+        var level = 0
+        var name = ""
+        lateinit var ship:ShipJson
+        var planets:List<PlanetJson> = listOf()
+        var stations:List<StationJson> = listOf()
     }
 }

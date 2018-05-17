@@ -1,4 +1,4 @@
-package com.quickbite.spaceslingshot.objects
+package com.quickbite.spaceslingshot.objects.gamescreenobjects
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -15,6 +15,8 @@ import com.badlogic.gdx.physics.box2d.Fixture
 import com.badlogic.gdx.physics.box2d.FixtureDef
 import com.badlogic.gdx.physics.box2d.PolygonShape
 import com.quickbite.spaceslingshot.MyGame
+import com.quickbite.spaceslingshot.objects.BodyData
+import com.quickbite.spaceslingshot.objects.MutablePair
 import com.quickbite.spaceslingshot.screens.GameScreen
 import com.quickbite.spaceslingshot.util.*
 
@@ -378,8 +380,8 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
     /**
      *
      */
-    private fun findClickedOn(mouseX:Float, mouseY: Float, dst:Float):MutablePair<Int, ShipLocation>{
-        val hit:MutablePair<Int, ShipLocation> = MutablePair(0, ShipLocation.Rear)
+    private fun findClickedOn(mouseX:Float, mouseY: Float, dst:Float): MutablePair<Int, ShipLocation> {
+        val hit: MutablePair<Int, ShipLocation> = MutablePair(0, ShipLocation.Rear)
 
         burnHandles.forEach { handle ->
             val dstToHandle = handle.burnHandlePosition.dst(mouseX, mouseY)
@@ -406,7 +408,7 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
         return result //Return the result
     }
 
-    private fun setDoubleBurnGraphic(handle:BurnHandle, value:Boolean){
+    private fun setDoubleBurnGraphic(handle: BurnHandle, value:Boolean){
         when(value){
         //If we are double burning, set the texture and apply the bonus burn.
             true -> {
@@ -428,7 +430,7 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
         }
     }
 
-    private fun getBurnHandle(shipLocation: ShipLocation):BurnHandle{
+    private fun getBurnHandle(shipLocation: ShipLocation): BurnHandle {
         return burnHandles.filter { it.burnHandleLocation == shipLocation }[0]
     }
 

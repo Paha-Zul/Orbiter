@@ -2,13 +2,17 @@ package com.quickbite.spaceslingshot.screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.Screen
-import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.guis.EditorGUI
-import com.quickbite.spaceslingshot.objects.*
+import com.quickbite.spaceslingshot.inputprocessor.EditorScreenInputProcessor
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.Planet
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.PlayerShip
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.SpaceBody
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.SpaceStation
 import com.quickbite.spaceslingshot.util.EditorUtil
 import com.quickbite.spaceslingshot.util.ProceduralPlanetTextureGenerator
 
@@ -16,8 +20,8 @@ import com.quickbite.spaceslingshot.util.ProceduralPlanetTextureGenerator
  * Created by Paha on 8/8/2016.
  */
 class EditorScreen(val game:MyGame) : Screen{
-    private var currentlyPlacing:SpaceBody? = null
-    var currentlySelected:SpaceBody? = null
+    private var currentlyPlacing: SpaceBody? = null
+    var currentlySelected: SpaceBody? = null
 
     val placedThings = mutableListOf<SpaceBody>()
 
@@ -25,6 +29,10 @@ class EditorScreen(val game:MyGame) : Screen{
 
     override fun show() {
         editorGUI.openEditorGUI()
+        EditorUtil.init()
+
+        val multiInput = InputMultiplexer(MyGame.stage, EditorScreenInputProcessor(this))
+        Gdx.input.inputProcessor = multiInput
     }
 
     override fun pause() {
@@ -53,15 +61,17 @@ class EditorScreen(val game:MyGame) : Screen{
     }
 
     private fun draw(){
-        MyGame.batch.begin()
+        val batch = MyGame.batch
+        batch.projectionMatrix = MyGame.camera.combined
+        batch.begin()
         showPlacing()
         placedThings.forEach {
-            it.draw(MyGame.batch)
+            it.draw(batch)
         }
         placedThings.forEach {
-            it.draw2(MyGame.batch)
+            it.draw2(batch)
         }
-        MyGame.batch.end()
+        batch.end()
 
         MyGame.stage.act()
         MyGame.stage.draw()
@@ -105,13 +115,17 @@ class EditorScreen(val game:MyGame) : Screen{
     }
 
     private fun checkSave(){
-        if(Gdx.input.isKeyJustPressed(Input.Keys.F5))
-            EditorUtil.saveCurrent(placedThings)
-        else if(Gdx.input.isKeyJustPressed(Input.Keys.F6)) {
-            val list = EditorUtil.loadScene()
-            placedThings.clear()
-            placedThings.addAll(list)
+        if(Gdx.input.isKeyJustPressed(Input.Keys.F5)) {
+            editorGUI.openSaveLevelDialog()
+        }else if(Gdx.input.isKeyJustPressed(Input.Keys.F6)) {
+            editorGUI.openLoadLevelDialog()
         }
+    }
+
+    fun loadLevel(level:Int){
+        val list = EditorUtil.loadLevel(level)
+        placedThings.clear()
+        placedThings.addAll(list)
     }
 
     /**

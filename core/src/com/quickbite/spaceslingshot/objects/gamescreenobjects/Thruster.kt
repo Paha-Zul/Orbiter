@@ -1,7 +1,7 @@
-package com.quickbite.spaceslingshot.objects
+package com.quickbite.spaceslingshot.objects.gamescreenobjects
 
 import com.badlogic.gdx.math.Vector2
-import com.quickbite.spaceslingshot.util.MutablePair
+import com.quickbite.spaceslingshot.objects.MutablePair
 
 /**
  * Created by Paha on 10/2/2016.
@@ -9,8 +9,8 @@ import com.quickbite.spaceslingshot.util.MutablePair
  * @param burnForce The amount of force that this thruster outputs.
  * @param fuelBurnedPerTick The amount of fuel that the thruster consumes per tick.
  */
-class Thruster(var burnForce:Float, var fuelBurnedPerTick:Float, val burnDirection:Vector2, val location:ShipBase.ShipLocation, val rotationOffset:Float) {
-    private var _result:MutablePair<Float, Float> = MutablePair(0f, 0f)
+class Thruster(var burnForce:Float, var fuelBurnedPerTick:Float, val burnDirection:Vector2, val location: ShipBase.ShipLocation, val rotationOffset:Float) {
+    private var _result: MutablePair<Float, Float> = MutablePair(0f, 0f)
 
     var burnTime:Int = 0
     var doubleBurn:Boolean = false
@@ -24,7 +24,7 @@ class Thruster(var burnForce:Float, var fuelBurnedPerTick:Float, val burnDirecti
      * @param fuel The fuel of the ship.
      * @return A Pair object that holds the remaining fuel in the first and the burn force in the second.
      */
-    fun burnFuel(fuel:Float):MutablePair<Float, Float>{
+    fun burnFuel(fuel:Float): MutablePair<Float, Float> {
         if(fuel <= 0 || burnTime <= 0) {
             _result.set(0f, 0f)
             return _result

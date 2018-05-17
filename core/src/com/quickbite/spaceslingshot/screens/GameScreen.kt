@@ -17,7 +17,10 @@ import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.data.GameScreenData
 import com.quickbite.spaceslingshot.data.json.JsonLevelData
 import com.quickbite.spaceslingshot.guis.GameScreenGUI
-import com.quickbite.spaceslingshot.objects.*
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.Obstacle
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.Planet
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.PlayerShip
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.ShipBase
 import com.quickbite.spaceslingshot.util.*
 
 /**
@@ -53,7 +56,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
             GameScreen.lost = lost
         }
 
-        fun applyGravity(planet:Planet, ship:ShipBase){
+        fun applyGravity(planet: Planet, ship: ShipBase){
             val dst = planet.position.dst(ship.position)
             if(dst <= planet.gravityRange){
                 val pull = planet.getPull(dst)

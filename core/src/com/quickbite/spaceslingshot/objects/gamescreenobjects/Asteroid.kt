@@ -1,4 +1,4 @@
-package com.quickbite.spaceslingshot.objects
+package com.quickbite.spaceslingshot.objects.gamescreenobjects
 
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -14,7 +14,7 @@ import com.quickbite.spaceslingshot.interfaces.IDrawable
 import com.quickbite.spaceslingshot.interfaces.IPhysicsBody
 import com.quickbite.spaceslingshot.interfaces.IUniqueID
 import com.quickbite.spaceslingshot.interfaces.IUpdateable
-import com.quickbite.spaceslingshot.util.BodyData
+import com.quickbite.spaceslingshot.objects.BodyData
 import com.quickbite.spaceslingshot.util.Constants
 
 /**

@@ -1,4 +1,4 @@
-package com.quickbite.spaceslingshot.objects
+package com.quickbite.spaceslingshot.objects.gamescreenobjects
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Sprite
@@ -14,17 +14,17 @@ import com.badlogic.gdx.utils.Timer
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.interfaces.IPhysicsBody
 import com.quickbite.spaceslingshot.interfaces.IUniqueID
+import com.quickbite.spaceslingshot.objects.BodyData
+import com.quickbite.spaceslingshot.objects.CustomTimer
 import com.quickbite.spaceslingshot.screens.GameScreen
-import com.quickbite.spaceslingshot.util.BodyData
 import com.quickbite.spaceslingshot.util.Constants
-import com.quickbite.spaceslingshot.util.CustomTimer
 import com.quickbite.spaceslingshot.util.EventSystem
 
 /**
  * Created by Paha on 9/23/2016.
  */
 
-class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, rotation:Float, val homeStation:Boolean = false):SpaceBody(position, size, rotation), IUniqueID, IPhysicsBody, Disposable{
+class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, rotation:Float, val homeStation:Boolean = false): SpaceBody(position, size, rotation), IUniqueID, IPhysicsBody, Disposable{
 
     companion object{
         val arrowOffsets:List<Vector2> = listOf(
@@ -49,7 +49,7 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, rotation:
     var currArrowSpot:Vector2 = Vector2(arrowOffsets[0])
     var currArrowCounter = 0
     val timer = CustomTimer(0.25f, false, {
-        currArrowCounter = (currArrowCounter+1)% arrowOffsets.size
+        currArrowCounter = (currArrowCounter + 1) % arrowOffsets.size
         setArrowOffset(arrowOffsets[currArrowCounter])
     })
 

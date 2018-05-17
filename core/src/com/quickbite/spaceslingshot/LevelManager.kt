@@ -6,14 +6,13 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.quickbite.spaceslingshot.data.GameScreenData
 import com.quickbite.spaceslingshot.data.json.JsonLevelData
-import com.quickbite.spaceslingshot.objects.AsteroidSpawner
-import com.quickbite.spaceslingshot.objects.Obstacle
-import com.quickbite.spaceslingshot.objects.Planet
-import com.quickbite.spaceslingshot.objects.SpaceStation
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.AsteroidSpawner
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.Obstacle
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.Planet
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.SpaceStation
 import com.quickbite.spaceslingshot.screens.GameScreen
 import com.quickbite.spaceslingshot.util.Predictor
 import com.quickbite.spaceslingshot.util.ProceduralPlanetTextureGenerator
-import com.quickbite.spaceslingshot.util.Util
 
 /**
  * Created by Paha on 6/18/2017.
@@ -23,6 +22,7 @@ import com.quickbite.spaceslingshot.util.Util
 object LevelManager {
     lateinit var levels:Array<JsonLevelData>
 
+    fun getOrderedLevels() = levels.toList().sortedBy { it.level }
 
     fun reloadLevel(screen:GameScreen):Boolean{
         return loadLevel(GameScreen.gameScreenData.currLevel, screen)
@@ -57,7 +57,7 @@ object LevelManager {
     private fun loadLevel(level:Int, data: GameScreenData):Boolean{
         if(level >= levels.size) return false
 
-        val levelData = levels[level]
+        val levelData = levels.first { it.level == level }
         data.disposeAndClearLists()
 
         var planetTexture: Texture
