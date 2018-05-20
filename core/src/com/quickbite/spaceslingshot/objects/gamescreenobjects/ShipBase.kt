@@ -205,7 +205,7 @@ abstract class ShipBase(position: Vector2, var fuel:Float) : SpaceBody(position,
         }
 
         this.setShipRotation(0f)
-        this.body.setTransform(Vector2(position.x * Constants.BOX2D_SCALE, position.y * Constants.BOX2D_SCALE), 0f)
+        this.body.setTransform(Vector2(position.x, position.y * Constants.BOX2D_SCALE), 0f)
         this.body.setLinearVelocity(initialVelocity.x * Constants.VELOCITY_SCALE, initialVelocity.y * Constants.VELOCITY_SCALE)
         this.velocity.set(initialVelocity)
     }

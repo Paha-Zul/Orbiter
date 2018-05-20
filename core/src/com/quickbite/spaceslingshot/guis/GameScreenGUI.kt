@@ -272,17 +272,19 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
 
         GameOverTable.retryButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                LevelManager.reloadLevel(gameScreen)
+                gameScreen.loadLevel(GameScreen.gameScreenData.currLevel)
                 hideGameOver()
             }
         })
 
         GameOverTable.nextButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                if(!LevelManager.loadNextLevel(gameScreen)){
+                if(!gameScreen.hasNextLevel()){
                     goToMainMenu()
-                }else
+                }else {
+                    gameScreen.loadNextLevel()
                     hideGameOver()
+                }
             }
         })
     }

@@ -1,6 +1,7 @@
 package com.quickbite.spaceslingshot.util
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.quickbite.spaceslingshot.json.PlanetJson
 import com.quickbite.spaceslingshot.json.ShipJson
@@ -23,6 +24,11 @@ object EditorUtil {
 
         val data = json.fromJson(List::class.java, JsonLevel::class.java, savedFile.readString())
         loadedLevels = data as MutableList<JsonLevel>
+    }
+
+    fun getSortedLevels():List<JsonLevel>{
+        loadedLevels.sortBy { it.level }
+        return loadedLevels
     }
 
     fun levelExists(number:Int) = loadedLevels.any { it.level ==  number}
@@ -51,8 +57,14 @@ object EditorUtil {
             this.stations = stations
         }
 
-        loadedLevels.add(jsonLevel) //Add it to the list
+        //Check if we already have a level 1
+        val index = loadedLevels.indexOfFirst { it.level == levelNumber }
+        if(index >= 0) //If we do, overwrite it
+            loadedLevels[index] = jsonLevel
+        else //Else, add it to the end of the list
+            loadedLevels.add(jsonLevel) //Add it to the list
 
+        loadedLevels.sortBy { it.level }
         val file = Gdx.files.local(levelFile)
         file.writeString(json.prettyPrint(loadedLevels), false)
     }
@@ -63,15 +75,19 @@ object EditorUtil {
         val objectList = mutableListOf<SpaceBody>()
 
         data.stations.forEach {
-            objectList += SpaceStation(it.position, 70, 0f, it.rotation, false)
+            objectList += SpaceStation(Vector2(it.position), 70, 0f, it.rotation, false)
         }
 
         data.planets.forEach {
-            objectList += Planet(it.position, it.size, it.gravityRange,
+            objectList += Planet(Vector2(it.position), it.size, it.gravityRange,
                     it.gravityStrength, it.rotation, ProceduralPlanetTextureGenerator.getNextTexture())
         }
 
-        objectList += PlayerShip(data.ship.position, data.ship.fuel).apply { rotation = data.ship.rotation; hideControls = true }
+        objectList += PlayerShip(Vector2(data.ship.position), data.ship.fuel).apply {
+            rotation = data.ship.rotation
+            hideControls = true
+            velocity.set(data.ship.velocity)
+        }
 
         return objectList
     }

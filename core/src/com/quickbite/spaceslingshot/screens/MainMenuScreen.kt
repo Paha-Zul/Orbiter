@@ -6,6 +6,7 @@ import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.graphics.Texture
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.guis.MainMenuGUI
+import com.quickbite.spaceslingshot.util.EditorUtil
 import com.quickbite.spaceslingshot.util.ProceduralPlanetTextureGenerator
 
 /**
@@ -16,6 +17,8 @@ class MainMenuScreen(val game:MyGame) :Screen{
     var music:Music? = null
 
     override fun show() {
+        EditorUtil.init() //This will simply initiate the init() function call
+
         MainMenuGUI(this)
 
         Gdx.input.inputProcessor = MyGame.stage
@@ -30,6 +33,7 @@ class MainMenuScreen(val game:MyGame) :Screen{
 
 //        ProceduralPlanetTextureGenerator.generatePlanetTexturesFromData()
         ProceduralPlanetTextureGenerator.generatePlanetTexturesFromDataThreaded(10)
+
 
         MyGame.camera.position.set(MyGame.camera.viewportWidth/2f, MyGame.camera.viewportHeight/2f, 0f)
 

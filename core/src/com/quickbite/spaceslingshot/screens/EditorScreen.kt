@@ -177,6 +177,9 @@ class EditorScreen(val game:MyGame) : Screen{
     }
 
     override fun dispose() {
-
+        currentlyPlacing = null
+        currentlySelected = null
+        placedThings.clear()
+        MyGame.stage.clear()
     }
 }

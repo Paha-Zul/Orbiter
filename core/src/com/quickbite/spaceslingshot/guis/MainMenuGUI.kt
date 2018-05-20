@@ -21,6 +21,7 @@ import com.quickbite.spaceslingshot.screens.EditorScreen
 import com.quickbite.spaceslingshot.screens.GameScreen
 import com.quickbite.spaceslingshot.screens.MainMenuScreen
 import com.quickbite.spaceslingshot.util.Constants
+import com.quickbite.spaceslingshot.util.EditorUtil
 import com.quickbite.spaceslingshot.util.Padding
 
 /**
@@ -389,8 +390,8 @@ class MainMenuGUI(val mainMenu:MainMenuScreen) {
         val numX = (maxWidth - offsets.left - offsets.right)/(buttonSize+spaceX)
         val numY = (maxHeight - offsets.top - offsets.bottom)/(buttonSize+spaceX)
 
-        val numButtons = LevelManager.levels.size
-        val levelList = LevelManager.getOrderedLevels()
+        val numButtons = EditorUtil.loadedLevels.size
+        val levelList = EditorUtil.getSortedLevels()
 
         for(i in 0 until numButtons){
 

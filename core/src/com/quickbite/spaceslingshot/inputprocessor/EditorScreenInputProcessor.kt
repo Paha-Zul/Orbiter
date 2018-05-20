@@ -1,11 +1,13 @@
 package com.quickbite.spaceslingshot.inputprocessor
 
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.math.Vector2
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.screens.EditorScreen
+import com.quickbite.spaceslingshot.screens.MainMenuScreen
 
-class EditorScreenInputProcessor(editorScreen: EditorScreen) : InputProcessor {
+class EditorScreenInputProcessor(val editorScreen: EditorScreen) : InputProcessor {
     val initialCameraPostion = Vector2()
     val mouseClickPosition = Vector2()
 
@@ -26,6 +28,11 @@ class EditorScreenInputProcessor(editorScreen: EditorScreen) : InputProcessor {
     }
 
     override fun keyUp(keycode: Int): Boolean {
+        when(keycode){
+            Input.Keys.ESCAPE -> {
+                editorScreen.dispose()
+                editorScreen.game.screen = MainMenuScreen(editorScreen.game)}
+        }
         return false
     }
 

@@ -17,10 +17,8 @@ import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.data.GameScreenData
 import com.quickbite.spaceslingshot.data.json.JsonLevelData
 import com.quickbite.spaceslingshot.guis.GameScreenGUI
-import com.quickbite.spaceslingshot.objects.gamescreenobjects.Obstacle
-import com.quickbite.spaceslingshot.objects.gamescreenobjects.Planet
-import com.quickbite.spaceslingshot.objects.gamescreenobjects.PlayerShip
-import com.quickbite.spaceslingshot.objects.gamescreenobjects.ShipBase
+import com.quickbite.spaceslingshot.json.ShipJson
+import com.quickbite.spaceslingshot.objects.gamescreenobjects.*
 import com.quickbite.spaceslingshot.util.*
 
 /**
@@ -115,7 +113,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
 
         //If we aren't doing endless (which is -1), load the level.
         if(levelToLoad != -1) {
-            LevelManager.loadLevel(levelToLoad, this)
+            loadLevel(levelToLoad)
         }else
             gameScreenData.endlessGame?.start()
 
@@ -150,7 +148,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
         draw(MyGame.batch)
 
         //Debug render AFTER we draw
-//        MyGame.debugRenderer.render(MyGame.world, MyGame.Box2dCamera.combined)
+        MyGame.debugRenderer.render(MyGame.world, MyGame.Box2dCamera.combined)
 
         //Update stage
         MyGame.stage.act()
@@ -367,6 +365,45 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
         //Save the achievements
         AchievementManager.saveAchievementsToPref(gameScreenData.achievementFlags, level.level.toString())
     }
+
+    fun loadLevel(level:Int){
+        gameScreenData.reset() //Reset the game data
+        this.reset() //Reset this screen
+
+        gameScreenData.currLevel = level
+
+        val objects = EditorUtil.loadLevel(level)
+        objects.forEach {
+            when(it){
+                is PlayerShip -> loadShip(it)
+                is Planet -> gameScreenData.planetList.add(it)
+                is SpaceStation -> gameScreenData.stationList.add(it)
+            }
+        }
+    }
+
+    fun loadShip(newShip:PlayerShip){
+        gameScreenData.ship.dispose()
+        gameScreenData.ship = newShip
+        Predictor.setPredictorShipToPlayerShip(newShip)
+        newShip.hideControls = false
+//        Predictor.predictorShip.reset(newShip.position, newShip.fuel, newShip.velocity)
+        Predictor.points[0].apply {
+            position.set(newShip.position)
+            fuel = newShip.fuel
+            velocity = Vector2(newShip.velocity)
+        }
+        Predictor.ship = newShip
+    }
+
+    fun loadNextLevel(){
+        loadLevel(++gameScreenData.currLevel)
+    }
+
+    /**
+     * @return True if there is a next level, false otherwise
+     */
+    fun hasNextLevel() = EditorUtil.getSortedLevels().size > gameScreenData.currLevel
 
     fun reset(){
         GameScreen.lost = false

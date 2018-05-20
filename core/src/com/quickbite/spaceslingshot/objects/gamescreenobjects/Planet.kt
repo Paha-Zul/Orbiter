@@ -23,7 +23,7 @@ import com.quickbite.spaceslingshot.util.Constants
  * @param position The position of the planet
  * @param radius The radius/size of the planet
  * @param gravityRangeRadius The radius of the gravity well
- * @param density The density of the planet. This affects gravity strength and should be between 0.1 and 1
+ * @param density The density of the planet. This affects gravity strength and should be between 0.01 and 0.1
  * @param texture The texture to use for the planet
  */
 class Planet(position: Vector2, radius: Int, var gravityRangeRadius: Float, var density: Float, rotation:Float, texture:Texture)

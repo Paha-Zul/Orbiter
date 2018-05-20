@@ -224,7 +224,7 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
         val bodyDef = BodyDef()
 //        bodyDef.type = if(testShip) BodyDef.BodyType.DynamicBody else BodyDef.BodyType.KinematicBody
         bodyDef.type = BodyDef.BodyType.DynamicBody
-        bodyDef.position.set(position.x* Constants.BOX2D_SCALE, position.y* Constants.BOX2D_SCALE)
+        bodyDef.position.set(position.x* Constants.BOX2D_SCALE, position.y*Constants.BOX2D_SCALE)
         bodyDef.allowSleep = false
 
         val world = MyGame.world

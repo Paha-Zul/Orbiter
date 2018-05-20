@@ -22,7 +22,7 @@ object Predictor : Disposable{
 
     var currPointIndex = 0
 
-    private lateinit var ship: PlayerShip
+    lateinit var ship: PlayerShip
     private lateinit var pausePhysicsFunc:()->Unit
     private lateinit var resumePhysicsFunc:()->Unit
     private lateinit var physicsStep:()->Unit
@@ -58,10 +58,14 @@ object Predictor : Disposable{
         ship.velocity.set(Predictor.points[Predictor.currPointIndex].velocity)
     }
 
+    fun setPredictorShipToPlayerShip(ship:PlayerShip){
+        points[0].position.set(ship.position)
+        currPointIndex = 0
+    }
 
     private fun runPrediction(){
         val pointToStartFrom = points[currPointIndex]
-        predictorShip.reset(Vector2(pointToStartFrom.position), ship.fuel, Vector2(ship.velocity))
+        predictorShip.reset(pointToStartFrom.position, ship.fuel, Vector2(ship.velocity))
         predictorShip.setShipRotation(ship.rotation)
         predictorShip.copyThrusters(ship.thrusters)
 

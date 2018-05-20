@@ -216,7 +216,9 @@ class EditorGUI(val editorScreen: EditorScreen) {
         innerTable.background = inputTextBackgroundFilled
 
         val levelsLabel = Label("Levels", defaultLabelStyle)
-        innerTable.add(levelsLabel).colspan(6)
+        innerTable.add(levelsLabel).colspan(numColsPerRow).spaceBottom(10f)
+
+        val cancelButton = TextButton("Cancel", defaultTextButtonStyle)
 
         levels.forEachIndexed{ i, level ->
             if(i%numColsPerRow == 0)
@@ -233,10 +235,19 @@ class EditorGUI(val editorScreen: EditorScreen) {
             innerTable.add(levelButton)
         }
 
+        innerTable.row()
+        innerTable.add(cancelButton).colspan(numColsPerRow).spaceTop(10f)
+
         levelSelectTable.setFillParent(true)
         levelSelectTable.add(innerTable).center()
 
         MyGame.stage.addActor(levelSelectTable)
+
+        cancelButton.addListener(object:ChangeListener(){
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                levelSelectTable.remove()
+            }
+        })
     }
 
     fun clickedOn(body: SpaceBody?){
@@ -325,7 +336,6 @@ class EditorGUI(val editorScreen: EditorScreen) {
     }
 
     private fun clickedOnStation(station: SpaceStation){
-        println("station")
         bottomTable.clear()
 
         val rotationLabel = Label("Rotation:", defaultLabelStyle)
