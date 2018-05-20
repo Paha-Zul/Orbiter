@@ -1,0 +1,34 @@
+[
+{
+	class: com.quickbite.spaceslingshot.util.EditorUtil$JsonLevel
+	name: such
+	ship: {
+		position: {
+			x: 219
+			y: 161.00002
+		}
+		rotation: 90
+		fuel: 100
+	}
+	planets: [
+		{
+			position: {
+				x: 296
+				y: 386
+			}
+			size: 40
+			gravityRange: 100
+			gravityStrength: 0.01
+		}
+	]
+	stations: [
+		{
+			position: {
+				x: 227
+				y: 678
+			}
+			rotation: 270
+		}
+	]
+}
+]
