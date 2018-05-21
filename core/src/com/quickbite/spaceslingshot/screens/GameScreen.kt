@@ -12,12 +12,10 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.quickbite.spaceslingshot.GameScreenInputListener
-import com.quickbite.spaceslingshot.LevelManager
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.data.GameScreenData
 import com.quickbite.spaceslingshot.data.json.JsonLevelData
 import com.quickbite.spaceslingshot.guis.GameScreenGUI
-import com.quickbite.spaceslingshot.json.ShipJson
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.*
 import com.quickbite.spaceslingshot.util.*
 
@@ -332,8 +330,8 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
      */
     fun gameOver(){
         if(!lost) {
-            val level = LevelManager.levels[gameScreenData.currLevel]
-            checkAchievementCompletion(level)
+//            val level = LevelManager.levels[gameScreenData.currLevel]
+//            checkAchievementCompletion(level)
         }
         gameScreenData.endlessGame?.finish()
     }
@@ -372,7 +370,8 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
 
         gameScreenData.currLevel = level
 
-        val objects = EditorUtil.loadLevel(level)
+        val data = LevelManager.loadLevel(level)
+        val objects = data.first
         objects.forEach {
             when(it){
                 is PlayerShip -> loadShip(it)
@@ -403,7 +402,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
     /**
      * @return True if there is a next level, false otherwise
      */
-    fun hasNextLevel() = EditorUtil.getSortedLevels().size - 1 > gameScreenData.currLevel
+    fun hasNextLevel() = LevelManager.getSortedLevels().size - 1 > gameScreenData.currLevel
 
     fun reset(){
         GameScreen.lost = false

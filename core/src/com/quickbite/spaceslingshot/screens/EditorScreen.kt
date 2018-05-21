@@ -13,7 +13,7 @@ import com.quickbite.spaceslingshot.objects.gamescreenobjects.Planet
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.PlayerShip
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.SpaceBody
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.SpaceStation
-import com.quickbite.spaceslingshot.util.EditorUtil
+import com.quickbite.spaceslingshot.util.LevelManager
 import com.quickbite.spaceslingshot.util.ProceduralPlanetTextureGenerator
 
 /**
@@ -29,7 +29,7 @@ class EditorScreen(val game:MyGame) : Screen{
 
     override fun show() {
         editorGUI.openEditorGUI()
-        EditorUtil.init()
+        LevelManager.init()
 
         val multiInput = InputMultiplexer(MyGame.stage, EditorScreenInputProcessor(this))
         Gdx.input.inputProcessor = multiInput
@@ -123,9 +123,11 @@ class EditorScreen(val game:MyGame) : Screen{
     }
 
     fun loadLevel(level:Int){
-        val list = EditorUtil.loadLevel(level)
+        //TODO Achievements?
+        val data = LevelManager.loadLevel(level)
+        placedThings.forEach { it.dispose() }
         placedThings.clear()
-        placedThings.addAll(list)
+        placedThings.addAll(data.first)
     }
 
     /**
@@ -156,7 +158,7 @@ class EditorScreen(val game:MyGame) : Screen{
         val worldCoords = MyGame.camera.unproject(Vector3(Gdx.input.x.toFloat(), Gdx.input.y.toFloat(), 0f))
         when(type){
             "planet" -> {
-                val planet = Planet(Vector2(worldCoords.x, worldCoords.y), 40, 40f, 1f, 0f, ProceduralPlanetTextureGenerator.getNextTexture())
+                val planet = Planet(Vector2(worldCoords.x, worldCoords.y), 40, 40f, 0.01f, 0f, ProceduralPlanetTextureGenerator.getNextTexture())
                 currentlyPlacing = planet
             }
             "station" -> {

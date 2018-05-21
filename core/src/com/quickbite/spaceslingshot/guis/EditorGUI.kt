@@ -16,13 +16,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
+import com.badlogic.gdx.utils.Array
 import com.quickbite.spaceslingshot.MyGame
+import com.quickbite.spaceslingshot.data.json.AchievementJson
+import com.quickbite.spaceslingshot.json.JsonLevel
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.Planet
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.PlayerShip
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.SpaceBody
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.SpaceStation
 import com.quickbite.spaceslingshot.screens.EditorScreen
-import com.quickbite.spaceslingshot.util.EditorUtil
+import com.quickbite.spaceslingshot.util.LevelManager
 import com.quickbite.spaceslingshot.util.onLeaveFieldOrEnter
 
 class EditorGUI(val editorScreen: EditorScreen) {
@@ -130,7 +133,7 @@ class EditorGUI(val editorScreen: EditorScreen) {
         val saveLevelButton = TextButton("Save", defaultTextButtonStyle)
         val cancelButton = TextButton("Cancel", defaultTextButtonStyle)
 
-        val lambda = {level:EditorUtil.JsonLevel ->
+        val lambda = {level: JsonLevel ->
             saveLevelTable.remove()
             openOverwriteDialog(level.level, level.name)
         }
@@ -151,10 +154,11 @@ class EditorGUI(val editorScreen: EditorScreen) {
                 try{
                     val number = levelNumberInput.text.toInt()
                     val name = levelNameInput.text
-                    if(EditorUtil.levelExists(number)) {
+                    if(LevelManager.levelExists(number)) {
                         openOverwriteDialog(number, name)
                     }else
-                        EditorUtil.saveLevel(number, name, editorScreen.placedThings)
+                        LevelManager.saveLevel(number, name, editorScreen.placedThings,
+                                Array.with(AchievementJson("win", ""), AchievementJson("fuel", "50"), AchievementJson("time", "10"))) //TODO Fix to save achievements!!
 
                     saveLevelTable.remove()
                 }catch(e:Exception){
@@ -194,7 +198,8 @@ class EditorGUI(val editorScreen: EditorScreen) {
 
         yesButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                EditorUtil.saveLevel(level, levelName, editorScreen.placedThings)
+                LevelManager.saveLevel(level, levelName, editorScreen.placedThings,
+                        Array.with(AchievementJson("win", ""), AchievementJson("fuel", "50"), AchievementJson("time", "10"))) //TODO Fix to save achievements!
                 overwriteTable.remove()
             }
         })
@@ -214,7 +219,7 @@ class EditorGUI(val editorScreen: EditorScreen) {
     fun openLoadLevelDialog(){
         levelSelectTable.clear()
 
-        val levels = EditorUtil.loadedLevels.toList() //Copies the list so we don't screw it up
+        val levels = LevelManager.loadedLevels.toList() //Copies the list so we don't screw it up
         levels.sortedBy { it.level }
 
 
@@ -242,8 +247,8 @@ class EditorGUI(val editorScreen: EditorScreen) {
         })
     }
 
-    private fun loadedLevelsTable(buttonFunc:((EditorUtil.JsonLevel) -> Unit)? = null):Table{
-        val levels = EditorUtil.loadedLevels.toList() //Copies the list so we don't screw it up
+    private fun loadedLevelsTable(buttonFunc:((JsonLevel) -> Unit)? = null):Table{
+        val levels = LevelManager.loadedLevels.toList() //Copies the list so we don't screw it up
         levels.sortedBy { it.level }
 
         val numColsPerRow = 6

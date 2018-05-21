@@ -2,7 +2,6 @@ package com.quickbite.spaceslingshot.json
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Json
-import com.quickbite.spaceslingshot.LevelManager
 import com.quickbite.spaceslingshot.data.json.JsonLevelData
 
 /**
@@ -14,6 +13,6 @@ object JsonLevelLoader{
 
     fun loadLevels(){
 //        LevelManager.levels = json.fromJson(Array<JsonLevelData>::class.java, Gdx.files.internal("data/levels.json"))
-        LevelManager.levels = json.fromJson(Array<JsonLevelData>::class.java, JsonLevelData::class.java, Gdx.files.internal("data/levels.json"))
+//        LevelManager.levels = json.fromJson(Array<JsonLevelData>::class.java, JsonLevelData::class.java, Gdx.files.internal("data/levels.json"))
     }
 }

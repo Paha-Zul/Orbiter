@@ -2,7 +2,10 @@ package com.quickbite.spaceslingshot.util
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Json
+import com.quickbite.spaceslingshot.data.json.AchievementJson
+import com.quickbite.spaceslingshot.json.JsonLevel
 import com.quickbite.spaceslingshot.json.PlanetJson
 import com.quickbite.spaceslingshot.json.ShipJson
 import com.quickbite.spaceslingshot.json.StationJson
@@ -11,7 +14,8 @@ import com.quickbite.spaceslingshot.objects.gamescreenobjects.PlayerShip
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.SpaceBody
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.SpaceStation
 
-object EditorUtil {
+
+object LevelManager {
     private val json = Json()
     var loadedLevels:MutableList<JsonLevel> = mutableListOf()
 
@@ -35,7 +39,7 @@ object EditorUtil {
 
     fun levelExists(number:Int) = loadedLevels.any { it.level ==  number}
 
-    fun saveLevel(levelNumber:Int, levelName:String, list:List<SpaceBody>){
+    fun saveLevel(levelNumber:Int, levelName:String, list:List<SpaceBody>, achievements:Array<AchievementJson>){
         var ship = ShipJson()
         val planets = mutableListOf<PlanetJson>()
         val stations = mutableListOf<StationJson>()
@@ -57,7 +61,9 @@ object EditorUtil {
             this.ship = ship
             this.planets = planets
             this.stations = stations
+            this.achievements = achievements
         }
+
 
         //Check if we already have a level 1
         val index = loadedLevels.indexOfFirst { it.level == levelNumber }
@@ -71,7 +77,7 @@ object EditorUtil {
         file.writeString(json.prettyPrint(loadedLevels), false)
     }
 
-    fun loadLevel(level:Int):List<SpaceBody>{
+    fun loadLevel(level:Int):Pair<List<SpaceBody>, List<Pair<String, String>>>{
         val data = loadedLevels.first { it.level == level }
 
         val objectList = mutableListOf<SpaceBody>()
@@ -91,14 +97,6 @@ object EditorUtil {
             velocity.set(data.ship.velocity)
         }
 
-        return objectList
-    }
-
-    class JsonLevel{
-        var level = 0
-        var name = ""
-        lateinit var ship:ShipJson
-        var planets:List<PlanetJson> = listOf()
-        var stations:List<StationJson> = listOf()
+        return Pair(objectList, listOf())
     }
 }

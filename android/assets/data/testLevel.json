@@ -1,20 +1,20 @@
 [
 {
-	class: com.quickbite.spaceslingshot.util.EditorUtil$JsonLevel
+	class: com.quickbite.spaceslingshot.json.JsonLevel
 	name: such
 	ship: {
 		position: {
-			x: 219
-			y: 161.00002
+			x: 178
+			y: 142
 		}
-		rotation: 90
+		rotation: 450
 		fuel: 100
 	}
 	planets: [
 		{
 			position: {
-				x: 296
-				y: 386
+				x: 298
+				y: 432
 			}
 			size: 40
 			gravityRange: 100
@@ -24,10 +24,23 @@
 	stations: [
 		{
 			position: {
-				x: 227
-				y: 678
+				x: 170
+				y: 641
 			}
 			rotation: 270
+		}
+	]
+	achievements: [
+		{
+			name: win
+		}
+		{
+			name: fuel
+			value: 50
+		}
+		{
+			name: time
+			value: 10
 		}
 	]
 }

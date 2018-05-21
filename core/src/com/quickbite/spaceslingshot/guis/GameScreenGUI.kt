@@ -1,6 +1,5 @@
 package com.quickbite.spaceslingshot.guis
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -19,7 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
 import com.badlogic.gdx.utils.Timer
-import com.quickbite.spaceslingshot.LevelManager
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.interfaces.IUpdateable
 import com.quickbite.spaceslingshot.screens.GameScreen
@@ -307,17 +305,17 @@ class GameScreenGUI(val gameScreen: GameScreen) : Disposable, IUpdateable{
 
         val labelStyle = Label.LabelStyle(MyGame.font, Color.WHITE)
 
-        val label1 = Label(GH.getAchievementMessage(0, gameScreen), labelStyle)
+        val label1 = Label(AchievementManager.getAchievementMessage(GameScreen.gameScreenData.currLevel, 0), labelStyle)
         label1.setFontScale(0.15f)
         label1.setAlignment(Align.center)
         label1.setWrap(true)
 
-        val label2 = Label(GH.getAchievementMessage(1, gameScreen), labelStyle)
+        val label2 = Label(AchievementManager.getAchievementMessage(GameScreen.gameScreenData.currLevel, 1), labelStyle)
         label2.setFontScale(0.15f)
         label2.setAlignment(Align.center)
         label2.setWrap(true)
 
-        val label3 = Label(GH.getAchievementMessage(2, gameScreen), labelStyle)
+        val label3 = Label(AchievementManager.getAchievementMessage(GameScreen.gameScreenData.currLevel, 2), labelStyle)
         label3.setFontScale(0.15f)
         label3.setAlignment(Align.center)
         label3.setWrap(true)

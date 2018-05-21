@@ -1,5 +1,7 @@
 package com.quickbite.spaceslingshot.util
 
+import com.quickbite.spaceslingshot.screens.GameScreen
+
 /**
  * Created by Paha on 1/9/2017.
  */
@@ -32,5 +34,17 @@ object AchievementManager {
 
         //Return the array of booleans
         return arrayOf(split[0].toBoolean(), split[1].toBoolean(), split[2].toBoolean())
+    }
+
+    fun getAchievementMessage(level:Int, index: Int): String {
+        val achievment = LevelManager.getLevelJson(level)!!.achievements[index]
+        var message = ""
+        when (achievment.name) {
+            "win" -> message = "Win the Map"
+            "time" -> message = "Within time: " + achievment.value
+            "fuel" -> message = "Remaining fuel: " + achievment.value
+        }
+
+        return message
     }
 }

@@ -103,7 +103,6 @@ public class MyGame extends Game {
 			threadPool = new ThreadPoolExecutor(4, 8, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(20));
 		}
 
-		JsonLevelLoader.INSTANCE.loadLevels();
 		PlanetDataManager.INSTANCE.readDefinitionsJson();
 
 		this.setScreen(new MainMenuScreen(this));
