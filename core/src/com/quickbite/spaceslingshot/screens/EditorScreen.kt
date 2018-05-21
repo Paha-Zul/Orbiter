@@ -160,7 +160,7 @@ class EditorScreen(val game:MyGame) : Screen{
                 currentlyPlacing = planet
             }
             "station" -> {
-                val station = SpaceStation(Vector2(worldCoords.x, worldCoords.y), 60, 100f, 0f, false)
+                val station = SpaceStation(Vector2(worldCoords.x, worldCoords.y), 60, 100f, 0f)
                 currentlyPlacing = station
             }
             "ship" -> {
@@ -179,6 +179,7 @@ class EditorScreen(val game:MyGame) : Screen{
     override fun dispose() {
         currentlyPlacing = null
         currentlySelected = null
+        placedThings.forEach { it.dispose() } //This is super important to clean up world bodies
         placedThings.clear()
         MyGame.stage.clear()
     }

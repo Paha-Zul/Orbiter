@@ -403,7 +403,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
     /**
      * @return True if there is a next level, false otherwise
      */
-    fun hasNextLevel() = EditorUtil.getSortedLevels().size > gameScreenData.currLevel
+    fun hasNextLevel() = EditorUtil.getSortedLevels().size - 1 > gameScreenData.currLevel
 
     fun reset(){
         GameScreen.lost = false

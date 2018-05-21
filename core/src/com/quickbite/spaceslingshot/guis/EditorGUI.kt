@@ -130,12 +130,19 @@ class EditorGUI(val editorScreen: EditorScreen) {
         val saveLevelButton = TextButton("Save", defaultTextButtonStyle)
         val cancelButton = TextButton("Cancel", defaultTextButtonStyle)
 
+        val lambda = {level:EditorUtil.JsonLevel ->
+            saveLevelTable.remove()
+            openOverwriteDialog(level.level, level.name)
+        }
+
         innerTable.add(levelNumber)
         innerTable.add(levelNumberInput)
         innerTable.row()
         innerTable.add(levelName)
         innerTable.add(levelNameInput)
-        innerTable.row()
+        innerTable.row().spaceTop(10f)
+        innerTable.add(loadedLevelsTable(lambda)).colspan(2)
+        innerTable.row().spaceTop(10f)
         innerTable.add(saveLevelButton)
         innerTable.add(cancelButton)
 
@@ -210,33 +217,18 @@ class EditorGUI(val editorScreen: EditorScreen) {
         val levels = EditorUtil.loadedLevels.toList() //Copies the list so we don't screw it up
         levels.sortedBy { it.level }
 
-        val numColsPerRow = 6
 
         val innerTable = Table()
         innerTable.background = inputTextBackgroundFilled
 
         val levelsLabel = Label("Levels", defaultLabelStyle)
-        innerTable.add(levelsLabel).colspan(numColsPerRow).spaceBottom(10f)
-
         val cancelButton = TextButton("Cancel", defaultTextButtonStyle)
 
-        levels.forEachIndexed{ i, level ->
-            if(i%numColsPerRow == 0)
-                innerTable.row()
-
-            val levelButton = TextButton(level.level.toString(), defaultTextButtonStyle)
-            levelButton.addListener(object:ChangeListener(){ //On click load the level and close this table
-                override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    editorScreen.loadLevel(level.level)
-                    levelSelectTable.remove()
-                }
-            })
-
-            innerTable.add(levelButton)
-        }
-
+        innerTable.add(levelsLabel).spaceBottom(10f)
         innerTable.row()
-        innerTable.add(cancelButton).colspan(numColsPerRow).spaceTop(10f)
+        innerTable.add(loadedLevelsTable())
+        innerTable.row()
+        innerTable.add(cancelButton).spaceTop(10f)
 
         levelSelectTable.setFillParent(true)
         levelSelectTable.add(innerTable).center()
@@ -248,6 +240,41 @@ class EditorGUI(val editorScreen: EditorScreen) {
                 levelSelectTable.remove()
             }
         })
+    }
+
+    private fun loadedLevelsTable(buttonFunc:((EditorUtil.JsonLevel) -> Unit)? = null):Table{
+        val levels = EditorUtil.loadedLevels.toList() //Copies the list so we don't screw it up
+        levels.sortedBy { it.level }
+
+        val numColsPerRow = 6
+
+        val table = Table()
+
+        levels.forEachIndexed{ i, level ->
+            if(i%numColsPerRow == 0)
+                table.row()
+
+            val levelButton = TextButton(level.level.toString(), defaultTextButtonStyle)
+
+            if(buttonFunc == null)
+                levelButton.addListener(object:ChangeListener(){ //On click load the level and close this table
+                    override fun changed(event: ChangeEvent?, actor: Actor?) {
+                        editorScreen.loadLevel(level.level)
+                        levelSelectTable.remove()
+                    }
+                })
+            else
+                levelButton.addListener(object:ChangeListener(){ //On click load the level and close this table
+                    override fun changed(event: ChangeEvent?, actor: Actor?) {
+                        buttonFunc(level)
+                    }
+                })
+
+            table.add(levelButton)
+        }
+
+        table.row()
+        return table
     }
 
     fun clickedOn(body: SpaceBody?){

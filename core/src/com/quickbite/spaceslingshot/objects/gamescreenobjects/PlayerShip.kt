@@ -14,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.Fixture
 import com.badlogic.gdx.physics.box2d.FixtureDef
 import com.badlogic.gdx.physics.box2d.PolygonShape
+import com.badlogic.gdx.utils.Timer
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.objects.BodyData
 import com.quickbite.spaceslingshot.objects.MutablePair
@@ -107,7 +108,8 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
             }else if(otherData.type == BodyData.ObjectType.Station){
                 //Call this event but delay it. Since this event will be called during a physics step, we can not
                 //change anything physics related, so instead, delay it!
-                EventSystem.callEvent("hit_station", listOf(this), otherData.id, true)
+//                EventSystem.callEvent("hit_station", listOf(this), otherData.id, true)
+                hitStation(otherData.bodyOwner as SpaceStation)
 
                 //If we collided with a fuel container...
             }else if(otherData.type == BodyData.ObjectType.FuelContainer){
@@ -125,17 +127,45 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
             }
 
         }, this.uniqueID)
+    }
 
-        //On collide_end, remove the planet from the list
-        EventSystem.onEvent("collide_end", { args ->
-            val other = args[0] as Fixture
-            val otherData = other.body.userData as BodyData
+    private fun hitStation(station:SpaceStation){
+        //If the ship is not docking in the right spot, lose!
+        if(!station.checkCloseToDocking(position, station.dstToDock)){
+            setExploding()
+            return
+        }
 
-            if(other.isSensor && otherData.type == BodyData.ObjectType.Planet){
-                val planet = otherData.bodyOwner as Planet
+        //If the ship's velocity is too great, lose!
+        if(this.velocity.x > 1f || this.velocity.y > 1f){
+            this.setExploding()
+            return
+        }
+
+        //If we made it here, we docked well!
+        GameScreen.pauseTimer = true
+
+        //If we approached well, set the ship to docking!
+        val dockingPos = station.getDockingPosition()
+        this.setDocking(Vector2(dockingPos.x, dockingPos.y), rotation, {
+            if(station.homeStation){
+                GameScreen.setGameOver(false)
             }
+        })
 
-        }, this.uniqueID)
+        if(!station.homeStation) {
+            //Set a timer to refuel
+            Timer.schedule(object : Timer.Task() {
+                override fun run() {
+                    //Cancel the timer when we have no more fuel or the ship is full.
+                    if (station.fuelStorage <= 0 || addFuel(station.fuelRechargeAmountPerTick))
+                        this.cancel()
+
+                    station.fuelStorage -= station.fuelRechargeAmountPerTick
+                }
+            }, 0f, 0.016f)
+        }
+
     }
 
     override fun update(delta: Float) {

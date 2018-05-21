@@ -24,7 +24,7 @@ import com.quickbite.spaceslingshot.util.EventSystem
  * Created by Paha on 9/23/2016.
  */
 
-class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, rotation:Float, val homeStation:Boolean = false): SpaceBody(position, size, rotation), IUniqueID, IPhysicsBody, Disposable{
+class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, rotation:Float, val homeStation:Boolean = true): SpaceBody(position, size, rotation), IUniqueID, IPhysicsBody, Disposable{
 
     companion object{
         val arrowOffsets:List<Vector2> = listOf(
@@ -67,50 +67,6 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, rotation:
         arrow.setOrigin(arrow.width/2f, arrow.height/2f)
         arrow.color = Color.GREEN
         arrow.rotation = this.rotation + 180f
-
-        EventSystem.onEvent("hit_station", { args ->
-            //If the ship is a test ship, ignore
-            if(args[0] is TestShip) return@onEvent
-
-            val ship = args[0] as PlayerShip
-
-            //If the ship is not docking in the right spot, lose!
-            if(!checkCloseToDocking(ship.position, dstToDock)){
-                ship.setExploding()
-                return@onEvent
-            }
-
-            //If the ship's velocity is too great, lose!
-            if(ship.velocity.x > 1f || ship.velocity.y > 1f){
-                ship.setExploding()
-                return@onEvent
-            }
-
-            //If we made it here, we docked well!
-            GameScreen.pauseTimer = true
-
-            //If we approached well, set the ship to docking!
-            val dockingPos = getDockingPosition()
-            ship.setDocking(Vector2(dockingPos.x, dockingPos.y), rotation, {
-                if(homeStation){
-                    GameScreen.setGameOver(false)
-                }
-            })
-
-            if(!homeStation) {
-                //Set a timer to refuel
-                Timer.schedule(object : Timer.Task() {
-                    override fun run() {
-                        //Cancel the timer when we have no more fuel or the ship is full.
-                        if (this@SpaceStation.fuelStorage <= 0 || ship.addFuel(fuelRechargeAmountPerTick))
-                            this.cancel()
-
-                        this@SpaceStation.fuelStorage -= fuelRechargeAmountPerTick
-                    }
-                }, 0f, 0.016f)
-            }
-
-        }, this.uniqueID)
 
         this.createBody()
 
@@ -162,7 +118,7 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, rotation:
         currArrowSpot.set(this.position.x + x, this.position.y + y)
     }
 
-    private fun checkCloseToDocking(otherPosition:Vector2, range:Float):Boolean{
+    fun checkCloseToDocking(otherPosition:Vector2, range:Float):Boolean{
         val angle = rotation*MathUtils.degreesToRadians
         val x = dockingOffset.x * MathUtils.cos(angle) - dockingOffset.y*MathUtils.sin(angle) //Original X position
         val y = dockingOffset.x * MathUtils.sin(angle) + dockingOffset.y*MathUtils.cos(angle) //Original Y position
@@ -174,7 +130,7 @@ class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, rotation:
         return false
     }
 
-    private fun getDockingPosition():Vector2{
+    fun getDockingPosition():Vector2{
         val angle = rotation*MathUtils.degreesToRadians
         val x = dockingOffset.x * MathUtils.cos(angle) - dockingOffset.y*MathUtils.sin(angle) //Original X position
         val y = dockingOffset.x * MathUtils.sin(angle) + dockingOffset.y*MathUtils.cos(angle) //Original Y position

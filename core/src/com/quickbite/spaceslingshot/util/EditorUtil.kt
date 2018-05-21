@@ -31,6 +31,8 @@ object EditorUtil {
         return loadedLevels
     }
 
+    fun getLevelJson(level:Int) = loadedLevels.firstOrNull{ it.level == level}
+
     fun levelExists(number:Int) = loadedLevels.any { it.level ==  number}
 
     fun saveLevel(levelNumber:Int, levelName:String, list:List<SpaceBody>){
@@ -75,7 +77,7 @@ object EditorUtil {
         val objectList = mutableListOf<SpaceBody>()
 
         data.stations.forEach {
-            objectList += SpaceStation(Vector2(it.position), 70, 0f, it.rotation, false)
+            objectList += SpaceStation(Vector2(it.position), 70, 0f, it.rotation)
         }
 
         data.planets.forEach {
