@@ -1,7 +1,5 @@
 package com.quickbite.spaceslingshot.util
 
-import com.quickbite.spaceslingshot.screens.GameScreen
-
 /**
  * Created by Paha on 1/9/2017.
  */

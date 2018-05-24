@@ -10,7 +10,7 @@ import com.quickbite.spaceslingshot.interfaces.IPhysicsBody
 import com.quickbite.spaceslingshot.interfaces.IUniqueID
 import com.quickbite.spaceslingshot.util.Constants
 
-abstract class ShipBase(position: Vector2, var fuel:Float) : SpaceBody(position, 50, 0f)
+abstract class ShipBase(position: Vector2, var fuel:Float) : SpaceBody(position, Constants.SHIP_SIZE, 0f)
 , IUniqueID, IPhysicsBody, Disposable {
 
     enum class ShipLocation {Rear, Left, Right, Front}
@@ -25,8 +25,6 @@ abstract class ShipBase(position: Vector2, var fuel:Float) : SpaceBody(position,
         }
 
     protected val ringRadius = 100f
-    protected val shipWidth = 50f
-    protected val shipHeight = 50f
 
     protected val velocityHolder = Vector2()
 

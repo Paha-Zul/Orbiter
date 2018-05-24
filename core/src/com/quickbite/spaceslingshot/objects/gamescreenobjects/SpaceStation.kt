@@ -24,7 +24,8 @@ import com.quickbite.spaceslingshot.util.EventSystem
  * Created by Paha on 9/23/2016.
  */
 
-class SpaceStation(position: Vector2, size:Int, var fuelStorage:Float, rotation:Float, val homeStation:Boolean = true): SpaceBody(position, size, rotation), IUniqueID, IPhysicsBody, Disposable{
+class SpaceStation(position: Vector2, var fuelStorage:Float, rotation:Float, val homeStation:Boolean = true):
+        SpaceBody(position, Constants.STATION_SIZE, rotation), IUniqueID, IPhysicsBody, Disposable{
 
     companion object{
         val arrowOffsets:List<Vector2> = listOf(

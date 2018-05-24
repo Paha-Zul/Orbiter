@@ -14,6 +14,7 @@ import com.quickbite.spaceslingshot.objects.gamescreenobjects.PlayerShip
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.SpaceBody
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.SpaceStation
 import com.quickbite.spaceslingshot.util.LevelManager
+import com.quickbite.spaceslingshot.util.Predictor
 import com.quickbite.spaceslingshot.util.ProceduralPlanetTextureGenerator
 
 /**
@@ -108,7 +109,8 @@ class EditorScreen(val game:MyGame) : Screen{
 
     private fun checkDelete(){
         if(currentlySelected != null && Gdx.input.isKeyJustPressed(Input.Keys.FORWARD_DEL)){
-           placedThings -= currentlySelected!!
+            placedThings -= currentlySelected!!
+            currentlySelected?.dispose()
             currentlySelected = null
             editorGUI.clickedOn(null)
         }
@@ -162,14 +164,19 @@ class EditorScreen(val game:MyGame) : Screen{
                 currentlyPlacing = planet
             }
             "station" -> {
-                val station = SpaceStation(Vector2(worldCoords.x, worldCoords.y), 60, 100f, 0f)
+                val station = SpaceStation(Vector2(worldCoords.x, worldCoords.y), 100f, 0f)
                 currentlyPlacing = station
             }
             "ship" -> {
                 val ship = PlayerShip(Vector2(worldCoords.x, worldCoords.y), 100f)
                 ship.rotation = 0f
                 ship.hideControls = true
-                currentlyPlacing = ship
+                ship.setVelocity(0f, 1f)
+                currentlyPlacing = ship //TODO Figure out how to run the predictor in the editor.
+//                Predictor.init(ship, {ship.physicsArePaused = true}, {ship.physicsArePaused = false},
+//                        {MyGame.world.step(0.06f, 2, 4)})
+//                Predictor.queuePrediction = true
+//                Predictor.update()
             }
         }
     }

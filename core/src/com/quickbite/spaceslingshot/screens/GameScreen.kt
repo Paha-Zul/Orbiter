@@ -16,6 +16,7 @@ import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.data.GameScreenData
 import com.quickbite.spaceslingshot.data.json.JsonLevelData
 import com.quickbite.spaceslingshot.guis.GameScreenGUI
+import com.quickbite.spaceslingshot.json.JsonLevel
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.*
 import com.quickbite.spaceslingshot.util.*
 
@@ -146,7 +147,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
         draw(MyGame.batch)
 
         //Debug render AFTER we draw
-        MyGame.debugRenderer.render(MyGame.world, MyGame.Box2dCamera.combined)
+//        MyGame.debugRenderer.render(MyGame.world, MyGame.Box2dCamera.combined)
 
         //Update stage
         MyGame.stage.act()
@@ -330,16 +331,16 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
      */
     fun gameOver(){
         if(!lost) {
-//            val level = LevelManager.levels[gameScreenData.currLevel]
-//            checkAchievementCompletion(level)
+            val level = LevelManager.getLevelJson(gameScreenData.currLevel)!!
+            checkAchievementCompletion(level)
         }
         gameScreenData.endlessGame?.finish()
     }
 
-    private fun checkAchievementCompletion(level:JsonLevelData){
+    private fun checkAchievementCompletion(level:JsonLevel){
         //Loop over each achievement for the level and set our local achievement
         level.achievements.forEachIndexed { i, achievement ->
-            when(achievement[0]){
+            when(achievement.name){
                 "win" -> {
                     //if we didn't lose, we're good!
                     if(!GameScreen.lost)
@@ -347,13 +348,13 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
                 }
                 "time" -> {
                     //If our total time is less than the achievement time, we're good!
-                    val time = achievement[1].toFloat()
+                    val time = achievement.value.toFloat()
                     if(gameScreenData.levelTimer <= time)
                         gameScreenData.achievementFlags[i] = true
                 }
                 "fuel" -> {
                     //If the ship's fuel percentage is greater than the achievement goal, we're good!
-                    val fuel = achievement[1].toFloat()
+                    val fuel = achievement.value.toFloat()
                     if(gameScreenData.ship.fuel/ gameScreenData.ship.maxFuel >= fuel/100f)
                         gameScreenData.achievementFlags[i] = true
                 }
@@ -379,6 +380,8 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
                 is SpaceStation -> gameScreenData.stationList.add(it)
             }
         }
+
+        Predictor.queuePrediction = true
     }
 
     fun loadShip(newShip:PlayerShip){

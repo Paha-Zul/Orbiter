@@ -83,7 +83,7 @@ object LevelManager {
         val objectList = mutableListOf<SpaceBody>()
 
         data.stations.forEach {
-            objectList += SpaceStation(Vector2(it.position), 70, 0f, it.rotation)
+            objectList += SpaceStation(Vector2(it.position), 0f, it.rotation)
         }
 
         data.planets.forEach {

@@ -13,8 +13,8 @@
 	planets: [
 		{
 			position: {
-				x: 298
-				y: 432
+				x: 296
+				y: 382.51056
 			}
 			size: 40
 			gravityRange: 100
@@ -28,6 +28,161 @@
 				y: 641
 			}
 			rotation: 270
+		}
+	]
+	achievements: [
+		{
+			name: win
+		}
+		{
+			name: fuel
+			value: 50
+		}
+		{
+			name: time
+			value: 10
+		}
+	]
+}
+{
+	class: com.quickbite.spaceslingshot.json.JsonLevel
+	level: 1
+	name: second
+	ship: {
+		position: {
+			x: 214
+			y: 103.80817
+		}
+		rotation: 90
+		velocity: {
+			y: 1
+		}
+		fuel: 100
+	}
+	planets: [
+		{
+			position: {
+				x: 221
+				y: 368.97037
+			}
+			size: 40
+			gravityRange: 140
+			gravityStrength: 0.05
+		}
+	]
+	stations: [
+		{
+			position: {
+				x: 216
+				y: 683.77997
+			}
+			rotation: 270
+		}
+	]
+	achievements: [
+		{
+			name: win
+		}
+		{
+			name: fuel
+			value: 50
+		}
+		{
+			name: time
+			value: 10
+		}
+	]
+}
+{
+	class: com.quickbite.spaceslingshot.json.JsonLevel
+	level: 2
+	name: second
+	ship: {
+		position: {
+			x: 124
+			y: 108.32156
+		}
+		rotation: 90
+		velocity: {
+			y: 1
+		}
+		fuel: 100
+	}
+	planets: [
+		{
+			position: {
+				x: 221
+				y: 335.11987
+			}
+			size: 40
+			gravityRange: 100
+			gravityStrength: 0.05
+		}
+	]
+	stations: [
+		{
+			position: {
+				x: 342
+				y: 664.598
+			}
+			rotation: 270
+		}
+	]
+	achievements: [
+		{
+			name: win
+		}
+		{
+			name: fuel
+			value: 50
+		}
+		{
+			name: time
+			value: 10
+		}
+	]
+}
+{
+	class: com.quickbite.spaceslingshot.json.JsonLevel
+	level: 3
+	ship: {
+		position: {
+			x: 232
+			y: 111.706635
+		}
+		rotation: 90
+		velocity: {
+			y: 1
+		}
+		fuel: 100
+	}
+	planets: [
+		{
+			position: {
+				x: 153
+				y: 301.26938
+			}
+			size: 40
+			gravityRange: 100
+			gravityStrength: 0.05
+		}
+		{
+			position: {
+				x: 289
+				y: 460.36673
+			}
+			size: 40
+			gravityRange: 80
+			gravityStrength: 0.01
+		}
+	]
+	stations: [
+		{
+			position: {
+				x: 429
+				y: 616.079
+			}
+			rotation: 540
 		}
 	]
 	achievements: [

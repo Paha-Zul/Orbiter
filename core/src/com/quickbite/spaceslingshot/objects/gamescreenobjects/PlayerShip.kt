@@ -65,9 +65,9 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
 
     init {
         //The ship sprite
-        sprite.setSize(shipHeight, shipWidth)
-        sprite.setPosition(position.x - shipWidth / 2, position.y - shipHeight / 2)
-        sprite.setOrigin(shipHeight/2f, shipWidth/2f)
+        sprite.setSize(Constants.SHIP_SIZE.toFloat(), Constants.SHIP_SIZE.toFloat())
+        sprite.setPosition(position.x - Constants.SHIP_SIZE/ 2, position.y - Constants.SHIP_SIZE/ 2)
+        sprite.setOrigin(Constants.SHIP_SIZE/2f, Constants.SHIP_SIZE/2f)
 
         //The ring around the ship with handles and stuff, indicates it can be rotated
         ring = Sprite(MyGame.gameScreenAtlas.findRegion("arrowCircle"))
@@ -213,7 +213,7 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
         super.draw(batch)
 
         setAllDoubleBurnGraphics()
-        sprite.setPosition(position.x - shipWidth / 2f, position.y - shipHeight / 2f)
+        sprite.setPosition(position.x - Constants.SHIP_SIZE / 2f, position.y - Constants.SHIP_SIZE / 2f)
         ring.setPosition(position.x - ringRadius, position.y - ringRadius)
         burnHandles.forEach(BurnHandle::setPosition)
         thrusterLineDrawers.forEachIndexed { i, drawer ->
@@ -264,7 +264,7 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
         val mainFixture = FixtureDef()
         val shape = PolygonShape()
 
-        shape.setAsBox((shipWidth/2f)*Constants.BOX2D_SCALE, (shipHeight/2f)*Constants.BOX2D_SCALE)
+        shape.setAsBox((Constants.SHIP_SIZE/2f)*Constants.BOX2D_SCALE, (Constants.SHIP_SIZE/2f)*Constants.BOX2D_SCALE)
 
         mainFixture.shape = shape
 
@@ -330,7 +330,7 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
     override fun setPosition(x:Float, y:Float){
         super.setPosition(x, y)
 
-        sprite.setPosition(position.x - shipWidth / 2f, position.y - shipHeight / 2f)
+        sprite.setPosition(position.x - Constants.SHIP_SIZE / 2f, position.y - Constants.SHIP_SIZE/ 2f)
         ring.setPosition(position.x - ringRadius, position.y - ringRadius)
         burnHandles.forEach(BurnHandle::setPosition)
         setBurnHandlePosition()
@@ -489,7 +489,7 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
         super.reset(position, fuel, initialVelocity)
         this.hideShipSprite = false
 
-        sprite.setPosition(position.x - shipWidth / 2f, position.y - shipHeight / 2f)
+        sprite.setPosition(position.x - Constants.SHIP_SIZE / 2f, position.y - Constants.SHIP_SIZE / 2f)
         ring.setPosition(position.x - ringRadius, position.y - ringRadius)
         burnHandles.forEach(BurnHandle::setPosition)
         setBurnHandlePosition()

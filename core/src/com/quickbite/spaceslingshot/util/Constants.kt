@@ -26,4 +26,7 @@ object Constants {
     const val LEADERBOARD = "CgkI9L3rnvoREAIQAQ"
 
     const val ENDLESS_GAME_SCREEN_BOUND = 300f
+
+    const val STATION_SIZE = 70
+    const val SHIP_SIZE = 50
 }

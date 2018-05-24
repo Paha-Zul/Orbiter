@@ -61,7 +61,7 @@ class TestShip(position:Vector2, fuel:Float) : ShipBase(position, fuel) {
         val mainFixture = FixtureDef()
         val shape = PolygonShape()
 
-        shape.setAsBox((shipWidth/2f)* Constants.BOX2D_SCALE, (shipHeight/2f)* Constants.BOX2D_SCALE)
+        shape.setAsBox((Constants.SHIP_SIZE/2f)* Constants.BOX2D_SCALE, (Constants.SHIP_SIZE/2f)* Constants.BOX2D_SCALE)
 
         mainFixture.shape = shape
         mainFixture.isSensor = true
