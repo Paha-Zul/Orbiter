@@ -382,7 +382,6 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
      */
     fun setRotationTowardsMouse(mouseX:Float, mouseY:Float){
         val rot = MathUtils.atan2(mouseY - position.y, mouseX - position.x)*MathUtils.radiansToDegrees
-        println(rot)
         setShipRotation(rot)
 
         setBurnHandlePosition()
