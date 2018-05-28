@@ -32,6 +32,11 @@ class EditorScreenInputProcessor(val editorScreen: EditorScreen) : InputProcesso
             Input.Keys.ESCAPE -> {
                 editorScreen.dispose()
                 editorScreen.game.screen = MainMenuScreen(editorScreen.game)}
+            Input.Keys.F7 -> {
+                editorScreen.placedThings.forEach { it.dispose() } //Dispose each thing
+                editorScreen.placedThings.clear() //Clear the list
+                editorScreen.editorGUI.clickedOn(null) //Close the editor gui clicked on thingy
+            }
         }
         return false
     }

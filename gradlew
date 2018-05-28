@@ -107,7 +107,8 @@ fi
 
 # For Darwin, add options to specify how the application appears in the dock
 if $darwin; then
-    GRADLE_OPTS="$GRADLE_OPTS \"-Xdock:name=$APP_NAME\" \"-Xdock:icon=$APP_HOME/media/gradle.icns\" \"-Xmx4096m\" \"-Xms512m\" \"-XX:MaxPermSize=4096m\""
+    GRADLE_OPTS="$GRADLE_OPTS \"-Xdock:name=$APP_NAME\" \"-Xdock:icon=$APP_HOME/media/gradle.icns\" \"-Xmx4096m\" \"-Xms512m\" \"-XX:MaxPerm
+    Size=4096m\""
 fi
 
 # For Cygwin, switch paths to Windows format before running java

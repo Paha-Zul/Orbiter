@@ -57,8 +57,8 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
 
     val burnHandles:Array<BurnHandle> = arrayOf(
             BurnHandle(this, ShipLocation.Rear, 0f),
-            BurnHandle(this, ShipLocation.Left, 90f),
-            BurnHandle(this, ShipLocation.Right, -90f)
+            BurnHandle(this, ShipLocation.Left, -90f),
+            BurnHandle(this, ShipLocation.Right, 90f)
     )
 
     constructor():this(Vector2(0f, 0f), 0f)
@@ -108,7 +108,6 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
             }else if(otherData.type == BodyData.ObjectType.Station){
                 //Call this event but delay it. Since this event will be called during a physics step, we can not
                 //change anything physics related, so instead, delay it!
-//                EventSystem.callEvent("hit_station", listOf(this), otherData.id, true)
                 hitStation(otherData.bodyOwner as SpaceStation)
 
                 //If we collided with a fuel container...
@@ -147,7 +146,7 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
 
         //If we approached well, set the ship to docking!
         val dockingPos = station.getDockingPosition()
-        this.setDocking(Vector2(dockingPos.x, dockingPos.y), rotation, {
+        this.setDocking(Vector2(dockingPos.x, dockingPos.y), station.rotation, {
             if(station.homeStation){
                 GameScreen.setGameOver(false)
             }
@@ -186,7 +185,6 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
 
             val rotation = easeAlpha.apply(this.rotation, dockingData.rotation, progress)
             tmpVector.interpolate(dockingData.position, progress, Interpolation.linear)
-
             setPosition(tmpVector)
             setShipRotation(rotation)
 
@@ -352,8 +350,6 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
         }
     }
 
-
-
     /**
      * Sets the thrust fire's position in relation to the ship.
      */
@@ -373,20 +369,30 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
         dockingData = DockingData(position, rotation, callback)
         tmpVector.set(this.position) //We will use this to interpolate
 
+        //TODO This line will crash because of modifying physics... how/where else can we do this?
+//        setShipRotation(Math.floorMod(rotation.toInt(), 360).toFloat()) //Knock this down into normal range
+
         setVelocity(0f, 0f)
         thrusters.forEach { thruster -> thruster.burnTime = 0 }
     }
 
     /**
      * Sets the rotation of the ship towards the mouse. Also handles all graphics related to the ship.
+     * @param mouseX The Mouse's X location
+     * @param mouseY The mouse's Y location
+     * @param rotationOffset The offset of rotation. This is mainly used for the burn handles to
+     * rotate the ship in the correct direction when dragging a handle
      */
-    fun setRotationTowardsMouse(mouseX:Float, mouseY:Float){
+    fun setRotationTowardsMouse(mouseX:Float, mouseY:Float, rotationOffset:Float = 0f){
         val rot = MathUtils.atan2(mouseY - position.y, mouseX - position.x)*MathUtils.radiansToDegrees
-        setShipRotation(rot)
+        setShipRotation(rot+rotationOffset)
 
         setBurnHandlePosition()
     }
 
+    /**
+     * Sets the ship as exploding
+     */
     fun setExploding(){
         exploding = true
         explodingEffect.setPosition(position.x, position.y)
@@ -407,7 +413,11 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
     }
 
     /**
-     *
+     * Finds what part of the ship was clicked on (if any). Checks burn handles and the turn ring
+     * @param mouseX The mouse's X position
+     * @param mouseY The mouse's Y position
+     * @param dst The distance to the ship
+     * @return Returns a pair that holds a result (0 or 1) and a ship location
      */
     private fun findClickedOn(mouseX:Float, mouseY: Float, dst:Float): MutablePair<Int, ShipLocation> {
         val hit: MutablePair<Int, ShipLocation> = MutablePair(0, ShipLocation.Rear)
@@ -469,7 +479,7 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
      * @param mouseY The mouse's Y position
      */
     fun dragBurn(mouseX: Float, mouseY: Float, shipLocation: ShipLocation) {
-        val rotationOffset = GH.getRotationFromLocation(shipLocation)
+        val rotationOffset = -burnHandles.first { it.burnHandleLocation == shipLocation }.rotationOffset //For some reason we gotta negate it to flip it
 
         var dst = position.dst(mouseX, mouseY) - ringRadius
         if (dst <= 0) dst = 0f
@@ -482,7 +492,7 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
             thruster.burnTime = (fuel / thruster.fuelBurnedPerTick).toInt()
         }
 
-        this.setRotationTowardsMouse(mouseX, mouseY)
+        this.setRotationTowardsMouse(mouseX, mouseY, rotationOffset)
     }
 
     override fun reset(position: Vector2, fuel: Float, initialVelocity: Vector2) {

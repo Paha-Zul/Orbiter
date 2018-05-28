@@ -22,9 +22,9 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
     var shipLocation: ShipBase.ShipLocation = ShipBase.ShipLocation.Rear
     var rotationOffset:Float = 0f
 
-    val startDragPos:Vector2 = Vector2()
+    private val startDragPos:Vector2 = Vector2()
     val offset:Vector2 = Vector2()
-    val originalCameraPos = Vector2()
+    private val originalCameraPos = Vector2()
 
     var tapTime:Long = 0
 
@@ -79,7 +79,8 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
                 0 -> draggingScreen = true
             }
             shipLocation = clicked.second
-            rotationOffset = GH.getRotationFromLocation(shipLocation)
+            rotationOffset = GameScreen.gameScreenData.ship.burnHandles
+                    .first { it.burnHandleLocation == clicked.second }.rotationOffset
         }else
             draggingScreen = true
 

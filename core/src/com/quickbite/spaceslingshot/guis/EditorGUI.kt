@@ -275,7 +275,7 @@ class EditorGUI(val editorScreen: EditorScreen) {
                     }
                 })
 
-            table.add(levelButton)
+            table.add(levelButton).spaceRight(5f)
         }
 
         table.row()

@@ -59,14 +59,13 @@ public class GH {
     }
 
     public static float getRotationFromLocation(ShipBase.ShipLocation location){
-        //TODO For some reason the left and right need to be flipped here...
         switch(location){
             case Rear:
                 return 0f;
             case Left:
-                return -90f;
-            case Right:
                 return 90f;
+            case Right:
+                return -90f;
             default:
                 return 0f;
         }

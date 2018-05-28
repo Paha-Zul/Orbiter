@@ -8,6 +8,9 @@
 			y: 142
 		}
 		rotation: 450
+		velocity: {
+			y: 1
+		}
 		fuel: 100
 	}
 	planets: [
@@ -183,6 +186,73 @@
 				y: 616.079
 			}
 			rotation: 540
+		}
+	]
+	achievements: [
+		{
+			name: win
+		}
+		{
+			name: fuel
+			value: 50
+		}
+		{
+			name: time
+			value: 10
+		}
+	]
+}
+{
+	class: com.quickbite.spaceslingshot.json.JsonLevel
+	level: 4
+	name: such
+	ship: {
+		position: {
+			x: 232
+			y: 111.706635
+		}
+		rotation: 90
+		velocity: {
+			y: 1
+		}
+		fuel: 100
+	}
+	planets: [
+		{
+			position: {
+				x: 153
+				y: 301.26938
+			}
+			size: 40
+			gravityRange: 100
+			gravityStrength: 0.01
+		}
+		{
+			position: {
+				x: 80.99997
+				y: 651.3399
+			}
+			size: 40
+			gravityRange: 100
+			gravityStrength: 0.05
+		}
+		{
+			position: {
+				x: 314
+				y: 514.48376
+			}
+			size: 40
+			gravityRange: 100
+			gravityStrength: 0.02
+		}
+	]
+	stations: [
+		{
+			position: {
+				x: 245.99997
+				y: 910.86035
+			}
+			rotation: 270
 		}
 	]
 	achievements: [
