@@ -27,7 +27,6 @@ class EditorScreen(val game:MyGame) : Screen{
     var playerShip:PlayerShip? = null
 
     val editorGUI = EditorGUI(this)
-    val lineDrawer:LineDraw = LineDraw(Vector2(),Vector2(), GH.createPixel(Color.WHITE))
 
     override fun show() {
         editorGUI.openEditorGUI()
@@ -76,7 +75,7 @@ class EditorScreen(val game:MyGame) : Screen{
             it.draw2(batch)
         }
         playerShip?.draw(batch)
-        lineDrawer.draw(batch)
+        Predictor.drawLine(batch)
         batch.end()
 
         MyGame.debugRenderer.render(MyGame.world, MyGame.Box2dCamera.combined)
@@ -126,6 +125,7 @@ class EditorScreen(val game:MyGame) : Screen{
             currentlySelected?.dispose()
             currentlySelected = null
             editorGUI.clickedOn(null)
+            Predictor.queuePrediction()
         }
     }
 
@@ -172,6 +172,7 @@ class EditorScreen(val game:MyGame) : Screen{
                 playerShip?.setPhysicsPaused(true)
                 Predictor.init(playerShip!!, {}, {}, {MyGame.world.step(0.016f, 4, 2)})
             }
+
             currentlyPlacing?.body?.setTransform(currentlyPlacing?.position!!.x*Constants.BOX2D_SCALE,
                     currentlyPlacing?.position!!.y*Constants.BOX2D_SCALE,
                     currentlyPlacing?.rotation!!)

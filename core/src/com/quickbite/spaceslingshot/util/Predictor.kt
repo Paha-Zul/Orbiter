@@ -1,6 +1,7 @@
 package com.quickbite.spaceslingshot.util
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import com.quickbite.spaceslingshot.data.GameScreenData
@@ -34,6 +35,10 @@ object Predictor : Disposable{
         this.pausePhysicsFunc = pausePhysicsFunc
         this.resumePhysicsFunc = resumePhysicsFunc
         this.physicsStep = physicsStep
+
+        setPredictorShipToPlayerShip(ship)
+
+        lineDrawer.size = 3
     }
 
     val points: Array<ShipDataHolder> = Array(steps / stepSizeToRecord, {
@@ -58,7 +63,7 @@ object Predictor : Disposable{
 
     private fun predict() {
         runPrediction()
-        lineDrawer?.points = Predictor.points.toList()
+        lineDrawer.points = Predictor.points.toList()
         queuePrediction = false
     }
 
@@ -118,13 +123,8 @@ object Predictor : Disposable{
         resumePhysicsFunc()
     }
 
-    private fun simulate(data:GameScreenData, ship: PlayerShip){
-        data.planetList.forEach { planet ->
-            val dst = ship.position.dst(planet.position)
-            if(dst <= planet.gravityRange){
-
-            }
-        }
+    fun drawLine(batch:SpriteBatch){
+        lineDrawer.draw(batch)
     }
 
     override fun dispose() {

@@ -31,7 +31,6 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
 
     companion object{
         lateinit var gameScreenData:GameScreenData
-        val predictorLineDrawer = LineDraw(Vector2(), Vector2(), GH.createPixel(Color.WHITE))
         lateinit var gui:GameScreenGUI
 
         var finished = false
@@ -120,8 +119,6 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
         Predictor.init(gameScreenData.ship, {pauseAllPhysicsExceptPredictorShip(gameScreenData)}, { resumeAllPhysicsExceptPredictorShip(gameScreenData)},
                 {doPhysicsStep(Constants.PHYSICS_TIME_STEP)})
         Predictor.queuePrediction()
-
-        predictorLineDrawer.size = 3
     }
 
     override fun pause() {
@@ -269,7 +266,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
 
         //Draw the predictor line
         if(!GameScreen.finished)
-            predictorLineDrawer.draw(batch)
+            Predictor.drawLine(batch)
 
         //Draw the ship AFTER the predictor line
         gameScreenData.ship.draw(batch)

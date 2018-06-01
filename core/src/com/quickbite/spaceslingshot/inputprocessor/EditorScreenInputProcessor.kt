@@ -58,7 +58,6 @@ class EditorScreenInputProcessor(val editorScreen: EditorScreen) : InputProcesso
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         mouseClickPosition.set(screenX.toFloat(), screenY.toFloat())
         initialCameraPostion.set(MyGame.camera.position.x, MyGame.camera.position.y)
-        println("Touched")
         return false
     }
 }

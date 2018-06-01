@@ -26,6 +26,7 @@ import com.quickbite.spaceslingshot.objects.gamescreenobjects.SpaceBody
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.SpaceStation
 import com.quickbite.spaceslingshot.screens.EditorScreen
 import com.quickbite.spaceslingshot.util.LevelManager
+import com.quickbite.spaceslingshot.util.Predictor
 import com.quickbite.spaceslingshot.util.onLeaveFieldOrEnter
 
 class EditorGUI(val editorScreen: EditorScreen) {
@@ -330,6 +331,7 @@ class EditorGUI(val editorScreen: EditorScreen) {
                         val gravityRange = gravityWellInput.text.toFloat()
                         val density = gravityWellStrengthInput.text.toFloat()
                         editorScreen.replacePlanet(size, gravityRange, density)
+                        Predictor.queuePrediction()
                     }catch (e:Exception){
                         println(e)
                     }
@@ -344,6 +346,7 @@ class EditorGUI(val editorScreen: EditorScreen) {
                     try{
                         val input = gravityWellInput.text.toFloat()
                         planet.gravityRangeRadius = input
+                        Predictor.queuePrediction()
                     }catch (e:Exception){
                         println(e)
                     }
@@ -358,6 +361,7 @@ class EditorGUI(val editorScreen: EditorScreen) {
                     try{
                         val input = gravityWellStrengthInput.text.toFloat()
                         planet.density = input
+                        Predictor.queuePrediction()
                     }catch (e:Exception){
                         println(e)
                     }
@@ -429,6 +433,7 @@ class EditorGUI(val editorScreen: EditorScreen) {
             try{
                 val xVelocity = shipXVelocityInput.text.toFloat()
                 ship.velocity.x = xVelocity
+                Predictor.queuePrediction()
             }catch (e:Exception){
                 println(e)
             }
@@ -438,6 +443,7 @@ class EditorGUI(val editorScreen: EditorScreen) {
             try{
                 val yVelocity = shipYVelocityInput.text.toFloat()
                 ship.velocity.y = yVelocity
+                Predictor.queuePrediction()
             }catch (e:Exception){
                 println(e)
             }
@@ -447,6 +453,7 @@ class EditorGUI(val editorScreen: EditorScreen) {
             try{
                 val fuel = shipFuelInput.text.toFloat()
                 ship.fuel = fuel
+                Predictor.queuePrediction()
             }catch (e:Exception){
                 println(e)
             }
