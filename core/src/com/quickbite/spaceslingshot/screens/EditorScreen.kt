@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.Screen
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.quickbite.spaceslingshot.MyGame
@@ -13,9 +15,7 @@ import com.quickbite.spaceslingshot.objects.gamescreenobjects.Planet
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.PlayerShip
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.SpaceBody
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.SpaceStation
-import com.quickbite.spaceslingshot.util.LevelManager
-import com.quickbite.spaceslingshot.util.Predictor
-import com.quickbite.spaceslingshot.util.ProceduralPlanetTextureGenerator
+import com.quickbite.spaceslingshot.util.*
 
 /**
  * Created by Paha on 8/8/2016.
@@ -25,8 +25,10 @@ class EditorScreen(val game:MyGame) : Screen{
     var currentlySelected: SpaceBody? = null
 
     val placedThings = mutableListOf<SpaceBody>()
+    var playerShip:PlayerShip? = null
 
     val editorGUI = EditorGUI(this)
+    val lineDrawer:LineDraw = LineDraw(Vector2(),Vector2(), GH.createPixel(Color.WHITE))
 
     override fun show() {
         editorGUI.openEditorGUI()
@@ -49,6 +51,8 @@ class EditorScreen(val game:MyGame) : Screen{
     }
 
     override fun render(delta: Float) {
+        Predictor.update()
+
         if(currentlyPlacing != null) {
             placeThing()
         }else{
@@ -72,7 +76,11 @@ class EditorScreen(val game:MyGame) : Screen{
         placedThings.forEach {
             it.draw2(batch)
         }
+        playerShip?.draw(batch)
+        lineDrawer.draw(batch)
         batch.end()
+
+        MyGame.debugRenderer.render(MyGame.world, MyGame.Box2dCamera.combined)
 
         MyGame.stage.act()
         MyGame.stage.draw()
@@ -101,6 +109,12 @@ class EditorScreen(val game:MyGame) : Screen{
                     editorGUI.clickedOn(currentlySelected!!)
                     return
                 }
+            }
+
+            if(playerShip != null && playerShip!!.clickedOn(worldCoords.x, worldCoords.y)) {
+                currentlySelected = playerShip //Set the currently selected
+                editorGUI.clickedOn(currentlySelected!!)
+                return
             }
 
             editorGUI.clickedOn(null)
@@ -151,8 +165,16 @@ class EditorScreen(val game:MyGame) : Screen{
      */
     private fun placeThing(){
         if(Gdx.input.justTouched()){
-            placedThings += currentlyPlacing!!
+            if(currentlyPlacing !is PlayerShip)
+                placedThings += currentlyPlacing!!
+            else{
+                playerShip?.dispose()
+                playerShip = currentlyPlacing!! as PlayerShip
+                playerShip?.setPhysicsPaused(true)
+                Predictor.init(playerShip!!, {}, {}, {MyGame.world.step(0.016f, 4, 2)})
+            }
             currentlyPlacing = null
+            Predictor.queuePrediction(lineDrawer)
         }
     }
 

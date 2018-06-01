@@ -14,7 +14,7 @@ import com.quickbite.spaceslingshot.screens.GameScreen
  * Created by Paha on 8/7/2016.
  */
 object Predictor : Disposable{
-    var queuePrediction = false
+    private var queuePrediction = false
 
     val predictorShip = TestShip(Vector2(0f, 0f), 0f)
     private val steps = 300
@@ -22,10 +22,12 @@ object Predictor : Disposable{
 
     var currPointIndex = 0
 
-    lateinit var ship: PlayerShip
+    var ship: PlayerShip? = null
     private lateinit var pausePhysicsFunc:()->Unit
     private lateinit var resumePhysicsFunc:()->Unit
     private lateinit var physicsStep:()->Unit
+
+    private var lineDrawer:LineDraw? = null
 
     fun init(ship: PlayerShip, pausePhysicsFunc:()->Unit, resumePhysicsFunc:()->Unit, physicsStep:()->Unit){
         this.ship = ship
@@ -47,15 +49,23 @@ object Predictor : Disposable{
             predict()
     }
 
-    private fun predict(){
+    /**
+     * Queues the prediction for the next frame
+     */
+    fun queuePrediction(lineDrawer: LineDraw? = null){
+        queuePrediction = true
+        this.lineDrawer = lineDrawer
+    }
+
+    private fun predict(lineDrawer:LineDraw? = null){
         runPrediction()
-        GameScreen.predictorLineDrawer.points = Predictor.points.toList()
+        lineDrawer?.points = Predictor.points.toList()
         queuePrediction = false
     }
 
 
     fun setShipVelocityAsCurrentPredictorVelocity() {
-        ship.velocity.set(Predictor.points[Predictor.currPointIndex].velocity)
+        ship?.velocity?.set(Predictor.points[Predictor.currPointIndex].velocity)
     }
 
     fun setPredictorShipToPlayerShip(ship:PlayerShip){
@@ -64,10 +74,13 @@ object Predictor : Disposable{
     }
 
     private fun runPrediction(){
+        if(ship == null)
+            return
+
         val pointToStartFrom = points[currPointIndex]
-        predictorShip.reset(pointToStartFrom.position, ship.fuel, Vector2(ship.velocity))
-        predictorShip.setShipRotation(ship.rotation)
-        predictorShip.copyThrusters(ship.thrusters)
+        predictorShip.reset(pointToStartFrom.position, ship!!.fuel, Vector2(ship!!.velocity))
+        predictorShip.setShipRotation(ship!!.rotation)
+        predictorShip.copyThrusters(ship!!.thrusters)
 
         pausePhysicsFunc()
 

@@ -50,7 +50,7 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
         draggingScreen = false
 
         if(runPredictor)
-            Predictor.queuePrediction = true
+            Predictor.queuePrediction(GameScreen.predictorLineDrawer)
 
         return false
     }
@@ -108,12 +108,12 @@ class GameScreenInputListener(val screen: GameScreen) : InputProcessor{
         when {
             draggingRotateShip -> {
                 ship.setRotationTowardsMouse(worldPos.x, worldPos.y)
-                Predictor.queuePrediction = true
+                Predictor.queuePrediction(GameScreen.predictorLineDrawer)
             }
             draggingShipBurnTime -> {
                 ship.dragBurn(worldPos.x, worldPos.y, shipLocation)
                 GameScreen.gui.fuelBar.setAmounts(ship.fuel, ship.fuelTaken)
-                Predictor.queuePrediction = true
+                Predictor.queuePrediction(GameScreen.predictorLineDrawer)
             }
             draggingScreen -> {
                 offset.set(screenX - startDragPos.x, screenY - startDragPos.y) //The difference between where the screen was and is now.

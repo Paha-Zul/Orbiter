@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.screens.EditorScreen
 import com.quickbite.spaceslingshot.screens.MainMenuScreen
+import com.quickbite.spaceslingshot.util.Constants
 
 class EditorScreenInputProcessor(val editorScreen: EditorScreen) : InputProcessor {
     val initialCameraPostion = Vector2()
@@ -45,7 +46,8 @@ class EditorScreenInputProcessor(val editorScreen: EditorScreen) : InputProcesso
         val offsetX =  mouseClickPosition.x - screenX
         val offsetY = screenY - mouseClickPosition.y
         MyGame.camera.position.set(initialCameraPostion.x + offsetX, initialCameraPostion.y + offsetY, 0f)
-        println("Dragging")
+        val camPos = MyGame.camera.position
+        MyGame.Box2dCamera.position.set(camPos.x* Constants.BOX2D_SCALE, camPos.y* Constants.BOX2D_SCALE, 0f)
         return false
     }
 

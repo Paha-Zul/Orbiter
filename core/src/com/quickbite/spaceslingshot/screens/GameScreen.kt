@@ -99,7 +99,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
         pauseTimer = false
 
         gameScreenData.ship = PlayerShip()
-        Predictor.queuePrediction = true
+        Predictor.queuePrediction(GameScreen.predictorLineDrawer)
         gui = GameScreenGUI(this)
 
         Gdx.input.inputProcessor = InputMultiplexer(MyGame.stage, GameScreenInputListener(this))
@@ -120,7 +120,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
 
         Predictor.init(gameScreenData.ship, {pauseAllPhysicsExceptPredictorShip(gameScreenData)}, { resumeAllPhysicsExceptPredictorShip(gameScreenData)},
                 {doPhysicsStep(Constants.PHYSICS_TIME_STEP)})
-        Predictor.queuePrediction = true
+        Predictor.queuePrediction(GameScreen.predictorLineDrawer)
 
         predictorLineDrawer.size = 3
     }
@@ -381,7 +381,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
             }
         }
 
-        Predictor.queuePrediction = true
+        Predictor.queuePrediction(GameScreen.predictorLineDrawer)
     }
 
     fun loadShip(newShip:PlayerShip){
@@ -425,7 +425,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
 
         if(paused) {
             Predictor.setShipVelocityAsCurrentPredictorVelocity()
-            Predictor.queuePrediction = true
+            Predictor.queuePrediction(GameScreen.predictorLineDrawer)
             gui.bottomPauseText.setText("Resume")
         }else{
 
