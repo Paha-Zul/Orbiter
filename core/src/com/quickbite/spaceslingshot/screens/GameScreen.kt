@@ -14,7 +14,6 @@ import com.badlogic.gdx.utils.Array
 import com.quickbite.spaceslingshot.GameScreenInputListener
 import com.quickbite.spaceslingshot.MyGame
 import com.quickbite.spaceslingshot.data.GameScreenData
-import com.quickbite.spaceslingshot.data.json.JsonLevelData
 import com.quickbite.spaceslingshot.guis.GameScreenGUI
 import com.quickbite.spaceslingshot.json.JsonLevel
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.*
@@ -68,7 +67,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
          * Pauses all physics except for the test ship predictor which is enabled
          */
         fun pauseAllPhysicsExceptPredictorShip(data:GameScreenData){
-            data.planetList.forEach { p -> p.setPhysicsPaused(true) }
+            data.planetList.forEach { p -> p.physicsArePaused = true }
             data.asteroidList.forEach { a -> a.setPhysicsPaused(true) }
             data.fuelContainerList.forEach { a -> a.setPhysicsPaused(true) }
             data.ship.setPhysicsPaused(true)
@@ -78,7 +77,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
          * Resumes all physics except for the test ship predictor which is disabled
          */
         fun resumeAllPhysicsExceptPredictorShip(data:GameScreenData){
-            data.planetList.forEach { p -> p.setPhysicsPaused(false) }
+            data.planetList.forEach { p -> p.physicsArePaused = false }
             data.asteroidList.forEach { a -> a.setPhysicsPaused(false) }
             data.fuelContainerList.forEach { a -> a.setPhysicsPaused(false) }
             data.ship.setPhysicsPaused(false)
@@ -99,7 +98,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
         pauseTimer = false
 
         gameScreenData.ship = PlayerShip()
-        Predictor.queuePrediction(GameScreen.predictorLineDrawer)
+        Predictor.queuePrediction()
         gui = GameScreenGUI(this)
 
         Gdx.input.inputProcessor = InputMultiplexer(MyGame.stage, GameScreenInputListener(this))
@@ -120,7 +119,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
 
         Predictor.init(gameScreenData.ship, {pauseAllPhysicsExceptPredictorShip(gameScreenData)}, { resumeAllPhysicsExceptPredictorShip(gameScreenData)},
                 {doPhysicsStep(Constants.PHYSICS_TIME_STEP)})
-        Predictor.queuePrediction(GameScreen.predictorLineDrawer)
+        Predictor.queuePrediction()
 
         predictorLineDrawer.size = 3
     }
@@ -381,7 +380,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
             }
         }
 
-        Predictor.queuePrediction(GameScreen.predictorLineDrawer)
+        Predictor.queuePrediction()
     }
 
     fun loadShip(newShip:PlayerShip){
@@ -425,7 +424,7 @@ class GameScreen(val game:MyGame, val levelToLoad:Int, val isEndlessGame:Boolean
 
         if(paused) {
             Predictor.setShipVelocityAsCurrentPredictorVelocity()
-            Predictor.queuePrediction(GameScreen.predictorLineDrawer)
+            Predictor.queuePrediction()
             gui.bottomPauseText.setText("Resume")
         }else{
 

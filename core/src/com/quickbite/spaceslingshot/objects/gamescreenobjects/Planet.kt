@@ -27,12 +27,10 @@ import com.quickbite.spaceslingshot.util.Constants
  * @param texture The texture to use for the planet
  */
 class Planet(position: Vector2, radius: Int, var gravityRangeRadius: Float, var density: Float, rotation:Float, texture:Texture)
-    : SpaceBody(position, radius, rotation), IUniqueID, IPhysicsBody, Disposable{
+    : SpaceBody(position, radius, rotation), IUniqueID, Disposable{
 
-    override var physicsArePaused: Boolean = false
     var sprite:Sprite
     override val uniqueID: Long = MathUtils.random(Long.MAX_VALUE)
-    override lateinit var body: Body
 
     private val gravityRing:TextureRegionDrawable
 
@@ -123,10 +121,4 @@ class Planet(position: Vector2, radius: Int, var gravityRangeRadius: Float, var 
     override fun dispose() {
         MyGame.world.destroyBody(this.body)
     }
-
-    override fun setPhysicsPaused(pausePhysics: Boolean) {
-        //Nothing for now
-    }
-
-
 }

@@ -41,10 +41,6 @@ abstract class ShipBase(position: Vector2, var fuel:Float) : SpaceBody(position,
 
     override val uniqueID: Long = MathUtils.random(Long.MAX_VALUE)
 
-    override lateinit var body: Body
-
-    override var physicsArePaused: Boolean = false
-
     constructor():this(Vector2(0f, 0f), 0f)
 
     init{

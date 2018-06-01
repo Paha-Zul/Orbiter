@@ -122,7 +122,7 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
                 val shipVelocity = velocity //Grab the ships velocity
                 Predictor.setShipVelocityAsCurrentPredictorVelocity() //Get the current velocity we need to be at
                 shipVelocity.add(asteroidVelocity)
-                Predictor.queuePrediction(GameScreen.predictorLineDrawer)
+                Predictor.queuePrediction()
             }
 
         }, this.uniqueID)
@@ -299,7 +299,7 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
             Predictor.currPointIndex++ //increase the point index
             if(Predictor.currPointIndex >= Predictor.points.size - 2){ //If we are past the last point, predict again!
                 Predictor.setShipVelocityAsCurrentPredictorVelocity()
-                Predictor.queuePrediction(GameScreen.predictorLineDrawer)
+                Predictor.queuePrediction()
             }
             val newPosition = Vector2(Predictor.points[Predictor.currPointIndex].position) //Make a copy so we don't change the predictor ship
             position.set(newPosition.x, newPosition.y)

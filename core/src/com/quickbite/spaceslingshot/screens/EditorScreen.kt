@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.quickbite.spaceslingshot.MyGame
@@ -165,16 +164,19 @@ class EditorScreen(val game:MyGame) : Screen{
      */
     private fun placeThing(){
         if(Gdx.input.justTouched()){
-            if(currentlyPlacing !is PlayerShip)
+            if(currentlyPlacing !is PlayerShip) {
                 placedThings += currentlyPlacing!!
-            else{
+            }else{
                 playerShip?.dispose()
                 playerShip = currentlyPlacing!! as PlayerShip
                 playerShip?.setPhysicsPaused(true)
                 Predictor.init(playerShip!!, {}, {}, {MyGame.world.step(0.016f, 4, 2)})
             }
+            currentlyPlacing?.body?.setTransform(currentlyPlacing?.position!!.x*Constants.BOX2D_SCALE,
+                    currentlyPlacing?.position!!.y*Constants.BOX2D_SCALE,
+                    currentlyPlacing?.rotation!!)
             currentlyPlacing = null
-            Predictor.queuePrediction(lineDrawer)
+            Predictor.queuePrediction()
         }
     }
 

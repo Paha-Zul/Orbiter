@@ -3,6 +3,7 @@ package com.quickbite.spaceslingshot.objects.gamescreenobjects
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.physics.box2d.Body
 import com.quickbite.spaceslingshot.interfaces.IDrawable
 import com.quickbite.spaceslingshot.interfaces.IUpdateable
 
@@ -16,6 +17,9 @@ open class SpaceBody(val position: Vector2, val size: Int, rotation:Float) : IDr
     }
 
     open var rotation = rotation
+
+    lateinit var body:Body
+    var physicsArePaused = false
 
     override var dead: Boolean = false
 
@@ -41,5 +45,9 @@ open class SpaceBody(val position: Vector2, val size: Int, rotation:Float) : IDr
     open fun clickedOn(x:Float, y:Float):Boolean{
         rect.set(position.x - size.toFloat()/2f, position.y - size.toFloat()/2f, size.toFloat(), size.toFloat())
         return rect.contains(x, y)
+    }
+
+    open fun createBody(){
+
     }
 }

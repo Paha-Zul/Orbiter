@@ -38,8 +38,6 @@ class SpaceStation(position: Vector2, var fuelStorage:Float, rotation:Float, val
     }
 
     override val uniqueID: Long = MathUtils.random(Long.MAX_VALUE)
-    override lateinit var body: Body
-    override var physicsArePaused: Boolean = false
 
     val secondsToRefuel = 2f
     val fuelRechargeAmountPerTick = fuelStorage/(60f*secondsToRefuel) //Assuming 60 ticks per second

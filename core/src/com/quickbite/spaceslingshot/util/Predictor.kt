@@ -1,5 +1,6 @@
 package com.quickbite.spaceslingshot.util
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import com.quickbite.spaceslingshot.data.GameScreenData
@@ -8,7 +9,6 @@ import com.quickbite.spaceslingshot.objects.gamescreenobjects.PlayerShip
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.ShipBase
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.TestShip
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.Thruster
-import com.quickbite.spaceslingshot.screens.GameScreen
 
 /**
  * Created by Paha on 8/7/2016.
@@ -27,7 +27,7 @@ object Predictor : Disposable{
     private lateinit var resumePhysicsFunc:()->Unit
     private lateinit var physicsStep:()->Unit
 
-    private var lineDrawer:LineDraw? = null
+    private var lineDrawer = LineDraw(Vector2(), Vector2(), GH.createPixel(Color.WHITE))
 
     fun init(ship: PlayerShip, pausePhysicsFunc:()->Unit, resumePhysicsFunc:()->Unit, physicsStep:()->Unit){
         this.ship = ship
@@ -52,12 +52,11 @@ object Predictor : Disposable{
     /**
      * Queues the prediction for the next frame
      */
-    fun queuePrediction(lineDrawer: LineDraw? = null){
+    fun queuePrediction() {
         queuePrediction = true
-        this.lineDrawer = lineDrawer
     }
 
-    private fun predict(lineDrawer:LineDraw? = null){
+    private fun predict() {
         runPrediction()
         lineDrawer?.points = Predictor.points.toList()
         queuePrediction = false
