@@ -273,7 +273,16 @@
 	class: com.quickbite.spaceslingshot.json.JsonLevel
 	level: 5
 	name: super
-	ship: {}
+	ship: {
+		position: {
+			x: 57.000015
+			y: 214.75598
+		}
+		velocity: {
+			y: 1
+		}
+		fuel: 100
+	}
 	planets: [
 		{
 			position: {

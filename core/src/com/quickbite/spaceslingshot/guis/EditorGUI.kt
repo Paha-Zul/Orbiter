@@ -158,10 +158,7 @@ class EditorGUI(val editorScreen: EditorScreen) {
                     if(LevelManager.levelExists(number)) {
                         openOverwriteDialog(number, name)
                     }else
-                        //TODO Let's move this to the editor screen
-                        LevelManager.saveLevel(number, name, editorScreen.placedThings,
-                                Array.with(AchievementJson("win", ""), AchievementJson("fuel", "50"), AchievementJson("time", "10"))) //TODO Fix to save achievements!!
-
+                        editorScreen.saveLevel(number, name)
                     saveLevelTable.remove()
                 }catch(e:Exception){
                     println(e)
@@ -200,9 +197,7 @@ class EditorGUI(val editorScreen: EditorScreen) {
 
         yesButton.addListener(object:ChangeListener(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                //TODO Let's move this to the editor screen
-                LevelManager.saveLevel(level, levelName, editorScreen.placedThings,
-                        Array.with(AchievementJson("win", ""), AchievementJson("fuel", "50"), AchievementJson("time", "10"))) //TODO Fix to save achievements!
+                editorScreen.saveLevel(level, levelName)
                 overwriteTable.remove()
             }
         })

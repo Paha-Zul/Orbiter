@@ -7,7 +7,9 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.utils.Array
 import com.quickbite.spaceslingshot.MyGame
+import com.quickbite.spaceslingshot.data.json.AchievementJson
 import com.quickbite.spaceslingshot.guis.EditorGUI
 import com.quickbite.spaceslingshot.inputprocessor.EditorScreenInputProcessor
 import com.quickbite.spaceslingshot.objects.gamescreenobjects.Planet
@@ -142,6 +144,14 @@ class EditorScreen(val game:MyGame) : Screen{
         }else if(Gdx.input.isKeyJustPressed(Input.Keys.F6)) {
             editorGUI.openLoadLevelDialog()
         }
+    }
+
+    fun saveLevel(level:Int, levelName:String){
+        val list = mutableListOf(playerShip!! as SpaceBody)
+        list.addAll(placedThings)
+        LevelManager.saveLevel(level, levelName, list,
+                Array.with(AchievementJson("win", ""), AchievementJson("fuel", "50"), AchievementJson("time", "10"))) //TODO Fix to save achievements!
+
     }
 
     fun loadLevel(level:Int){
