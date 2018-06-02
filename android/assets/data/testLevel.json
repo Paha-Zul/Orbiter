@@ -269,4 +269,43 @@
 		}
 	]
 }
+{
+	class: com.quickbite.spaceslingshot.json.JsonLevel
+	level: 5
+	name: super
+	ship: {}
+	planets: [
+		{
+			position: {
+				x: 165
+				y: 515.39355
+			}
+			size: 40
+			gravityRange: 100
+			gravityStrength: 0.01
+		}
+	]
+	stations: [
+		{
+			position: {
+				x: 388
+				y: 664.9295
+			}
+			rotation: 180
+		}
+	]
+	achievements: [
+		{
+			name: win
+		}
+		{
+			name: fuel
+			value: 50
+		}
+		{
+			name: time
+			value: 10
+		}
+	]
+}
 ]

@@ -505,6 +505,11 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
         setBurnHandlePosition()
     }
 
+    override fun setPhysicsPosition(x: Float, y: Float) {
+        super.setPhysicsPosition(x, y)
+        Predictor.setPredictorShipToPlayerShip(this)
+    }
+
     class BurnHandle(val ship: PlayerShip, val burnHandleLocation: ShipLocation, val rotationOffset:Float){
         companion object{
             var normalBurnTexture: TextureRegion = MyGame.gameScreenAtlas.findRegion("arrow")

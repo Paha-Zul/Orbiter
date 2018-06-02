@@ -97,7 +97,7 @@ class EditorScreen(val game:MyGame) : Screen{
         currentlyPlacing!!.draw2(MyGame.batch)
     }
 
-    private fun checkClickedOn(){
+    fun checkClickedOn():SpaceBody?{
         if(Gdx.input.justTouched()){
             val worldCoords = MyGame.camera.unproject(Vector3(Gdx.input.x.toFloat(), Gdx.input.y.toFloat(), 0f))
             //Loop through each thing and check if any were clicked on
@@ -105,24 +105,31 @@ class EditorScreen(val game:MyGame) : Screen{
                 if(it.clickedOn(worldCoords.x, worldCoords.y)) {
                     currentlySelected = it //Set the currently selected
                     editorGUI.clickedOn(currentlySelected!!)
-                    return
+                    return it
                 }
             }
 
             if(playerShip != null && playerShip!!.clickedOn(worldCoords.x, worldCoords.y)) {
                 currentlySelected = playerShip //Set the currently selected
                 editorGUI.clickedOn(currentlySelected!!)
-                return
+                return playerShip!!
             }
 
             editorGUI.clickedOn(null)
         }
+
+        return null
     }
 
     private fun checkDelete(){
         if(currentlySelected != null && Gdx.input.isKeyJustPressed(Input.Keys.FORWARD_DEL)){
-            placedThings -= currentlySelected!!
-            currentlySelected?.dispose()
+            if(currentlySelected == playerShip) {
+                playerShip!!.dispose()
+                playerShip = null
+            }else {
+                placedThings -= currentlySelected!!
+                currentlySelected?.dispose()
+            }
             currentlySelected = null
             editorGUI.clickedOn(null)
             Predictor.queuePrediction()
@@ -142,7 +149,13 @@ class EditorScreen(val game:MyGame) : Screen{
         val data = LevelManager.loadLevel(level)
         placedThings.forEach { it.dispose() }
         placedThings.clear()
-        placedThings.addAll(data.first)
+
+        data.first.forEach {
+            if (it is PlayerShip)
+                playerShip = it
+            else
+                placedThings += it
+        }
     }
 
     /**
@@ -215,6 +228,7 @@ class EditorScreen(val game:MyGame) : Screen{
         currentlySelected = null
         placedThings.forEach { it.dispose() } //This is super important to clean up world bodies
         placedThings.clear()
+        playerShip?.dispose()
         MyGame.stage.clear()
     }
 }

@@ -64,6 +64,8 @@ object LevelManager {
             this.achievements = achievements
         }
 
+        println("Saving, ship pos: ${ship.position}")
+
 
         //Check if we already have a level 1
         val index = loadedLevels.indexOfFirst { it.level == levelNumber }
@@ -95,7 +97,10 @@ object LevelManager {
             rotation = data.ship.rotation
             hideControls = true
             velocity.set(data.ship.velocity)
+            setPhysicsPosition(data.ship.position.x, data.ship.position.y)
         }
+
+        println("Loading, ship position: ${data.ship.position}")
 
         return Pair(objectList, listOf())
     }
