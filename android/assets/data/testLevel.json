@@ -275,19 +275,20 @@
 	name: super
 	ship: {
 		position: {
-			x: 57.000015
-			y: 214.75598
+			x: 67
+			y: 179.24823
 		}
 		velocity: {
-			y: 1
+			x: 0.4
+			y: 0.7
 		}
 		fuel: 100
 	}
 	planets: [
 		{
 			position: {
-				x: 165
-				y: 515.39355
+				x: 98.999985
+				y: 416.65585
 			}
 			size: 40
 			gravityRange: 100
@@ -299,6 +300,129 @@
 			position: {
 				x: 388
 				y: 664.9295
+			}
+			rotation: 180
+		}
+	]
+	achievements: [
+		{
+			name: win
+		}
+		{
+			name: fuel
+			value: 50
+		}
+		{
+			name: time
+			value: 10
+		}
+	]
+}
+{
+	class: com.quickbite.spaceslingshot.json.JsonLevel
+	level: 6
+	name: level
+	ship: {
+		position: {
+			x: 226
+			y: 90.476715
+		}
+		rotation: 450
+		velocity: {
+			y: 0.5
+		}
+		fuel: 100
+	}
+	planets: [
+		{
+			position: {
+				x: 150
+				y: 302.9111
+			}
+			size: 40
+			gravityRange: 80
+			gravityStrength: 0.01
+		}
+		{
+			position: {
+				x: 169
+				y: 465.39346
+			}
+			size: 40
+			gravityRange: 80
+			gravityStrength: 0.01
+		}
+		{
+			position: {
+				x: 362
+				y: 599.6671
+			}
+			size: 40
+			gravityRange: 80
+			gravityStrength: 0.01
+		}
+	]
+	stations: [
+		{
+			position: {
+				x: 59
+				y: 680.9083
+			}
+		}
+	]
+	achievements: [
+		{
+			name: win
+		}
+		{
+			name: fuel
+			value: 50
+		}
+		{
+			name: time
+			value: 10
+		}
+	]
+}
+{
+	class: com.quickbite.spaceslingshot.json.JsonLevel
+	level: 7
+	name: level
+	ship: {
+		position: {
+			x: 226
+			y: 65.85611
+		}
+		velocity: {
+			y: 1
+		}
+		fuel: 100
+	}
+	planets: [
+		{
+			position: {
+				x: 218
+				y: 460.36673
+			}
+			size: 40
+			gravityRange: 80
+			gravityStrength: 0.01
+		}
+		{
+			position: {
+				x: 184
+				y: 879.7475
+			}
+			size: 40
+			gravityRange: 150
+			gravityStrength: 0.03
+		}
+	]
+	stations: [
+		{
+			position: {
+				x: 400
+				y: 734.2454
 			}
 			rotation: 180
 		}

@@ -36,6 +36,9 @@ class EditorScreen(val game:MyGame) : Screen{
 
         val multiInput = InputMultiplexer(MyGame.stage, EditorScreenInputProcessor(this))
         Gdx.input.inputProcessor = multiInput
+
+        val camPos = MyGame.camera.position
+        MyGame.Box2dCamera.position.set(camPos.x * Constants.BOX2D_SCALE, camPos.y * Constants.BOX2D_SCALE, 0f)
     }
 
     override fun pause() {
@@ -161,9 +164,10 @@ class EditorScreen(val game:MyGame) : Screen{
         placedThings.clear()
 
         data.first.forEach {
-            if (it is PlayerShip)
+            if (it is PlayerShip) {
                 playerShip = it
-            else
+                Predictor.init(playerShip!!, {}, {}, {MyGame.world.step(0.016f, 4, 2)})
+            }else
                 placedThings += it
         }
     }
@@ -208,7 +212,7 @@ class EditorScreen(val game:MyGame) : Screen{
         val worldCoords = MyGame.camera.unproject(Vector3(Gdx.input.x.toFloat(), Gdx.input.y.toFloat(), 0f))
         when(type){
             "planet" -> {
-                val planet = Planet(Vector2(worldCoords.x, worldCoords.y), 40, 40f, 0.01f, 0f, ProceduralPlanetTextureGenerator.getNextTexture())
+                val planet = Planet(Vector2(worldCoords.x, worldCoords.y), 40, 80f, 0.01f, 0f, ProceduralPlanetTextureGenerator.getNextTexture())
                 currentlyPlacing = planet
             }
             "station" -> {

@@ -334,7 +334,7 @@ class PlayerShip(position: Vector2, fuel:Float) : ShipBase(position, fuel) {
         setBurnHandlePosition()
     }
 
-    private fun setBurnHandlePosition(){
+    fun setBurnHandlePosition(){
         burnHandles.forEach { handle ->
             val thruster = getThruster(handle.burnHandleLocation)
 
